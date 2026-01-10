@@ -50,8 +50,8 @@
                                 <div style="font-weight: 600;">#{{ $order->id }}</div>
                                 <div style="color: #6b7280; font-size: 12px;">{{ $order->order_number }}</div>
                             </td>
-                            <td style="padding: 16px; color: #1f2937; font-weight: 500;">{{ $order->customer_name }}</td>
-                            <td style="padding: 16px; color: #6b7280; font-size: 13px;">{{ $order->customer_email }}</td>
+                            <td style="padding: 16px; color: #1f2937; font-weight: 500;">{{ $order->customer?->name ?? 'N/A' }}</td>
+                            <td style="padding: 16px; color: #6b7280; font-size: 13px;">{{ $order->customer?->email ?? 'N/A' }}</td>
                             <td style="padding: 16px; color: #6b7280; font-size: 13px;">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                             <td style="padding: 16px; color: #1f2937; font-weight: 600;">{{ $order->items->count() }}</td>
                             <td style="padding: 16px; color: #1f2937; font-weight: 600;">R$ {{ number_format($order->total, 2, ',', '.') }}</td>

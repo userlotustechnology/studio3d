@@ -80,9 +80,17 @@
                 <!-- Endereço de Entrega -->
                 <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                     <h2 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 20px;">Endereço de Entrega</h2>
+                    @if($order->shippingAddress)
                     <div style="background-color: #f9fafb; padding: 16px; border-radius: 6px;">
-                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Rua:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->street }}</span></p>
-                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Cidade:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->city }}</span></p>
+                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Rua:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->shippingAddress->street }}, {{ $order->shippingAddress->number }}</span></p>
+                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Complemento:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->shippingAddress->complement ?? 'N/A' }}</span></p>
+                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Cidade:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->shippingAddress->city }}</span></p>
+                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Estado:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->shippingAddress->state }}</span></p>
+                        <p style="margin: 0;"><span style="color: #6b7280; font-size: 13px;">CEP:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->shippingAddress->postal_code }}</span></p>
+                    </div>
+                    @else
+                    <p style="color: #6b7280;">Nenhum endereço de entrega encontrado</p>
+                    @endif
                         <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Estado:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->state }}</span></p>
                         <p style="margin: 0;"><span style="color: #6b7280; font-size: 13px;">CEP:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->zip_code }}</span></p>
                     </div>
@@ -97,9 +105,9 @@
                     
                     <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
                         <p style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">Cliente</p>
-                        <p style="color: #1f2937; font-weight: 600; margin: 0;">{{ $order->customer_name }}</p>
-                        <p style="color: #6b7280; font-size: 12px; margin: 8px 0 0 0;">{{ $order->customer_email }}</p>
-                        <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">{{ $order->customer_phone }}</p>
+                        <p style="color: #1f2937; font-weight: 600; margin: 0;">{{ $order->customer?->name ?? 'N/A' }}</p>
+                        <p style="color: #6b7280; font-size: 12px; margin: 8px 0 0 0;">{{ $order->customer?->email ?? 'N/A' }}</p>
+                        <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">{{ $order->customer?->phone ?? 'N/A' }}</p>
                     </div>
 
                     <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
