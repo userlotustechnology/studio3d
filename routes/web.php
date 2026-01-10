@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CategoryController;
+use App\Models\Category;
 
 // Rotas públicas - Loja
 Route::get('/', [ProductController::class, 'shop'])->name('shop.index');
@@ -30,7 +34,7 @@ Route::middleware('guest')->group(function () {
 
 // Rotas protegidas por autenticação
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     // Rotas específicas para administradores
@@ -42,5 +46,40 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/settings', function () {
             return view('admin.settings.index');
         })->name('admin.settings.index');
+        
+        // Rotas de Gerenciamento de Produtos
+        Route::resource('admin/products', ProductController::class, [
+            'parameters' => ['product' => 'product'],
+            'names' => [
+                'index' => 'admin.products.index',
+                'create' => 'admin.products.create',
+                'store' => 'admin.products.store',
+                'show' => 'admin.products.show',
+                'edit' => 'admin.products.edit',
+                'update' => 'admin.products.update',
+                'destroy' => 'admin.products.destroy'
+            ]
+        ]);
+        
+        // Rotas de Gerenciamento de Pedidos
+        Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/admin/orders/pending', [OrderController::class, 'pending'])->name('admin.orders.pending');
+        Route::get('/admin/orders/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
+        Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+        Route::post('/admin/orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+        
+        // Rotas de Gerenciamento de Categorias
+        Route::resource('admin/categories', CategoryController::class, [
+            'parameters' => ['category' => 'category'],
+            'names' => [
+                'index' => 'admin.categories.index',
+                'create' => 'admin.categories.create',
+                'store' => 'admin.categories.store',
+                'show' => 'admin.categories.show',
+                'edit' => 'admin.categories.edit',
+                'update' => 'admin.categories.update',
+                'destroy' => 'admin.categories.destroy'
+            ]
+        ]);
     });
 });

@@ -8,7 +8,11 @@
         <nav style="font-size: 14px; color: var(--text-light);">
             <a href="{{ route('shop.index') }}" style="color: var(--primary-color);">Produtos</a>
             <span> / </span>
-            <a href="{{ route('shop.category', $product->category) }}" style="color: var(--primary-color);">{{ $product->category }}</a>
+            @if($product->category_id && $product->category)
+            <a href="{{ route('shop.category', $product->category->id) }}" style="color: var(--primary-color);">{{ $product->category->name }}</a>
+            @else
+            <span style="color: var(--text-light);">Sem categoria</span>
+            @endif
             <span> / </span>
             <span>{{ $product->name }}</span>
         </nav>
@@ -19,12 +23,12 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
             <!-- Product Image -->
             <div>
-                <img src="{{ $product->image }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
             </div>
 
             <!-- Product Information -->
             <div>
-                <div class="product-category" style="margin-bottom: 15px;">{{ $product->category }}</div>
+                <div class="product-category" style="margin-bottom: 15px;">{{ $product->category?->name ?? 'Sem categoria' }}</div>
                 
                 <h1 style="font-size: 36px; margin-bottom: 20px; color: var(--text-dark);">{{ $product->name }}</h1>
                 
@@ -116,7 +120,7 @@
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 12px 0; font-weight: 600; color: var(--text-dark); width: 30%;">Categoria</td>
-                        <td style="padding: 12px 0; color: var(--text-light);">{{ $product->category }}</td>
+                        <td style="padding: 12px 0; color: var(--text-light);">{{ $product->category?->name ?? 'Sem categoria' }}</td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 12px 0; font-weight: 600; color: var(--text-dark);">Preço</td>
@@ -157,9 +161,9 @@
                     @foreach($relatedProducts as $related)
                         <div class="product-card">
                             <a href="{{ route('shop.show', $related->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                                <img src="{{ $related->image }}" alt="{{ $related->name }}" class="product-image">
+                                <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}" class="product-image">
                                 <div class="product-info">
-                                    <div class="product-category">{{ $related->category }}</div>
+                                    <div class="product-category">{{ $related->category?->name ?? 'Sem categoria' }}</div>
                                     <h3 class="product-name">{{ $related->name }}</h3>
                                     <p class="product-description">{{ Str::limit($related->description, 80) }}</p>
                                     <div class="product-footer">

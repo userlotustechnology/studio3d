@@ -19,9 +19,9 @@
                 <a href="{{ route('shop.index') }}" class="category-btn active">
                     <i class="fas fa-th"></i> Todos os Produtos
                 </a>
-                @foreach($categories as $categoryName)
-                    <a href="{{ route('shop.category', $categoryName) }}" class="category-btn">
-                        {{ $categoryName }}
+                @foreach($categories as $category)
+                    <a href="{{ route('shop.category', $category->id) }}" class="category-btn">
+                        {{ $category->name }}
                     </a>
                 @endforeach
             </div>
@@ -33,9 +33,9 @@
                 @foreach($products as $product)
                     <div class="product-card">
                         <a href="{{ route('shop.show', $product->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="product-image">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
                             <div class="product-info">
-                                <div class="product-category">{{ $product->category }}</div>
+                                <div class="product-category">{{ $product->category?->name ?? 'Sem categoria' }}</div>
                                 <h3 class="product-name">{{ $product->name }}</h3>
                                 <p class="product-description">{{ Str::limit($product->description, 100) }}</p>
                                 <div class="product-footer">

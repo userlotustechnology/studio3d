@@ -118,84 +118,6 @@
                 @endif
 
                 <li class="menu-title small text-uppercase">
-                    <span class="menu-title-text">COMUNIDADE</span>
-                </li>
-
-                <li class="menu-item {{ request()->routeIs('eventos.*') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('eventos.*') ? 'active' : '' }}">
-                        <span class="material-symbols-outlined menu-icon">event</span>
-                        <span class="title">Eventos</span>
-                    </a>
-                    <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Próximos Eventos
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Calendário
-                            </a>
-                        </li>
-                        @if(Auth::user()->role === 'admin')
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Criar Evento
-                            </a>
-                        </li>
-                        @endif
-                    </ul>
-                </li>
-
-                <li class="menu-item {{ request()->routeIs('comunidade.*') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('comunidade.*') ? 'active' : '' }}">
-                        <span class="material-symbols-outlined menu-icon">group</span>
-                        <span class="title">Comunidade</span>
-                    </a>
-                    <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Membros
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Grupos
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Ministérios
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="menu-item {{ request()->routeIs('comunicacao.*') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('comunicacao.*') ? 'active' : '' }}">
-                        <span class="material-symbols-outlined menu-icon">chat</span>
-                        <span class="title">Comunicação</span>
-                    </a>
-                    <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Avisos
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Notícias
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Boletim
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="menu-title small text-uppercase">
                     <span class="menu-title-text">FINANCEIRO</span>
                 </li>
 
@@ -224,6 +146,88 @@
                         @endif
                     </ul>
                 </li>
+
+                <li class="menu-title small text-uppercase">
+                    <span class="menu-title-text">LOJA</span>
+                </li>
+
+                <li class="menu-item">
+                    <a href="{{ route('shop.index') }}" class="menu-link {{ request()->routeIs('shop.index') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">storefront</span>
+                        <span class="title">Vitrine</span>
+                    </a>
+                </li>
+
+                @if(Auth::user()->role === 'admin')
+                <li class="menu-item {{ request()->routeIs('admin.products.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">shopping_bag</span>
+                        <span class="title">Produtos</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.products.index') }}" class="menu-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                                Listar Produtos
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.products.create') }}" class="menu-link {{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
+                                Adicionar Produto
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="menu-item {{ request()->routeIs('admin.orders.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">receipt_long</span>
+                        <span class="title">Pedidos</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.orders.index') }}" class="menu-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
+                                Todos os Pedidos
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.orders.pending') }}" class="menu-link {{ request()->routeIs('admin.orders.pending') ? 'active' : '' }}">
+                                Pendentes
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.orders.completed') }}" class="menu-link {{ request()->routeIs('admin.orders.completed') ? 'active' : '' }}">
+                                Entregues
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="menu-item {{ request()->routeIs('admin.categories.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">category</span>
+                        <span class="title">Categorias</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.categories.index') }}" class="menu-link {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}">
+                                Listar Categorias
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.categories.create') }}" class="menu-link {{ request()->routeIs('admin.categories.create') ? 'active' : '' }}">
+                                Adicionar Categoria
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @else
+                <li class="menu-item">
+                    <a href="{{ route('cart.index') }}" class="menu-link {{ request()->routeIs('cart.index') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">shopping_cart</span>
+                        <span class="title">Meu Carrinho</span>
+                    </a>
+                </li>
+                @endif
 
                 <li class="menu-title small text-uppercase">
                     <span class="menu-title-text">CONTA</span>
@@ -496,6 +500,7 @@
     <!-- Link Of JS File -->
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/sidebar-menu-simple.js') }}"></script>
+    <script src="{{ asset('js/menu-toggle.js') }}"></script>
     <script src="{{ asset('assets/js/quill.min.js') }}"></script>
     <script src="{{ asset('assets/js/data-table.js') }}"></script>
     <script src="{{ asset('assets/js/prism.js') }}"></script>
@@ -505,18 +510,14 @@
     <script src="{{ asset('assets/js/echarts.min.js') }}"></script>
     <script src="{{ asset('assets/js/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/fullcalendar.main.js') }}"></script>
-    <script src="{{ asset('assets/js/jsvectormap.min.js') }}"></script>
-    <script src="{{ asset('assets/js/world-merc.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/apexcharts.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/echarts.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/maps.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/jsvectormap.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/world-merc.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/custom/apexcharts.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/custom/echarts.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/custom/maps.js') }}"></script> --}}
     <script src="{{ asset('assets/js/custom/custom.js') }}"></script>
     
     <!-- Custom Dashboard JavaScript -->
-    <script src="{{ asset('js/dashboard-custom.js') }}"></script>
-
-    <!-- Link Of JS File -->
-    
-    <!-- Custom JavaScript for Dashboard -->
+    {{-- <script src="{{ asset('js/dashboard-custom.js') }}"></script> --}}
 
     @yield('scripts')

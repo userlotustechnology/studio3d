@@ -1,13 +1,13 @@
 @extends('shop.layout')
 
-@section('title', $category . ' - Loja Online')
+@section('title', $category->name . ' - Loja Online')
 
 @section('content')
     <!-- Category Header -->
     <div class="hero">
         <div class="container">
-            <h1>{{ $category }}</h1>
-            <p>Confira todos os produtos dessa categoria</p>
+            <h1>{{ $category->name }}</h1>
+            <p>{{ $category->description ?? 'Confira todos os produtos dessa categoria' }}</p>
         </div>
     </div>
 
@@ -19,9 +19,9 @@
                 <a href="{{ route('shop.index') }}" class="category-btn">
                     <i class="fas fa-th"></i> Todos os Produtos
                 </a>
-                @foreach($categories as $categoryName)
-                    <a href="{{ route('shop.category', $categoryName) }}" class="category-btn {{ $categoryName === $category ? 'active' : '' }}">
-                        {{ $categoryName }}
+                @foreach($categories as $cat)
+                    <a href="{{ route('shop.category', $cat->id) }}" class="category-btn {{ $cat->id === $category->id ? 'active' : '' }}">
+                        {{ $cat->name }}
                     </a>
                 @endforeach
             </div>
@@ -33,9 +33,9 @@
                 @foreach($products as $product)
                     <div class="product-card">
                         <a href="{{ route('shop.show', $product->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="product-image">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
                             <div class="product-info">
-                                <div class="product-category">{{ $product->category }}</div>
+                                <div class="product-category">{{ $product->category?->name ?? 'Sem categoria' }}</div>
                                 <h3 class="product-name">{{ $product->name }}</h3>
                                 <p class="product-description">{{ Str::limit($product->description, 100) }}</p>
                                 <div class="product-footer">
