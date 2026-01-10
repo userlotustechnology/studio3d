@@ -130,7 +130,7 @@
                             <input type="radio" name="payment_method" value="credit_card" required style="margin-right: 15px;">
                             <div>
                                 <div style="font-weight: 600; color: var(--text-dark);"><i class="fas fa-credit-card"></i> Cartão de Crédito</div>
-                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Parcelado em até 12x</div>
+                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Parcelado em até 12x com juros</div>
                             </div>
                         </label>
 
@@ -217,6 +217,28 @@
     </div>
 
     <script>
+        // Máscara de Telefone Celular
+        const phoneInput = document.querySelector('input[name="customer_phone"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 11) {
+                    value = value.slice(0, 11);
+                }
+                
+                if (value.length > 7) {
+                    value = value.slice(0, 2) + ') ' + value.slice(2, 7) + '-' + value.slice(7);
+                    value = '(' + value;
+                } else if (value.length > 2) {
+                    value = value.slice(0, 2) + ') ' + value.slice(2);
+                    value = '(' + value;
+                }
+                
+                e.target.value = value;
+            });
+        }
+
         // Toggle shipping address section
         const differentAddressCheckbox = document.getElementById('different_address_toggle');
         const shippingAddressSection = document.getElementById('shipping_address_section');

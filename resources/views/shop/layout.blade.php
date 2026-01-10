@@ -357,6 +357,9 @@
                     <a href="{{ route('shop.index') }}">Produtos</a>
                     <a href="#about">Sobre</a>
                     <a href="#contact">Contato</a>
+                    <a href="{{ route('orders.search-form') }}" style="color: var(--primary-color); font-weight: 600;">
+                        <i class="fas fa-search"></i> Consultar Pedido
+                    </a>
                 </nav>
                 <div class="auth-buttons" style="gap: 20px;">
                     <a href="{{ route('cart.index') }}" style="position: relative; color: var(--primary-color); font-weight: 600;">

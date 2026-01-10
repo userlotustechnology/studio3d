@@ -25,6 +25,10 @@ Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkou
 Route::post('/checkout/processar', [CartController::class, 'processCheckout'])->name('cart.process-checkout');
 Route::get('/pedido/{order}/sucesso', [CartController::class, 'orderSuccess'])->name('order.success');
 
+// Rotas de Consulta de Pedidos (público)
+Route::get('/consultar-pedido', [CartController::class, 'searchOrdersForm'])->name('orders.search-form');
+Route::post('/consultar-pedido', [CartController::class, 'searchOrders'])->name('orders.search');
+
 // Rotas de autenticação
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

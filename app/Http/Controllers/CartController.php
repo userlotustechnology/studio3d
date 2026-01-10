@@ -64,7 +64,10 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'CPF inválido!');
             }
 
-            // Buscar ou criar cliente pelo CPF
+            // Remove máscara do CPF antes de usar
+            $cpf = preg_replace('/[^0-9]/', '', $cpf);
+
+            // Buscar ou criar cliente pelo CPF (sem máscara)
             $customer = Customer::where('cpf', $cpf)->first();
             
             if (!$customer) {
@@ -385,5 +388,60 @@ class CartController extends Controller
     {
         $order->load('items', 'customer', 'billingAddress', 'shippingAddress');
         return view('shop.order-success', compact('order'));
+    }
+
+    public function searchOrdersForm(): View
+    {
+        return view('shop.order-search');
+    }
+
+    public function searchOrders(Request $request): View|RedirectResponse
+    {
+        $validated = $request->validate([
+            'cpf' => 'required|string|min:11',
+            'order_id' => 'required|string',
+        ], [
+            'cpf.required' => 'O CPF é obrigatório',
+            'cpf.min' => 'O CPF deve ter no mínimo 11 dígitos',
+            'order_id.required' => 'O ID do pedido é obrigatório',
+        ]);
+
+        // Remove formatação do CPF
+        $cpf = preg_replace('/[^0-9]/', '', $validated['cpf']);
+
+        // Extrai o ID numérico do formato PED-YYYY-XXXXXX
+        $orderId = $validated['order_id'];
+        
+        // Se veio no formato completo PED-2026-000001, extrai apenas o número
+        if (preg_match('/^PED-\d{4}-(\d+)$/', $orderId, $matches)) {
+            $orderId = (int) $matches[1];
+        } else {
+            // Se veio só o número, converte
+            $orderId = (int) $orderId;
+        }
+
+        if ($orderId <= 0) {
+            return back()->with('error', 'O ID do pedido é inválido. Use o formato PED-YYYY-XXXXXX ou apenas o número.');
+        }
+
+        // Buscar o cliente pelo CPF
+        $customer = Customer::where('cpf', $cpf)->first();
+
+        if (!$customer) {
+            return back()->with('error', 'Nenhum cliente encontrado com este CPF.');
+        }
+
+        // Buscar o pedido pelo ID e verificar se pertence ao cliente
+        $order = Order::with('items', 'customer', 'billingAddress', 'shippingAddress')
+            ->where('id', $orderId)
+            ->where('customer_id', $customer->id)
+            ->where('is_draft', false)
+            ->first();
+
+        if (!$order) {
+            return back()->with('error', 'Pedido não encontrado. Verifique o CPF e o ID do pedido.');
+        }
+
+        return view('shop.order-details', compact('order'));
     }
 }
