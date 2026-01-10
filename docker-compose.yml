@@ -1,0 +1,67 @@
+services:
+  # Serviço PHP-FPM
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studio3d_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - studio3d_network
+    depends_on:
+      - mysql
+
+  # Serviço Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: studio3d_nginx
+    restart: unless-stopped
+    ports:
+      - "8089:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - studio3d_network
+    depends_on:
+      - app
+
+  # Serviço MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: studio3d_mysql
+    restart: unless-stopped
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: studio3d
+      MYSQL_ROOT_PASSWORD: studio3d123
+      MYSQL_USER: studio3d
+      MYSQL_PASSWORD: studio3d123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - studio3d_network
+
+  # Serviço Redis (opcional, para cache e sessões)
+  redis:
+    image: redis:alpine
+    container_name: studio3d_redis
+    restart: unless-stopped
+    ports:
+      - "6389:6379"
+    networks:
+      - studio3d_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  studio3d_network:
+    driver: bridge
