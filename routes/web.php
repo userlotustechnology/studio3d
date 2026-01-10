@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SettingController;
 use App\Models\Category;
 
 // Rotas públicas - Loja
@@ -59,9 +60,9 @@ Route::middleware('auth')->group(function () {
             ]
         ]);
         
-        Route::get('/admin/settings', function () {
-            return view('admin.settings.index');
-        })->name('admin.settings.index');
+        Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+        Route::post('/admin/settings/store', [SettingController::class, 'storeSettings'])->name('admin.settings.store');
+        Route::post('/admin/settings/system', [SettingController::class, 'systemSettings'])->name('admin.settings.system');
         
         // Rotas de Gerenciamento de Produtos
         Route::resource('admin/products', ProductController::class, [

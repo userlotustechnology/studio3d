@@ -97,10 +97,10 @@
                     </ul>
                 </li>
 
-                <li class="menu-item {{ request()->routeIs('paroquia.*') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('paroquia.*') ? 'active' : '' }}">
-                        <span class="material-symbols-outlined menu-icon">church</span>
-                        <span class="title">Paróquia</span>
+                <li class="menu-item {{ request()->routeIs('store.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('store.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">store</span>
+                        <span class="title">Loja</span>
                     </a>
                     <ul class="menu-sub">
                         <li class="menu-item">
