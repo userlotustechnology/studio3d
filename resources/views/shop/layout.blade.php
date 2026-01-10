@@ -357,7 +357,11 @@
                     <a href="#about">Sobre</a>
                     <a href="#contact">Contato</a>
                 </nav>
-                <div class="auth-buttons">
+                <div class="auth-buttons" style="gap: 20px;">
+                    <a href="{{ route('cart.index') }}" style="position: relative; color: var(--primary-color); font-weight: 600;">
+                        <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
+                        <span id="cart-count" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">0</span>
+                    </a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                             <i class="fas fa-user-circle"></i> Minha Conta
@@ -424,6 +428,18 @@
     </footer>
 
     <script>
+        // Atualizar contador de carrinho
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            let count = 0;
+            
+            cart.forEach(item => {
+                count += item.quantity;
+            });
+            
+            document.getElementById('cart-count').textContent = count;
+        }
+
         // Simple cart functionality
         function addToCart(productId, productName, productPrice) {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -441,8 +457,12 @@
             }
             
             localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
             alert(`${productName} adicionado ao carrinho!`);
         }
+
+        // Chamar ao carregar a página
+        document.addEventListener('DOMContentLoaded', updateCartCount);
     </script>
 
     @yield('scripts')

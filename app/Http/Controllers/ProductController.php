@@ -33,4 +33,17 @@ class ProductController extends Controller
 
         return view('shop.category', compact('products', 'categories', 'category'));
     }
+
+    public function show(int $id): View
+    {
+        $product = Product::where('is_active', true)->findOrFail($id);
+        
+        $relatedProducts = Product::where('is_active', true)
+            ->where('category', $product->category)
+            ->where('id', '!=', $id)
+            ->limit(4)
+            ->get();
+
+        return view('shop.show', compact('product', 'relatedProducts'));
+    }
 }

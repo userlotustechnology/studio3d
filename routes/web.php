@@ -3,10 +3,22 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 
 // Rotas públicas - Loja
 Route::get('/', [ProductController::class, 'shop'])->name('shop.index');
 Route::get('/categoria/{category}', [ProductController::class, 'category'])->name('shop.category');
+Route::get('/produto/{id}', [ProductController::class, 'show'])->name('shop.show');
+
+// Rotas do Carrinho
+Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
+Route::post('/carrinho/adicionar/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrinho/atualizar/{product}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/carrinho/remover/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/carrinho/limpar', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/checkout/processar', [CartController::class, 'processCheckout'])->name('cart.process-checkout');
+Route::get('/pedido/{order}/sucesso', [CartController::class, 'orderSuccess'])->name('order.success');
 
 // Rotas de autenticação
 Route::middleware('guest')->group(function () {

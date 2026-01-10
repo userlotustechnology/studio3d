@@ -32,20 +32,22 @@
             <div class="products-grid">
                 @foreach($products as $product)
                     <div class="product-card">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="product-image">
-                        <div class="product-info">
-                            <div class="product-category">{{ $product->category }}</div>
-                            <h3 class="product-name">{{ $product->name }}</h3>
-                            <p class="product-description">{{ Str::limit($product->description, 100) }}</p>
-                            <div class="product-footer">
-                                <div class="product-price">
-                                    R$ {{ number_format($product->price, 2, ',', '.') }}
+                        <a href="{{ route('shop.show', $product->id) }}" style="display: block; text-decoration: none; color: inherit;">
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="product-image">
+                            <div class="product-info">
+                                <div class="product-category">{{ $product->category }}</div>
+                                <h3 class="product-name">{{ $product->name }}</h3>
+                                <p class="product-description">{{ Str::limit($product->description, 100) }}</p>
+                                <div class="product-footer">
+                                    <div class="product-price">
+                                        R$ {{ number_format($product->price, 2, ',', '.') }}
+                                    </div>
+                                    <button class="btn-add-cart" onclick="event.preventDefault(); addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
+                                        <i class="fas fa-shopping-cart"></i> Comprar
+                                    </button>
                                 </div>
-                                <button class="btn-add-cart" onclick="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
-                                    <i class="fas fa-shopping-cart"></i> Comprar
-                                </button>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
