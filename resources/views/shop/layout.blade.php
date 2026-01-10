@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Loja Online') - Minha Loja</title>
 
     <!-- Fonts -->
@@ -428,37 +429,55 @@
     </footer>
 
     <script>
-        // Atualizar contador de carrinho
+        // Atualizar contador de carrinho via servidor
         function updateCartCount() {
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            let count = 0;
-            
-            cart.forEach(item => {
-                count += item.quantity;
-            });
-            
-            document.getElementById('cart-count').textContent = count;
+            // O contador agora é atualizado automaticamente pelo servidor
+            // Podemos fazer uma requisição AJAX se necessário para atualizar dinamicamente
         }
 
-        // Simple cart functionality
-        function addToCart(productId, productName, productPrice) {
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: productId,
-                    name: productName,
-                    price: productPrice,
-                    quantity: 1
-                });
+        // Adicionar ao carrinho via POST
+        function addToCart(productId, productName, productPrice, quantity = 1) {
+            try {
+                console.log('addToCart called with:', { productId, productName, productPrice, quantity });
+                
+                // Criar um form temporário e enviar via POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/carrinho/adicionar/${productId}`;
+                
+                // Token CSRF
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken.content;
+                    form.appendChild(csrfInput);
+                } else {
+                    console.error('CSRF token not found');
+                    alert('Erro de segurança: token CSRF não encontrado');
+                    return false;
+                }
+                
+                // Quantity
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'hidden';
+                quantityInput.name = 'quantity';
+                quantityInput.value = quantity;
+                form.appendChild(quantityInput);
+                
+                // Adicionar o formulário ao body se ainda não estiver lá
+                if (!form.parentElement) {
+                    document.body.appendChild(form);
+                }
+                
+                console.log('Submitting form to:', form.action);
+                form.submit();
+            } catch (error) {
+                console.error('Erro ao adicionar ao carrinho:', error);
+                alert('Erro ao processar sua solicitação. Por favor, tente novamente.');
+                return false;
             }
-            
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            alert(`${productName} adicionado ao carrinho!`);
         }
 
         // Chamar ao carregar a página

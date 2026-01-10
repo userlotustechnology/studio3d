@@ -12,40 +12,41 @@
                 <form method="POST" action="{{ route('cart.process-checkout') }}" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     @csrf
 
-                    <!-- Personal Information -->
+                    <!-- Customer Information -->
                     <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Informações Pessoais</h2>
 
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Nome Completo *</label>
-                        <input type="text" name="customer_name" value="{{ old('customer_name') }}" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                        <input type="text" name="customer_name" value="{{ old('customer_name', $customer->name ?? '') }}" required placeholder="Seu nome completo" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
                         @error('customer_name')
                             <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Email *</label>
-                        <input type="email" name="customer_email" value="{{ old('customer_email') }}" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                        @error('customer_email')
-                            <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
-                        @enderror
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Email *</label>
+                            <input type="email" name="customer_email" value="{{ old('customer_email', $customer->email ?? '') }}" required placeholder="seu@email.com" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('customer_email')
+                                <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Telefone *</label>
+                            <input type="tel" name="customer_phone" value="{{ old('customer_phone', $customer->phone ?? '') }}" required placeholder="(11) 99999-9999" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('customer_phone')
+                                <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Telefone *</label>
-                        <input type="tel" name="customer_phone" value="{{ old('customer_phone') }}" required placeholder="(11) 98765-4321" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                        @error('customer_phone')
-                            <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Shipping Address -->
-                    <h2 style="font-size: 20px; margin-bottom: 20px; margin-top: 40px; color: var(--text-dark);">Endereço de Entrega</h2>
+                    <!-- Billing Address -->
+                    <h2 style="font-size: 20px; margin-bottom: 20px; margin-top: 40px; color: var(--text-dark);">Endereço de Cobrança</h2>
 
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Endereço *</label>
-                        <input type="text" name="shipping_address" value="{{ old('shipping_address') }}" required placeholder="Rua, número e complemento" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                        @error('shipping_address')
+                        <input type="text" name="billing_address" value="{{ old('billing_address') }}" required placeholder="Rua, número e complemento" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                        @error('billing_address')
                             <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
                         @enderror
                     </div>
@@ -53,15 +54,15 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Cidade *</label>
-                            <input type="text" name="city" value="{{ old('city') }}" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                            @error('city')
+                            <input type="text" name="billing_city" value="{{ old('billing_city') }}" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('billing_city')
                                 <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
                             @enderror
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Estado *</label>
-                            <input type="text" name="state" value="{{ old('state') }}" required maxlength="2" placeholder="SP" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                            @error('state')
+                            <input type="text" name="billing_state" value="{{ old('billing_state') }}" required maxlength="2" placeholder="SP" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('billing_state')
                                 <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
                             @enderror
                         </div>
@@ -69,10 +70,56 @@
 
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">CEP *</label>
-                        <input type="text" name="postal_code" value="{{ old('postal_code') }}" required placeholder="00000-000" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
-                        @error('postal_code')
+                        <input type="text" name="billing_postal_code" value="{{ old('billing_postal_code') }}" required placeholder="00000-000" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                        @error('billing_postal_code')
                             <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
                         @enderror
+                    </div>
+
+                    <!-- Shipping Address Toggle -->
+                    <div style="margin-bottom: 20px; margin-top: 30px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="different_address_toggle" name="different_address" value="on" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                            <span style="font-weight: 600; color: var(--text-dark);">O endereço de entrega é diferente do de cobrança?</span>
+                        </label>
+                    </div>
+
+                    <!-- Shipping Address (Hidden by default) -->
+                    <div id="shipping_address_section" style="display: none; margin-bottom: 20px;">
+                        <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Endereço de Entrega</h2>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Endereço *</label>
+                            <input type="text" name="shipping_address" value="{{ old('shipping_address') }}" placeholder="Rua, número e complemento" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('shipping_address')
+                                <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Cidade *</label>
+                                <input type="text" name="shipping_city" value="{{ old('shipping_city') }}" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                                @error('shipping_city')
+                                    <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Estado *</label>
+                                <input type="text" name="shipping_state" value="{{ old('shipping_state') }}" maxlength="2" placeholder="SP" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                                @error('shipping_state')
+                                    <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">CEP *</label>
+                            <input type="text" name="shipping_postal_code" value="{{ old('shipping_postal_code') }}" placeholder="00000-000" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+                            @error('shipping_postal_code')
+                                <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Payment Method -->
@@ -138,7 +185,6 @@
                             </div>
                         @endforeach
                     </div>
-
                     <div style="border-top: 2px solid var(--border-color); padding-top: 20px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                             <span style="color: var(--text-light);">Subtotal</span>
@@ -169,4 +215,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle shipping address section
+        const differentAddressCheckbox = document.getElementById('different_address_toggle');
+        const shippingAddressSection = document.getElementById('shipping_address_section');
+        const shippingInputs = shippingAddressSection.querySelectorAll('input[name^="shipping_"]');
+
+        // Se há erros de validação e o checkbox está marcado, mostrar a seção
+        if (differentAddressCheckbox.checked) {
+            shippingAddressSection.style.display = 'block';
+        }
+
+        differentAddressCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                shippingAddressSection.style.display = 'block';
+                // Tornar os inputs obrigatórios
+                shippingInputs.forEach(input => input.required = true);
+            } else {
+                shippingAddressSection.style.display = 'none';
+                // Remover obrigatoriedade quando desabilitado
+                shippingInputs.forEach(input => input.required = false);
+            }
+        });
+    </script>
 @endsection

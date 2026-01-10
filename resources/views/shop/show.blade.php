@@ -170,7 +170,7 @@
                                         <div class="product-price">
                                             R$ {{ number_format($related->price, 2, ',', '.') }}
                                         </div>
-                                        <button class="btn-add-cart" onclick="addToCart({{ $related->id }}, '{{ $related->name }}', {{ $related->price }})">
+                                        <button type="button" class="btn-add-cart" onclick="addToCart({{ $related->id }}, {{ json_encode($related->name) }}, {{ $related->price }}); return false;">
                                             <i class="fas fa-shopping-cart"></i> Comprar
                                         </button>
                                     </div>
@@ -198,24 +198,31 @@
 
         function addToCartWithQuantity(productId, productName, productPrice) {
             const quantity = parseInt(document.getElementById('quantity').value);
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
-                    id: productId,
-                    name: productName,
-                    price: productPrice,
-                    quantity: quantity
-                });
+            // Criar um form temporário e enviar via POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/carrinho/adicionar/${productId}`;
+            
+            // Token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken.content;
+                form.appendChild(csrfInput);
             }
             
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            alert(`${quantity}x ${productName} adicionado ao carrinho!`);
-            document.getElementById('quantity').value = 1;
+            // Quantity
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'hidden';
+            quantityInput.name = 'quantity';
+            quantityInput.value = quantity;
+            form.appendChild(quantityInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
 
         function switchTab(tabName) {

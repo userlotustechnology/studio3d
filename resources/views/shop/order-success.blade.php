@@ -37,18 +37,36 @@
 
                 <div>
                     <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Email de Confirmação</div>
-                    <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ $order->customer_email }}</div>
+                    <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ $order->customer->email }}</div>
                 </div>
+            </div>
+
+            <!-- Billing Address -->
+            <div style="background-color: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: left;">
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px;">Endereço de Cobrança</h3>
+                @if($order->billingAddress)
+                    <p style="color: var(--text-light); line-height: 1.8;">
+                        {{ $order->customer->name }}<br>
+                        {{ $order->billingAddress->street }}<br>
+                        {{ $order->billingAddress->city }}, {{ $order->billingAddress->state }} - {{ $order->billingAddress->postal_code }}
+                    </p>
+                @else
+                    <p style="color: var(--text-light);">Endereço de cobrança não disponível</p>
+                @endif
             </div>
 
             <!-- Shipping Address -->
             <div style="background-color: var(--bg-light); border-radius: 8px; padding: 25px; margin-bottom: 30px; text-align: left;">
                 <h3 style="font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px;">Endereço de Entrega</h3>
-                <p style="color: var(--text-light); line-height: 1.8;">
-                    {{ $order->customer_name }}<br>
-                    {{ $order->shipping_address }}<br>
-                    {{ $order->city }}, {{ $order->state }} - {{ $order->postal_code }}
-                </p>
+                @if($order->shippingAddress)
+                    <p style="color: var(--text-light); line-height: 1.8;">
+                        {{ $order->customer->name }}<br>
+                        {{ $order->shippingAddress->street }}<br>
+                        {{ $order->shippingAddress->city }}, {{ $order->shippingAddress->state }} - {{ $order->shippingAddress->postal_code }}
+                    </p>
+                @else
+                    <p style="color: var(--text-light);">Endereço de entrega não disponível</p>
+                @endif
             </div>
 
             <!-- Order Items -->

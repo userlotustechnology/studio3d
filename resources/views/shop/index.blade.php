@@ -42,7 +42,7 @@
                                     <div class="product-price">
                                         R$ {{ number_format($product->price, 2, ',', '.') }}
                                     </div>
-                                    <button class="btn-add-cart" onclick="event.preventDefault(); addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
+                                    <button type="button" class="btn-add-cart" onclick="addToCart({{ $product->id }}, {{ json_encode($product->name) }}, {{ $product->price }}); return false;">
                                         <i class="fas fa-shopping-cart"></i> Comprar
                                     </button>
                                 </div>

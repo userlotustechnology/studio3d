@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -41,10 +42,17 @@ class DashboardController extends Controller
             ->get();
 
         // Categorias de produtos
-        $categories = Product::where('is_active', true)
-            ->selectRaw('category, COUNT(*) as count')
-            ->groupBy('category')
-            ->get();
+        $categories = Category::withCount(['products' => function ($query) {
+                $query->where('is_active', true);
+            }])
+            ->where('is_active', true)
+            ->get()
+            ->map(function ($category) {
+                return (object) [
+                    'category' => $category->name,
+                    'count' => $category->products_count
+                ];
+            });
 
         // Receita por status
         $revenueByStatus = Order::selectRaw('status, SUM(total) as total, COUNT(*) as count')

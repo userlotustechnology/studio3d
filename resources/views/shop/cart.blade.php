@@ -26,37 +26,46 @@
                         @foreach($items as $item)
                             <div style="display: grid; grid-template-columns: 100px 1fr auto auto; gap: 20px; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color);">
                                 <!-- Product Image -->
-                                <img src="{{ $item['product']->image }}" alt="{{ $item['product']->name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">
+                                @if($item->product && $item->product->image)
+                                    <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product_name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">
+                                @else
+                                    <div style="width: 100px; height: 100px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-box" style="font-size: 32px; color: #9ca3af;"></i>
+                                    </div>
+                                @endif
 
                                 <!-- Product Info -->
                                 <div>
                                     <h3 style="font-weight: 600; margin-bottom: 8px; color: var(--text-dark);">
-                                        <a href="{{ route('shop.show', $item['product']->id) }}" style="color: var(--primary-color);">
-                                            {{ $item['product']->name }}
-                                        </a>
+                                        @if($item->product)
+                                            <a href="{{ route('shop.show', $item->product_id) }}" style="color: var(--primary-color);">
+                                                {{ $item->product_name }}
+                                            </a>
+                                        @else
+                                            {{ $item->product_name }}
+                                        @endif
                                     </h3>
                                     <p style="color: var(--text-light); font-size: 14px;">
-                                        R$ {{ number_format($item['product']->price, 2, ',', '.') }} cada
+                                        R$ {{ number_format($item->product_price, 2, ',', '.') }} cada
                                     </p>
                                 </div>
 
                                 <!-- Quantity -->
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <form method="POST" action="{{ route('cart.update', $item['product']->id) }}" style="display: flex; gap: 10px; align-items: center;">
+                                    <form method="POST" action="{{ route('cart.update', $item->product_id) }}" style="display: flex; gap: 10px; align-items: center;" class="quantity-form">
                                         @csrf
-                                        <button type="button" onclick="this.parentElement.quantity.value = Math.max(1, parseInt(this.parentElement.quantity.value) - 1)" style="background: none; border: 1px solid var(--border-color); padding: 6px 10px; cursor: pointer; border-radius: 4px;">−</button>
-                                        <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" style="width: 50px; text-align: center; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px;">
-                                        <button type="button" onclick="this.parentElement.quantity.value = parseInt(this.parentElement.quantity.value) + 1" style="background: none; border: 1px solid var(--border-color); padding: 6px 10px; cursor: pointer; border-radius: 4px;">+</button>
-                                        <button type="submit" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px;">Atualizar</button>
+                                        <button type="button" class="qty-btn" onclick="decrementQuantity(this)" style="background: none; border: 1px solid var(--border-color); padding: 6px 10px; cursor: pointer; border-radius: 4px;">−</button>
+                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" class="qty-input" style="width: 50px; text-align: center; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                        <button type="button" class="qty-btn" onclick="incrementQuantity(this)" style="background: none; border: 1px solid var(--border-color); padding: 6px 10px; cursor: pointer; border-radius: 4px;">+</button>
                                     </form>
                                 </div>
 
                                 <!-- Total & Remove -->
                                 <div style="text-align: right;">
                                     <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">
-                                        R$ {{ number_format($item['total'], 2, ',', '.') }}
+                                        R$ {{ number_format($item->product_price * $item->quantity, 2, ',', '.') }}
                                     </div>
-                                    <form method="POST" action="{{ route('cart.remove', $item['product']->id) }}" style="display: inline;">
+                                    <form method="POST" action="{{ route('cart.remove', $item->product_id) }}" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 500; text-decoration: underline;">
@@ -127,4 +136,36 @@
             @endif
         </div>
     </div>
+
+    <script>
+        // Funções para incrementar/decrementar quantidade
+        function incrementQuantity(btn) {
+            const input = btn.parentElement.querySelector('.qty-input');
+            input.value = parseInt(input.value) + 1;
+            submitForm(btn.parentElement);
+        }
+
+        function decrementQuantity(btn) {
+            const input = btn.parentElement.querySelector('.qty-input');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+                submitForm(btn.parentElement);
+            }
+        }
+
+        // Submeter formulário automaticamente ao mudar a quantidade
+        function submitForm(form) {
+            form.submit();
+        }
+
+        // Adicionar evento de mudança ao input de quantidade
+        document.querySelectorAll('.qty-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (parseInt(this.value) < 1) {
+                    this.value = 1;
+                }
+                submitForm(this.parentElement);
+            });
+        });
+    </script>
 @endsection
