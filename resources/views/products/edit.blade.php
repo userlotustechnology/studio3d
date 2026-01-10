@@ -79,6 +79,57 @@
                     </div>
                 </div>
 
+                <!-- SKU, Tipo e Estoque -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                    <!-- SKU -->
+                    <div>
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            SKU
+                        </label>
+                        <input type="text" name="sku" value="{{ old('sku', $product->sku) }}"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="SKU-001">
+                        @error('sku')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Tipo de Produto -->
+                    <div>
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Tipo de Produto *
+                        </label>
+                        <select name="type" required
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                            <option value="">Selecione o tipo</option>
+                            <option value="physical" {{ old('type', $product->type) == 'physical' ? 'selected' : '' }}>
+                                <i class="fas fa-box"></i> Físico
+                            </option>
+                            <option value="digital" {{ old('type', $product->type) == 'digital' ? 'selected' : '' }}>
+                                <i class="fas fa-download"></i> Digital
+                            </option>
+                        </select>
+                        @error('type')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Estoque -->
+                    <div id="stock-field">
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            <span id="stock-label">Estoque (unidades) *</span>
+                        </label>
+                        <input type="number" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" id="stock-input" min="0"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                        <p id="stock-help" style="color: #6b7280; font-size: 12px; margin-top: 4px; display: none;">
+                            Produtos digitais não requerem estoque
+                        </p>
+                        @error('stock')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Imagem -->
                 <div style="margin-bottom: 24px;">
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
@@ -138,6 +189,34 @@ const dropZone = document.getElementById('drop-zone');
 const imageInput = document.getElementById('image-input');
 const imagePreview = document.getElementById('image-preview');
 const previewImg = document.getElementById('preview-img');
+const typeSelect = document.querySelector('select[name="type"]');
+const stockInput = document.getElementById('stock-input');
+const stockField = document.getElementById('stock-field');
+const stockLabel = document.getElementById('stock-label');
+const stockHelp = document.getElementById('stock-help');
+
+// Função para atualizar visibilidade do campo de estoque
+function updateStockField() {
+    const selectedType = typeSelect.value;
+    
+    if (selectedType === 'digital') {
+        // Produtos digitais: tornar estoque opcional
+        stockInput.removeAttribute('required');
+        stockLabel.textContent = 'Estoque (unidades)';
+        stockHelp.style.display = 'block';
+    } else if (selectedType === 'physical') {
+        // Produtos físicos: tornar estoque obrigatório
+        stockInput.setAttribute('required', '');
+        stockHelp.style.display = 'none';
+        stockLabel.textContent = 'Estoque (unidades) *';
+    }
+}
+
+// Adicionar listener para mudanças no tipo de produto
+typeSelect.addEventListener('change', updateStockField);
+
+// Chamar ao carregar para sincronizar com valor anterior
+updateStockField();
 
 // Click to select
 dropZone.addEventListener('click', () => imageInput.click());

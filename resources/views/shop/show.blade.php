@@ -36,10 +36,33 @@
                     R$ {{ number_format($product->price, 2, ',', '.') }}
                 </div>
 
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; font-size: 14px;">
+                    @if($product->sku)
+                    <div>
+                        <span style="color: var(--text-light);">SKU:</span>
+                        <span style="font-weight: 600; color: var(--text-dark);">{{ $product->sku }}</span>
+                    </div>
+                    @endif
+                    <div>
+                        <span style="color: var(--text-light);">Tipo:</span>
+                        <span style="font-weight: 600; color: var(--text-dark);">
+                            @if($product->type === 'digital')
+                                <i class="fas fa-download"></i> Digital
+                            @else
+                                <i class="fas fa-box"></i> Físico
+                            @endif
+                        </span>
+                    </div>
+                </div>
+
                 <div style="background-color: #f0f9ff; border-left: 4px solid var(--primary-color); padding: 15px; margin-bottom: 30px; border-radius: 4px;">
                     <p style="color: var(--text-dark); font-weight: 500;">
                         <i class="fas fa-check-circle" style="color: #10b981; margin-right: 10px;"></i>
-                        Produto em estoque
+                        @if($product->stock > 0)
+                            Produto em estoque ({{ $product->stock }} unidades)
+                        @else
+                            <i class="fas fa-times-circle" style="color: #ef4444;"></i> Produto fora de estoque
+                        @endif
                     </p>
                 </div>
 

@@ -41,7 +41,11 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Usuários autenticados não podem adicionar itens ao carrinho neste momento.');
         }
 
+        // Validar estoque (apenas para produtos físicos)
         $quantity = $request->input('quantity', 1);
+        if ($product->type === 'physical' && $product->stock < $quantity) {
+            return redirect()->back()->with('error', 'Quantidade solicitada indisponível em estoque. Estoque disponível: ' . $product->stock . ' unidades.');
+        }
         
         // Obter ou criar order de rascunho
         $order = session()->get('draft_order_id');
@@ -283,7 +287,17 @@ class CartController extends Controller
         $total = $order->total;
         $customer = $order->customer;
 
-        return view('shop.checkout', compact('order', 'items', 'subtotal', 'shippingCost', 'discount', 'total', 'customer'));
+        // Verificar se há produtos digitais no pedido
+        $hasDigitalProducts = $order->items()->whereHas('product', function($q) {
+            $q->where('type', 'digital');
+        })->exists();
+
+        // Verificar se há produtos físicos no pedido
+        $hasPhysicalProducts = $order->items()->whereHas('product', function($q) {
+            $q->where('type', 'physical');
+        })->exists();
+
+        return view('shop.checkout', compact('order', 'items', 'subtotal', 'shippingCost', 'discount', 'total', 'customer', 'hasDigitalProducts', 'hasPhysicalProducts'));
     }
 
     public function processCheckout(Request $request): RedirectResponse
@@ -300,6 +314,11 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
         }
 
+        // Verificar se há produtos físicos no pedido
+        $hasPhysicalProducts = $order->items()->whereHas('product', function($q) {
+            $q->where('type', 'physical');
+        })->exists();
+
         $rules = [
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email',
@@ -311,14 +330,17 @@ class CartController extends Controller
             'payment_method' => 'required|in:credit_card,debit_card,pix,boleto,paypal',
         ];
 
-        // Se o endereço de entrega é diferente, validar seus campos
-        if ($request->input('different_address') === 'on' || $request->input('different_address') === 'true' || $request->input('different_address') === '1') {
-            $rules = array_merge($rules, [
-                'shipping_address' => 'required|string',
-                'shipping_city' => 'required|string',
-                'shipping_state' => 'required|string|size:2',
-                'shipping_postal_code' => 'required|string',
-            ]);
+        // Validar endereço de entrega apenas se houver produtos físicos
+        if ($hasPhysicalProducts) {
+            // Se o endereço de entrega é diferente, validar seus campos
+            if ($request->input('different_address') === 'on' || $request->input('different_address') === 'true' || $request->input('different_address') === '1') {
+                $rules = array_merge($rules, [
+                    'shipping_address' => 'required|string',
+                    'shipping_city' => 'required|string',
+                    'shipping_state' => 'required|string|size:2',
+                    'shipping_postal_code' => 'required|string',
+                ]);
+            }
         }
 
         $validated = $request->validate($rules);
@@ -342,35 +364,38 @@ class CartController extends Controller
             'postal_code' => $validated['billing_postal_code'],
         ]);
 
-        // Criar endereço de entrega
-        if ($request->input('different_address') === 'on' || $request->input('different_address') === 'true' || $request->input('different_address') === '1') {
-            // Usar dados do endereço de entrega diferente
-            $shippingAddress = Address::create([
-                'customer_id' => $customer->id,
-                'type' => 'shipping',
-                'street' => $validated['shipping_address'],
-                'number' => '0',
-                'city' => $validated['shipping_city'],
-                'state' => $validated['shipping_state'],
-                'postal_code' => $validated['shipping_postal_code'],
-            ]);
-        } else {
-            // Usar o mesmo endereço de cobrança como entrega
-            $shippingAddress = Address::create([
-                'customer_id' => $customer->id,
-                'type' => 'shipping',
-                'street' => $validated['billing_address'],
-                'number' => '0',
-                'city' => $validated['billing_city'],
-                'state' => $validated['billing_state'],
-                'postal_code' => $validated['billing_postal_code'],
-            ]);
+        // Criar endereço de entrega apenas se houver produtos físicos
+        $shippingAddress = null;
+        if ($hasPhysicalProducts) {
+            if ($request->input('different_address') === 'on' || $request->input('different_address') === 'true' || $request->input('different_address') === '1') {
+                // Usar dados do endereço de entrega diferente
+                $shippingAddress = Address::create([
+                    'customer_id' => $customer->id,
+                    'type' => 'shipping',
+                    'street' => $validated['shipping_address'],
+                    'number' => '0',
+                    'city' => $validated['shipping_city'],
+                    'state' => $validated['shipping_state'],
+                    'postal_code' => $validated['shipping_postal_code'],
+                ]);
+            } else {
+                // Usar o mesmo endereço de cobrança como entrega
+                $shippingAddress = Address::create([
+                    'customer_id' => $customer->id,
+                    'type' => 'shipping',
+                    'street' => $validated['billing_address'],
+                    'number' => '0',
+                    'city' => $validated['billing_city'],
+                    'state' => $validated['billing_state'],
+                    'postal_code' => $validated['billing_postal_code'],
+                ]);
+            }
         }
 
         // Finalizar o pedido (remover draft status)
         $order->update([
             'billing_address_id' => $billingAddress->id,
-            'shipping_address_id' => $shippingAddress->id,
+            'shipping_address_id' => $shippingAddress?->id,
             'payment_method' => $validated['payment_method'],
             'status' => 'pending',
             'is_draft' => false,

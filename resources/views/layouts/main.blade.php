@@ -426,7 +426,7 @@
 
             <!-- Start Footer Area -->
             <footer class="footer-area bg-white text-center rounded-10 rounded-bottom-0">
-                <p class="fs-16 text-body">© <span class="text-secondary">Studio3d</span> - Sistema de Gestão Paroquial</p>
+                <p class="fs-16 text-body">© <span class="text-secondary">Studio3d</span> - Sistema de Vendas</p>
             </footer>
             <!-- End Footer Area -->
         </div>

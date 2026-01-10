@@ -76,7 +76,8 @@
                         @enderror
                     </div>
 
-                    <!-- Shipping Address Toggle -->
+                    <!-- Shipping Address Toggle (Only for physical products) -->
+                    @if($hasPhysicalProducts)
                     <div style="margin-bottom: 20px; margin-top: 30px;">
                         <label style="display: flex; align-items: center; cursor: pointer;">
                             <input type="checkbox" id="different_address_toggle" name="different_address" value="on" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
@@ -87,6 +88,19 @@
                     <!-- Shipping Address (Hidden by default) -->
                     <div id="shipping_address_section" style="display: none; margin-bottom: 20px;">
                         <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Endereço de Entrega</h2>
+                    @else
+                    <!-- Shipping Address Info for Digital Products -->
+                    @if($hasDigitalProducts)
+                    <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin-bottom: 30px; margin-top: 30px; border-radius: 4px; color: #065f46;">
+                        <i class="fas fa-info-circle"></i> 
+                        <span style="font-weight: 600;">Este pedido contém produtos digitais</span> e não requer endereço de entrega.
+                    </div>
+                    @endif
+
+                    <!-- Shipping Address (Hidden by default) -->
+                    <div id="shipping_address_section" style="display: none; margin-bottom: 20px;">
+                        <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Endereço de Entrega</h2>
+                    @endif
 
                         <div style="margin-bottom: 20px;">
                             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Endereço *</label>

@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
 use App\Models\Category;
 
 // Rotas públicas - Loja
@@ -44,9 +45,19 @@ Route::middleware('auth')->group(function () {
     
     // Rotas específicas para administradores
     Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/users', function () {
-            return view('admin.users.index');
-        })->name('admin.users.index');
+        // Rotas de Gerenciamento de Usuários
+        Route::resource('admin/users', UserController::class, [
+            'parameters' => ['user' => 'user'],
+            'names' => [
+                'index' => 'admin.users.index',
+                'create' => 'admin.users.create',
+                'store' => 'admin.users.store',
+                'show' => 'admin.users.show',
+                'edit' => 'admin.users.edit',
+                'update' => 'admin.users.update',
+                'destroy' => 'admin.users.destroy'
+            ]
+        ]);
         
         Route::get('/admin/settings', function () {
             return view('admin.settings.index');

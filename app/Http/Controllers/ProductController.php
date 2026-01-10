@@ -69,14 +69,30 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0.01',
             'category_id' => 'required|exists:categories,id',
+            'sku' => 'nullable|string|unique:products,sku',
+            'type' => 'required|in:physical,digital',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
-        ]);
+        ];
+
+        // Estoque é obrigatório apenas para produtos físicos
+        if ($request->input('type') === 'physical') {
+            $rules['stock'] = 'required|integer|min:0';
+        } else {
+            $rules['stock'] = 'nullable|integer|min:0';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Se for digital e não informou estoque, define como 0
+        if ($request->input('type') === 'digital' && !$request->input('stock')) {
+            $validated['stock'] = 0;
+        }
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
@@ -99,14 +115,30 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0.01',
             'category_id' => 'required|exists:categories,id',
+            'sku' => 'nullable|string|unique:products,sku,' . $product->id,
+            'type' => 'required|in:physical,digital',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
-        ]);
+        ];
+
+        // Estoque é obrigatório apenas para produtos físicos
+        if ($request->input('type') === 'physical') {
+            $rules['stock'] = 'required|integer|min:0';
+        } else {
+            $rules['stock'] = 'nullable|integer|min:0';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Se for digital e não informou estoque, define como 0
+        if ($request->input('type') === 'digital' && !$request->input('stock')) {
+            $validated['stock'] = 0;
+        }
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
