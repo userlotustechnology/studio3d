@@ -1,7 +1,7 @@
 .PHONY: help up down restart build bash logs clean install composer-install npm-install migrate fresh seed test cache-clear permission
 
 # Variáveis
-DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE = docker compose
 PHP_CONTAINER = app
 DB_CONTAINER = mysql
 

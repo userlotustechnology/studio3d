@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 
-// Rotas públicas
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+// Rotas públicas - Loja
+Route::get('/', [ProductController::class, 'shop'])->name('shop.index');
+Route::get('/categoria/{category}', [ProductController::class, 'category'])->name('shop.category');
 
 // Rotas de autenticação
 Route::middleware('guest')->group(function () {
