@@ -10,6 +10,11 @@ class ProductImage extends Model
         'product_id',
         'path',
         'position',
+        'is_main',
+    ];
+
+    protected $casts = [
+        'is_main' => 'boolean',
     ];
 
     public function product()
@@ -33,6 +38,21 @@ class ProductImage extends Model
         }
 
         return \Illuminate\Support\Facades\Storage::disk('public')->url($this->path);
+    }
+
+    /**
+     * Set this image as the main image for the product.
+     * This will unset any other main image for the same product.
+     */
+    public function setAsMain(): void
+    {
+        // Unset other main images for this product
+        self::where('product_id', $this->product_id)
+            ->where('id', '!=', $this->id)
+            ->update(['is_main' => false]);
+        
+        // Set this one as main
+        $this->update(['is_main' => true]);
     }
 }
 

@@ -21,9 +21,29 @@
     <!-- Product Details -->
     <div class="container" style="padding: 60px 20px;">
         <div class="product-detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
-            <!-- Product Image -->
+            <!-- Product Image Gallery -->
             <div class="product-image-container">
-                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                <!-- Main Image -->
+                <div style="margin-bottom: 15px;">
+                    <img id="mainProductImage" src="{{ $product->image_url }}" alt="{{ $product->name }}" 
+                        style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px; cursor: zoom-in;"
+                        onclick="openImageModal(this.src)">
+                </div>
+                
+                <!-- Thumbnail Gallery -->
+                @if($product->images->count() > 1)
+                <div class="product-thumbnails" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    @foreach($product->images as $index => $image)
+                    <div class="thumbnail-wrapper" style="width: 80px; cursor: pointer;">
+                        <img src="{{ $image->image_url }}" 
+                            alt="{{ $product->name }} - Imagem {{ $index + 1 }}" 
+                            class="product-thumbnail {{ $image->is_main ? 'active' : '' }}"
+                            style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 2px solid {{ $image->is_main ? 'var(--primary-color)' : 'transparent' }}; transition: all 0.3s;"
+                            onclick="changeMainImage(this, '{{ $image->image_url }}')">
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
 
             <!-- Product Information -->
@@ -66,10 +86,6 @@
                     </p>
                 </div>
 
-                <p style="font-size: 16px; color: var(--text-light); line-height: 1.8; margin-bottom: 30px;">
-                    {{ $product->description }}
-                </p>
-
                 <div style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 20px 0; margin-bottom: 30px;">
                     <div style="display: flex; gap: 20px; align-items: center;">
                         <div>
@@ -83,31 +99,14 @@
                     </div>
                 </div>
 
-                <div class="product-action-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
-                    <button class="btn btn-primary" onclick="addToCartWithQuantity({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})" style="width: 100%; padding: 15px; font-size: 16px;">
-                        <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
-                    </button>
-                    <button style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid var(--primary-color); background-color: white; color: var(--primary-color); border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
-                        <i class="fas fa-heart"></i> Favoritar
-                    </button>
-                </div>
-
-                <div class="product-features-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 20px;">
-                    <div style="text-align: center;">
-                        <i class="fas fa-truck" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
-                        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Frete Rápido</h4>
-                        <p style="font-size: 12px; color: var(--text-light);">Entrega em 2-3 dias</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <i class="fas fa-shield-alt" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
-                        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Seguro</h4>
-                        <p style="font-size: 12px; color: var(--text-light);">Compra protegida</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <i class="fas fa-undo-alt" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
-                        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Troca Fácil</h4>
-                        <p style="font-size: 12px; color: var(--text-light);">30 dias para devolver</p>
-                    </div>
+                <div class="product-action-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px;">
+                    <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm">
+                        @csrf
+                        <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;">
+                            <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -115,15 +114,17 @@
         <!-- Tabs Section -->
         <div style="margin-bottom: 60px;">
             <div style="border-bottom: 2px solid var(--border-color); margin-bottom: 30px;">
-                <button onclick="switchTab('description')" class="tab-button active" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-dark);">
+                <button onclick="switchTab('description', this)" class="tab-button active" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-dark);">
                     Descrição
-                    <span style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--primary-color);"></span>
+                    <span class="tab-indicator" style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--primary-color);"></span>
                 </button>
-                <button onclick="switchTab('specifications')" class="tab-button" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-light);">
+                <button onclick="switchTab('specifications', this)" class="tab-button" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-light);">
                     Especificações
+                    <span class="tab-indicator" style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--primary-color); display: none;"></span>
                 </button>
-                <button onclick="switchTab('reviews')" class="tab-button" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-light);">
+                <button onclick="switchTab('reviews', this)" class="tab-button" style="padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; background: none; cursor: pointer; position: relative; color: var(--text-light);">
                     Avaliações
+                    <span class="tab-indicator" style="position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--primary-color); display: none;"></span>
                 </button>
             </div>
 
@@ -131,12 +132,6 @@
                 <p style="font-size: 16px; color: var(--text-light); line-height: 1.8;">
                     {{ $product->description }}
                 </p>
-                <ul style="margin-top: 20px; margin-left: 20px; color: var(--text-light);">
-                    <li style="margin-bottom: 10px;">Produto de alta qualidade e durabilidade</li>
-                    <li style="margin-bottom: 10px;">Certificado e testado antes do envio</li>
-                    <li style="margin-bottom: 10px;">Embalagem segura e profissional</li>
-                    <li style="margin-bottom: 10px;">Suporte técnico disponível</li>
-                </ul>
             </div>
 
             <div id="specifications-content" class="tab-content" style="display: none;">
@@ -211,68 +206,99 @@
     <script>
         function incrementQuantity() {
             const input = document.getElementById('quantity');
+            const cartInput = document.getElementById('cartQuantity');
             input.value = parseInt(input.value) + 1;
+            cartInput.value = input.value;
         }
 
         function decrementQuantity() {
             const input = document.getElementById('quantity');
+            const cartInput = document.getElementById('cartQuantity');
             if (parseInt(input.value) > 1) {
                 input.value = parseInt(input.value) - 1;
+                cartInput.value = input.value;
             }
         }
 
-        function addToCartWithQuantity(productId, productName, productPrice) {
-            const quantity = parseInt(document.getElementById('quantity').value);
-            
-            // Criar um form temporário e enviar via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/carrinho/adicionar/${productId}`;
-            
-            // Token CSRF
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
-            if (csrfToken) {
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = csrfToken.content;
-                form.appendChild(csrfInput);
-            }
-            
-            // Quantity
-            const quantityInput = document.createElement('input');
-            quantityInput.type = 'hidden';
-            quantityInput.name = 'quantity';
-            quantityInput.value = quantity;
-            form.appendChild(quantityInput);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        function switchTab(tabName) {
+        function switchTab(tabName, button) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.style.display = 'none';
             });
 
-            // Remove active class from all buttons
+            // Remove active class from all buttons and hide indicators
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.style.color = 'var(--text-light)';
-                btn.style.borderBottom = 'none';
+                btn.classList.remove('active');
+                const indicator = btn.querySelector('.tab-indicator');
+                if (indicator) indicator.style.display = 'none';
             });
 
             // Show selected tab
             document.getElementById(tabName + '-content').style.display = 'block';
 
-            // Add active class to clicked button
-            event.target.style.color = 'var(--text-dark)';
-            event.target.style.borderBottomWidth = '2px';
-            event.target.style.borderBottomColor = 'var(--primary-color)';
+            // Add active class to clicked button and show indicator
+            button.style.color = 'var(--text-dark)';
+            button.classList.add('active');
+            const indicator = button.querySelector('.tab-indicator');
+            if (indicator) indicator.style.display = 'block';
+        }
+
+        // Image Gallery Functions
+        function changeMainImage(thumbnail, imageUrl) {
+            // Update main image
+            document.getElementById('mainProductImage').src = imageUrl;
+            
+            // Update thumbnail borders
+            document.querySelectorAll('.product-thumbnail').forEach(thumb => {
+                thumb.style.border = '2px solid transparent';
+                thumb.classList.remove('active');
+            });
+            thumbnail.style.border = '2px solid var(--primary-color)';
+            thumbnail.classList.add('active');
+        }
+
+        // Image Modal for zoom
+        function openImageModal(src) {
+            const modal = document.createElement('div');
+            modal.id = 'imageModal';
+            modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:10000; cursor:pointer;';
+            modal.onclick = function() { this.remove(); };
+            
+            const img = document.createElement('img');
+            img.src = src;
+            img.style.cssText = 'max-width:90%; max-height:90%; object-fit:contain; border-radius:8px;';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'position:absolute; top:20px; right:30px; font-size:40px; color:white; background:none; border:none; cursor:pointer;';
+            closeBtn.onclick = function(e) { e.stopPropagation(); modal.remove(); };
+            
+            modal.appendChild(img);
+            modal.appendChild(closeBtn);
+            document.body.appendChild(modal);
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            });
         }
     </script>
 
     <style>
+        /* Product Gallery Styles */
+        .product-thumbnail:hover {
+            border-color: var(--primary-color) !important;
+            transform: scale(1.05);
+        }
+        
+        .product-thumbnails {
+            justify-content: flex-start;
+        }
+        
         /* Product Detail Page Responsive Styles */
         @media (max-width: 992px) {
             .product-detail-grid {
@@ -285,6 +311,19 @@
             
             .product-detail-price {
                 font-size: 36px !important;
+            }
+            
+            .product-thumbnails {
+                gap: 8px !important;
+            }
+            
+            .thumbnail-wrapper {
+                width: 70px !important;
+            }
+            
+            .product-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
             }
         }
         
@@ -302,8 +341,21 @@
                 gap: 25px !important;
             }
             
-            .product-image-container img {
+            .product-image-container img#mainProductImage {
                 max-height: 350px !important;
+            }
+            
+            .product-thumbnails {
+                justify-content: center;
+            }
+            
+            .thumbnail-wrapper {
+                width: 60px !important;
+            }
+            
+            .product-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
             }
             
             .product-detail-title {
@@ -361,8 +413,17 @@
                 padding: 30px 15px !important;
             }
             
-            .product-image-container img {
+            .product-image-container img#mainProductImage {
                 max-height: 280px !important;
+            }
+            
+            .thumbnail-wrapper {
+                width: 50px !important;
+            }
+            
+            .product-thumbnail {
+                width: 50px !important;
+                height: 50px !important;
             }
             
             .product-detail-title {

@@ -103,12 +103,24 @@ class ProductController extends Controller
         // store multiple images
         if ($request->hasFile('images')) {
             $disk = app()->environment('production') ? 's3' : 'public';
+            $isFirst = true;
             foreach ($request->file('images') as $file) {
                 $path = $file->store('products', $disk);
                 \App\Models\ProductImage::create([
                     'product_id' => $product->id,
                     'path' => $path,
+                    'is_main' => $isFirst, // First image is main by default
                 ]);
+                $isFirst = false;
+            }
+        }
+
+        // Set specific main image if selected
+        if ($request->filled('main_image_index')) {
+            $mainIndex = (int) $request->input('main_image_index');
+            $images = $product->images()->orderBy('id')->get();
+            if ($images->count() > $mainIndex) {
+                $images[$mainIndex]->setAsMain();
             }
         }
 
@@ -168,12 +180,26 @@ class ProductController extends Controller
         // add new uploaded images
         if ($request->hasFile('images')) {
             $disk = app()->environment('production') ? 's3' : 'public';
+            $hasMain = $product->images()->where('is_main', true)->exists();
+            $isFirst = !$hasMain; // If no main image, first new one becomes main
+            
             foreach ($request->file('images') as $file) {
                 $path = $file->store('products', $disk);
                 \App\Models\ProductImage::create([
                     'product_id' => $product->id,
                     'path' => $path,
+                    'is_main' => $isFirst,
                 ]);
+                $isFirst = false;
+            }
+        }
+
+        // Set specific main image if selected
+        if ($request->filled('main_image_id')) {
+            $mainImageId = (int) $request->input('main_image_id');
+            $img = \App\Models\ProductImage::find($mainImageId);
+            if ($img && $img->product_id === $product->id) {
+                $img->setAsMain();
             }
         }
 

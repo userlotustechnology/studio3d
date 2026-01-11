@@ -133,20 +133,38 @@
                 <!-- Imagem -->
                 <div style="margin-bottom: 24px;">
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                        Imagem do Produto
+                        Imagens do Produto
                     </label>
                     
                     <!-- Imagens Atuais -->
                     @if($product->images->count() > 0)
-                    <div style="margin-bottom: 16px; display:flex; gap:8px; flex-wrap:wrap;">
-                        @foreach($product->images as $img)
-                        <div style="position:relative; width:120px;">
-                            <img src="{{ $img->image_url ?? $product->image_url }}" alt="{{ $product->name }}" style="width:120px; height:80px; object-fit:cover; border-radius:6px;">
-                            <label style="display:block; text-align:center; margin-top:6px; font-size:12px;">
-                                <input type="checkbox" name="remove_images[]" value="{{ $img->id }}"> Remover
-                            </label>
+                    <div style="margin-bottom: 16px;">
+                        <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">Imagens atuais (selecione a imagem principal):</p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            @foreach($product->images as $img)
+                            <div style="position:relative; width:120px; text-align:center;">
+                                <label style="cursor:pointer; display:block;">
+                                    <div style="position:relative;">
+                                        <img src="{{ $img->image_url }}" alt="{{ $product->name }}" 
+                                            style="width:120px; height:80px; object-fit:cover; border-radius:6px; border: 3px solid {{ $img->is_main ? '#3b82f6' : 'transparent' }};">
+                                        @if($img->is_main)
+                                        <span style="position:absolute; top:4px; left:4px; background:#3b82f6; color:white; font-size:10px; padding:2px 6px; border-radius:4px;">
+                                            <i class="fas fa-star"></i> Principal
+                                        </span>
+                                        @endif
+                                    </div>
+                                    <div style="margin-top:6px;">
+                                        <input type="radio" name="main_image_id" value="{{ $img->id }}" {{ $img->is_main ? 'checked' : '' }}
+                                            style="margin-right:4px;">
+                                        <span style="font-size:11px; color:#374151;">Principal</span>
+                                    </div>
+                                </label>
+                                <label style="display:block; margin-top:4px; font-size:12px; color:#dc2626;">
+                                    <input type="checkbox" name="remove_images[]" value="{{ $img->id }}"> Remover
+                                </label>
+                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
                     </div>
                     @elseif($product->image)
                     <div style="margin-bottom: 16px;">

@@ -763,9 +763,6 @@
                     Minha Loja
                 </a>
                 <nav class="nav-links">
-                    <a href="{{ route('shop.index') }}">Produtos</a>
-                    <a href="#about">Sobre</a>
-                    <a href="#contact">Contato</a>
                     <a href="{{ route('orders.search-form') }}" style="color: var(--primary-color); font-weight: 600;">
                         <i class="fas fa-search"></i> Consultar Pedido
                     </a>
@@ -787,16 +784,13 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn btn-primary">Cadastre-se</a>
-                        @endif
                     @endauth
                 </div>
 
                 <!-- Mobile Cart and Menu Toggle -->
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <a href="{{ route('cart.index') }}" class="mobile-cart-btn" style="position: relative; color: var(--primary-color); font-weight: 600; display: none;">
-                        <i class="fas fa-shopping-cart" style="font-size: 22px;"></i>
+                        <i class="fas fa-shopping-cart" style="font-size: 22px;"></i>Carrinho
                         <span id="cart-count-mobile" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">0</span>
                     </a>
                     <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">
@@ -819,9 +813,6 @@
             </button>
         </div>
         <div class="mobile-menu-links">
-            <a href="{{ route('shop.index') }}"><i class="fas fa-home"></i> Produtos</a>
-            <a href="#about"><i class="fas fa-info-circle"></i> Sobre</a>
-            <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
             <a href="{{ route('orders.search-form') }}"><i class="fas fa-search"></i> Consultar Pedido</a>
             <a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Carrinho</a>
         </div>
@@ -840,11 +831,6 @@
                 <a href="{{ route('login') }}" class="btn btn-secondary">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i> Cadastre-se
-                    </a>
-                @endif
             @endauth
         </div>
     </nav>

@@ -135,8 +135,11 @@
                 <!-- Imagem -->
                 <div style="margin-bottom: 24px;">
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                        Imagem do Produto
+                        Imagens do Produto
                     </label>
+                    <p style="color: #6b7280; font-size: 12px; margin-bottom: 12px;">
+                        A primeira imagem enviada será definida como principal. Você pode alterar isso após criar o produto.
+                    </p>
                     <div style="border: 2px dashed #d1d5db; border-radius: 6px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s;"
                         id="drop-zone">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: #9ca3af; margin-bottom: 12px; display: block;"></i>
@@ -145,8 +148,10 @@
                         <input type="file" name="images[]" id="images-input" accept="image/*" multiple
                             style="display: none;">
                     </div>
-                    <div id="image-preview" style="margin-top: 16px; display: none; display:flex; gap:8px; flex-wrap:wrap;">
+                    <div id="image-preview" style="margin-top: 16px; display: none; gap:12px; flex-wrap:wrap;">
                         <!-- thumbnails will be injected here -->
+                    </div>
+                    <input type="hidden" name="main_image_index" id="main-image-index" value="0">
                     </div>
                     @error('images.*')
                     <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
@@ -253,15 +258,65 @@ imagesInput.addEventListener('change', (e) => {
 
 function showPreviews(files) {
     imagePreview.innerHTML = '';
-    Array.from(files).forEach(file => {
+    const mainImageInput = document.getElementById('main-image-index');
+    
+    Array.from(files).forEach((file, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative; width:120px; text-align:center;';
+        
+        const imgContainer = document.createElement('div');
+        imgContainer.style.position = 'relative';
+        
         const img = document.createElement('img');
         img.src = URL.createObjectURL(file);
-        img.style.maxWidth = '120px';
-        img.style.borderRadius = '6px';
-        img.style.objectFit = 'cover';
-        img.style.height = '80px';
+        img.style.cssText = 'width:120px; height:80px; object-fit:cover; border-radius:6px; border:3px solid ' + (index === 0 ? '#3b82f6' : 'transparent') + ';';
+        img.dataset.index = index;
         img.onload = () => URL.revokeObjectURL(img.src);
-        imagePreview.appendChild(img);
+        imgContainer.appendChild(img);
+        
+        if (index === 0) {
+            const badge = document.createElement('span');
+            badge.innerHTML = '<i class="fas fa-star"></i> Principal';
+            badge.style.cssText = 'position:absolute; top:4px; left:4px; background:#3b82f6; color:white; font-size:10px; padding:2px 6px; border-radius:4px;';
+            badge.className = 'main-badge';
+            imgContainer.appendChild(badge);
+        }
+        
+        wrapper.appendChild(imgContainer);
+        
+        const radioWrapper = document.createElement('div');
+        radioWrapper.style.marginTop = '6px';
+        
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'main_selector';
+        radio.value = index;
+        radio.checked = index === 0;
+        radio.style.marginRight = '4px';
+        radio.addEventListener('change', function() {
+            mainImageInput.value = this.value;
+            // Update all borders
+            document.querySelectorAll('#image-preview img').forEach((i, idx) => {
+                i.style.border = idx === parseInt(this.value) ? '3px solid #3b82f6' : '3px solid transparent';
+            });
+            // Update badges
+            document.querySelectorAll('.main-badge').forEach(b => b.remove());
+            const selectedContainer = this.closest('div').previousElementSibling;
+            const badge = document.createElement('span');
+            badge.innerHTML = '<i class="fas fa-star"></i> Principal';
+            badge.style.cssText = 'position:absolute; top:4px; left:4px; background:#3b82f6; color:white; font-size:10px; padding:2px 6px; border-radius:4px;';
+            badge.className = 'main-badge';
+            selectedContainer.appendChild(badge);
+        });
+        radioWrapper.appendChild(radio);
+        
+        const label = document.createElement('span');
+        label.textContent = 'Principal';
+        label.style.cssText = 'font-size:11px; color:#374151;';
+        radioWrapper.appendChild(label);
+        
+        wrapper.appendChild(radioWrapper);
+        imagePreview.appendChild(wrapper);
     });
     imagePreview.style.display = 'flex';
 }
