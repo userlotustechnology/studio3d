@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Address;
+use App\Models\ShippingRate;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -178,6 +179,99 @@ class CartController extends Controller
         }
 
         return true;
+    }
+
+    private function calculateShippingCost($cep): float
+    {
+        // Remove máscara do CEP
+        $cep = preg_replace('/[^0-9]/', '', $cep);
+        
+        if (strlen($cep) !== 8) {
+            return 0;
+        }
+
+        // Pegar os 2 primeiros dígitos do CEP para mapear estado
+        $cepPrefix = substr($cep, 0, 2);
+        
+        // Mapeamento de prefixo CEP para estado (primeiros 2 dígitos)
+        $cepStateMap = [
+            // SP: 01-19
+            '01' => 'SP', '02' => 'SP', '03' => 'SP', '04' => 'SP', '05' => 'SP',
+            '06' => 'SP', '07' => 'SP', '08' => 'SP', '09' => 'SP', '10' => 'SP',
+            '11' => 'SP', '12' => 'SP', '13' => 'SP', '14' => 'SP', '15' => 'SP',
+            '16' => 'SP', '17' => 'SP', '18' => 'SP', '19' => 'SP',
+            // RJ: 20-28
+            '20' => 'RJ', '21' => 'RJ', '22' => 'RJ', '23' => 'RJ', '24' => 'RJ',
+            '25' => 'RJ', '26' => 'RJ', '27' => 'RJ', '28' => 'RJ',
+            // MG: 30-39
+            '30' => 'MG', '31' => 'MG', '32' => 'MG', '33' => 'MG', '34' => 'MG',
+            '35' => 'MG', '36' => 'MG', '37' => 'MG', '38' => 'MG', '39' => 'MG',
+            // BA: 40-48
+            '40' => 'BA', '41' => 'BA', '42' => 'BA', '43' => 'BA', '44' => 'BA',
+            '45' => 'BA', '46' => 'BA', '47' => 'BA', '48' => 'BA',
+            // DF/GO: 70-72
+            '70' => 'DF', '71' => 'DF', '72' => 'GO',
+            // ES: 29
+            '29' => 'ES',
+            // PR: 80-87
+            '80' => 'PR', '81' => 'PR', '82' => 'PR', '83' => 'PR', '84' => 'PR',
+            '85' => 'PR', '86' => 'PR', '87' => 'PR',
+            // SC: 88-89
+            '88' => 'SC', '89' => 'SC',
+            // RS: 90-99
+            '90' => 'RS', '91' => 'RS', '92' => 'RS', '93' => 'RS', '94' => 'RS',
+            '95' => 'RS', '96' => 'RS', '97' => 'RS', '98' => 'RS', '99' => 'RS',
+        ];
+
+        $stateCode = $cepStateMap[$cepPrefix] ?? null;
+        
+        if ($stateCode) {
+            return ShippingRate::getRate($stateCode);
+        }
+
+        return ShippingRate::getRate('XX'); // Padrão para estado desconhecido
+    }
+
+    public function calculateShipping(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $cep = $request->input('cep');
+        $draftOrderId = session()->get('draft_order_id');
+
+        if (!$cep || !$draftOrderId) {
+            return response()->json(['error' => 'CEP inválido'], 400);
+        }
+
+        $order = Order::find($draftOrderId);
+        if (!$order) {
+            return response()->json(['error' => 'Pedido não encontrado'], 404);
+        }
+
+        // Verificar se é endereço de entrega (shipping) ou cobrança (billing)
+        $isShippingAddress = $request->input('isShippingAddress', false);
+
+        // Calcular novo frete
+        $shippingCost = $this->calculateShippingCost($cep);
+
+        // Se for endereço de entrega, atualizar o pedido
+        if ($isShippingAddress) {
+            $items = $order->items()->get();
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $subtotal += $item->product_price * $item->quantity;
+            }
+
+            $total = $subtotal + $shippingCost;
+
+            $order->update([
+                'shipping_cost' => $shippingCost,
+                'total' => $total,
+            ]);
+        }
+
+        return response()->json([
+            'shippingCost' => $shippingCost,
+            'formattedCost' => 'R$ ' . number_format($shippingCost, 2, ',', '.')
+        ]);
     }
 
     private function updateOrderTotals(Order $order): void

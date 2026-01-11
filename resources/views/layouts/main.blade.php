@@ -215,6 +215,25 @@
                         </li>
                     </ul>
                 </li>
+
+                <li class="menu-item {{ request()->routeIs('admin.shipping-rates.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.shipping-rates.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">local_shipping</span>
+                        <span class="title">Fretes</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.shipping-rates.index') }}" class="menu-link {{ request()->routeIs('admin.shipping-rates.index') ? 'active' : '' }}">
+                                Listar Fretes
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.shipping-rates.create') }}" class="menu-link {{ request()->routeIs('admin.shipping-rates.create') ? 'active' : '' }}">
+                                Adicionar Estado
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 @else
                 <li class="menu-item">
                     <a href="{{ route('cart.index') }}" class="menu-link {{ request()->routeIs('cart.index') ? 'active' : '' }}">

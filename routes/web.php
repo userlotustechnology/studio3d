@@ -9,7 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\Admin\ShippingRateController;
 use App\Models\Category;
 
 // Rotas públicas - Loja
@@ -27,6 +27,7 @@ Route::delete('/carrinho/remover/{product}', [CartController::class, 'remove'])-
 Route::post('/carrinho/limpar', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/checkout/processar', [CartController::class, 'processCheckout'])->name('cart.process-checkout');
+Route::post('/checkout/calcular-frete', [CartController::class, 'calculateShipping'])->name('cart.calculate-shipping');
 Route::get('/pedido/{order}/sucesso', [CartController::class, 'orderSuccess'])->name('order.success');
 
 // Rotas de Consulta de Pedidos (público)
@@ -104,5 +105,20 @@ Route::middleware('auth')->group(function () {
         // Rotas de Financeiro
         Route::get('/admin/financeiro', [FinanceController::class, 'index'])->name('admin.finance.index');
         Route::get('/admin/financeiro/vendas', [FinanceController::class, 'sales'])->name('admin.finance.sales');
+
+        // Rotas de Gerenciamento de Fretes
+        Route::resource('admin/shipping-rates', ShippingRateController::class, [
+            'parameters' => ['shipping_rate' => 'shippingRate'],
+            'names' => [
+                'index' => 'admin.shipping-rates.index',
+                'create' => 'admin.shipping-rates.create',
+                'store' => 'admin.shipping-rates.store',
+                'edit' => 'admin.shipping-rates.edit',
+                'update' => 'admin.shipping-rates.update',
+                'destroy' => 'admin.shipping-rates.destroy'
+            ]
+        ]);
+        Route::post('/admin/shipping-rates/{shippingRate}/toggle-active', [ShippingRateController::class, 'toggleActive'])->name('admin.shipping-rates.toggle-active');
+
     });
 });

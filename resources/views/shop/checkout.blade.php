@@ -310,7 +310,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
                             <span style="color: var(--text-light); font-weight: 500;">Frete</span>
-                            <span style="font-weight: 700; color: var(--text-dark);">R$ {{ number_format($shippingCost, 2, ',', '.') }}</span>
+                            <span style="font-weight: 700; color: var(--text-dark);" data-frete-value>R$ {{ number_format($shippingCost, 2, ',', '.') }}</span>
                         </div>
                         @if($discount > 0)
                             <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
@@ -320,7 +320,7 @@
                         @endif
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 20px 15px; border-radius: 10px; margin-top: 15px;">
                             <span style="font-size: 18px; font-weight: 700; color: var(--text-dark);">Total</span>
-                            <span style="font-size: 28px; font-weight: 800; color: #667eea;">
+                            <span style="font-size: 28px; font-weight: 800; color: #667eea;" data-total-value data-subtotal="{{ $subtotal }}">
                                 R$ {{ number_format($total, 2, ',', '.') }}
                             </span>
                         </div>
@@ -657,6 +657,9 @@
                     document.querySelector('input[name="shipping_city"]').value = data.localidade;
                     document.querySelector('input[name="shipping_state"]').value = data.uf;
 
+                    // Calcular frete baseado no CEP
+                    calculateShippingCost(cep);
+
                     // Mostrar campos de endereço de entrega
                     shippingAddressFields.style.display = 'block';
                     shippingCepCheck.style.display = 'inline';
@@ -669,6 +672,40 @@
                     shippingCepError.style.display = 'block';
                     shippingAddressFields.style.display = 'none';
                 });
+        }
+
+        // Função para calcular frete baseado no CEP
+        function calculateShippingCost(cep) {
+            fetch('{{ route("cart.calculate-shipping") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    cep: cep,
+                    isShippingAddress: true
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.shippingCost !== undefined) {
+                    // Atualizar o valor do frete na tela
+                    const freteElement = document.querySelector('[data-frete-value]');
+                    if (freteElement) {
+                        freteElement.textContent = data.formattedCost;
+                    }
+                    
+                    // Atualizar o total
+                    const totalElement = document.querySelector('[data-total-value]');
+                    if (totalElement) {
+                        const subtotal = parseFloat(totalElement.getAttribute('data-subtotal'));
+                        const newTotal = subtotal + data.shippingCost;
+                        totalElement.textContent = 'R$ ' + newTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    }
+                }
+            })
+            .catch(error => console.error('Erro ao calcular frete:', error));
         }
 
         // Funções existentes do formulário
