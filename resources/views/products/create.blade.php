@@ -140,15 +140,15 @@
                     <div style="border: 2px dashed #d1d5db; border-radius: 6px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s;"
                         id="drop-zone">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: #9ca3af; margin-bottom: 12px; display: block;"></i>
-                        <p style="color: #6b7280; margin: 0 0 8px 0;">Arraste a imagem aqui ou clique para selecionar</p>
-                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">PNG, JPG, GIF até 2MB</p>
-                        <input type="file" name="image" id="image-input" accept="image/*"
+                        <p style="color: #6b7280; margin: 0 0 8px 0;">Arraste as imagens aqui ou clique para selecionar (várias)</p>
+                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">PNG, JPG, GIF até 2MB por arquivo</p>
+                        <input type="file" name="images[]" id="images-input" accept="image/*" multiple
                             style="display: none;">
                     </div>
-                    <div id="image-preview" style="margin-top: 16px; display: none;">
-                        <img id="preview-img" src="" alt="Preview" style="max-width: 200px; border-radius: 6px;">
+                    <div id="image-preview" style="margin-top: 16px; display: none; display:flex; gap:8px; flex-wrap:wrap;">
+                        <!-- thumbnails will be injected here -->
                     </div>
-                    @error('image')
+                    @error('images.*')
                     <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -213,7 +213,8 @@ typeSelect.addEventListener('change', updateStockField);
 updateStockField();
 
 // Click to select
-dropZone.addEventListener('click', () => imageInput.click());
+const imagesInput = document.getElementById('images-input');
+dropZone.addEventListener('click', () => imagesInput.click());
 
 // Drag and drop
 dropZone.addEventListener('dragover', (e) => {
@@ -234,24 +235,35 @@ dropZone.addEventListener('drop', (e) => {
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-        imageInput.files = files;
-        handleImageSelect();
+        imagesInput.files = files;
+        showPreviews(files);
     }
 });
 
 // File input change
-imageInput.addEventListener('change', handleImageSelect);
-
-function handleImageSelect() {
-    const file = imageInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            imagePreview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+imagesInput.addEventListener('change', (e) => {
+    const files = e.target.files;
+    if (files && files.length) {
+        showPreviews(files);
+    } else {
+        imagePreview.style.display = 'none';
+        imagePreview.innerHTML = '';
     }
+});
+
+function showPreviews(files) {
+    imagePreview.innerHTML = '';
+    Array.from(files).forEach(file => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = '120px';
+        img.style.borderRadius = '6px';
+        img.style.objectFit = 'cover';
+        img.style.height = '80px';
+        img.onload = () => URL.revokeObjectURL(img.src);
+        imagePreview.appendChild(img);
+    });
+    imagePreview.style.display = 'flex';
 }
 </script>
 @endsection

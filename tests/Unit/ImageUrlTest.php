@@ -40,6 +40,7 @@ class ImageUrlTest extends TestCase
 
         Storage::shouldReceive('disk')->with('s3')->andReturn($mock);
 
+        $this->app['env'] = 'production';
         $this->app['config']->set('app.env', 'production');
 
         $p = new Product(['image' => 'products/test.jpg']);
@@ -55,6 +56,7 @@ class ImageUrlTest extends TestCase
 
         Storage::shouldReceive('disk')->with('s3')->andReturn($mock);
 
+        $this->app['env'] = 'production';
         $this->app['config']->set('app.env', 'production');
 
         $p = new Product(['image' => 'products/test.jpg']);

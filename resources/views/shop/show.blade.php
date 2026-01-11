@@ -23,7 +23,17 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
             <!-- Product Image -->
             <div>
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                <div style="margin-bottom:12px;">
+                    <img id="main-product-image" src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                </div>
+
+                @if($product->images->count() > 0)
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    @foreach($product->images as $img)
+                        <img src="{{ $img->image_url }}" alt="{{ $product->name }}" style="width:80px; height:80px; object-fit: cover; border-radius:6px; cursor:pointer;" onclick="document.getElementById('main-product-image').src='{{ $img->image_url }}'">
+                    @endforeach
+                </div>
+                @endif
             </div>
 
             <!-- Product Information -->

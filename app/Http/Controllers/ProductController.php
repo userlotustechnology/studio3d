@@ -43,7 +43,7 @@ class ProductController extends Controller
 
     public function show(int $id): View
     {
-        $product = Product::where('is_active', true)->with('category')->findOrFail($id);
+        $product = Product::where('is_active', true)->with(['category','images'])->findOrFail($id);
         
         $relatedProducts = Product::where('is_active', true)
             ->where('category_id', $product->category_id)
@@ -77,7 +77,8 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'sku' => 'nullable|string|unique:products,sku',
             'type' => 'required|in:physical,digital',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
         ];
 
@@ -95,15 +96,21 @@ class ProductController extends Controller
             $validated['stock'] = 0;
         }
 
-        if ($request->hasFile('image')) {
-            $disk = app()->environment('production') ? 's3' : 'public';
-            $path = $request->file('image')->store('products', $disk);
-            $validated['image'] = $path;
-        }
-
         $validated['is_active'] = $request->has('is_active');
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        // store multiple images
+        if ($request->hasFile('images')) {
+            $disk = app()->environment('production') ? 's3' : 'public';
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products', $disk);
+                \App\Models\ProductImage::create([
+                    'product_id' => $product->id,
+                    'path' => $path,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto criado com sucesso!');
@@ -124,7 +131,10 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'type' => 'required|in:physical,digital',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'integer|exists:product_images,id',
             'is_active' => 'boolean'
         ];
 
@@ -142,15 +152,29 @@ class ProductController extends Controller
             $validated['stock'] = 0;
         }
 
-        if ($request->hasFile('image')) {
-            // delete previous image from both disks (if any)
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-                Storage::disk('s3')->delete($product->image);
+        // remove selected images
+        if ($request->filled('remove_images')) {
+            $toRemove = $request->input('remove_images', []);
+            foreach ($toRemove as $imgId) {
+                $img = \App\Models\ProductImage::find($imgId);
+                if ($img && $img->product_id === $product->id) {
+                    Storage::disk('public')->delete($img->path);
+                    Storage::disk('s3')->delete($img->path);
+                    $img->delete();
+                }
             }
+        }
+
+        // add new uploaded images
+        if ($request->hasFile('images')) {
             $disk = app()->environment('production') ? 's3' : 'public';
-            $path = $request->file('image')->store('products', $disk);
-            $validated['image'] = $path;
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products', $disk);
+                \App\Models\ProductImage::create([
+                    'product_id' => $product->id,
+                    'path' => $path,
+                ]);
+            }
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -163,7 +187,14 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        // delete image from both disks (if any)
+        // delete all related images from both disks (if any)
+        foreach ($product->images as $img) {
+            Storage::disk('public')->delete($img->path);
+            Storage::disk('s3')->delete($img->path);
+            $img->delete();
+        }
+
+        // delete legacy image if exists
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
             Storage::disk('s3')->delete($product->image);

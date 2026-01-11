@@ -136,9 +136,19 @@
                         Imagem do Produto
                     </label>
                     
-                    <!-- Imagem Atual -->
-                    @if($product->image)
-                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="max-width: 150px; border-radius: 6px;">
+                    <!-- Imagens Atuais -->
+                    @if($product->images->count() > 0)
+                    <div style="margin-bottom: 16px; display:flex; gap:8px; flex-wrap:wrap;">
+                        @foreach($product->images as $img)
+                        <div style="position:relative; width:120px;">
+                            <img src="{{ $img->image_url ?? $product->image_url }}" alt="{{ $product->name }}" style="width:120px; height:80px; object-fit:cover; border-radius:6px;">
+                            <label style="display:block; text-align:center; margin-top:6px; font-size:12px;">
+                                <input type="checkbox" name="remove_images[]" value="{{ $img->id }}"> Remover
+                            </label>
+                        </div>
+                        @endforeach
+                    </div>
+                    @elseif($product->image)
                     <div style="margin-bottom: 16px;">
                         <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">Imagem Atual:</p>
                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="max-width: 150px; border-radius: 6px;">
@@ -148,15 +158,15 @@
                     <div style="border: 2px dashed #d1d5db; border-radius: 6px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s;"
                         id="drop-zone">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: #9ca3af; margin-bottom: 12px; display: block;"></i>
-                        <p style="color: #6b7280; margin: 0 0 8px 0;">Arraste a nova imagem aqui ou clique para selecionar</p>
-                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">PNG, JPG, GIF até 2MB</p>
-                        <input type="file" name="image" id="image-input" accept="image/*"
+                        <p style="color: #6b7280; margin: 0 0 8px 0;">Arraste as novas imagens aqui ou clique para selecionar (várias)</p>
+                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">PNG, JPG, GIF até 2MB por arquivo</p>
+                        <input type="file" name="images[]" id="images-input" accept="image/*" multiple
                             style="display: none;">
                     </div>
-                    <div id="image-preview" style="margin-top: 16px; display: none;">
-                        <img id="preview-img" src="" alt="Preview" style="max-width: 200px; border-radius: 6px;">
+                    <div id="image-preview" style="margin-top: 16px; display: none; flex-wrap:wrap; gap:8px;">
+                        <!-- thumbnails will be injected here -->
                     </div>
-                    @error('image')
+                    @error('images.*')
                     <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -187,14 +197,33 @@
 
 <script>
 const dropZone = document.getElementById('drop-zone');
-const imageInput = document.getElementById('image-input');
+const imagesInput = document.getElementById('images-input');
 const imagePreview = document.getElementById('image-preview');
-const previewImg = document.getElementById('preview-img');
 const typeSelect = document.querySelector('select[name="type"]');
 const stockInput = document.getElementById('stock-input');
 const stockField = document.getElementById('stock-field');
 const stockLabel = document.getElementById('stock-label');
 const stockHelp = document.getElementById('stock-help');
+
+// Defensive checks for elements that might be missing in some contexts
+if (!dropZone) throw new Error('drop-zone element not found');
+
+function showPreviews(files) {
+    if (!imagePreview) return;
+    imagePreview.innerHTML = '';
+    Array.from(files).forEach(file => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = '120px';
+        img.style.borderRadius = '6px';
+        img.style.objectFit = 'cover';
+        img.style.height = '80px';
+        img.style.marginRight = '8px';
+        img.onload = () => URL.revokeObjectURL(img.src);
+        imagePreview.appendChild(img);
+    });
+    imagePreview.style.display = 'flex';
+}
 
 // Função para atualizar visibilidade do campo de estoque
 function updateStockField() {
@@ -220,7 +249,20 @@ typeSelect.addEventListener('change', updateStockField);
 updateStockField();
 
 // Click to select
-dropZone.addEventListener('click', () => imageInput.click());
+if (imagesInput) {
+    dropZone.addEventListener('click', () => imagesInput.click());
+
+    // File input change
+    imagesInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length) {
+            showPreviews(files);
+        } else if (imagePreview) {
+            imagePreview.style.display = 'none';
+            imagePreview.innerHTML = '';
+        }
+    });
+}
 
 // Drag and drop
 dropZone.addEventListener('dragover', (e) => {
@@ -241,24 +283,11 @@ dropZone.addEventListener('drop', (e) => {
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-        imageInput.files = files;
-        handleImageSelect();
+        if (imagesInput) {
+            imagesInput.files = files;
+        }
+        showPreviews(files);
     }
 });
-
-// File input change
-imageInput.addEventListener('change', handleImageSelect);
-
-function handleImageSelect() {
-    const file = imageInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            imagePreview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-}
 </script>
 @endsection
