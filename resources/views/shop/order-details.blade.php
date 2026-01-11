@@ -182,6 +182,24 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons" style="display: grid; gap: 15px;">
+                @if($order->customer->phone)
+                <?php
+                    // Remove caracteres especiais do telefone
+                    $phone = preg_replace('/[^0-9]/', '', $order->customer->phone);
+                    // Adiciona código do país (55 para Brasil) se não tiver
+                    if (strlen($phone) === 11) {
+                        $phone = '55' . $phone;
+                    } elseif (strlen($phone) === 10) {
+                        $phone = '55' . $phone;
+                    }
+                    // Monta a mensagem
+                    $message = "Olá! Gostaria de informações sobre o pedido " . $order->order_number . ". Status atual: " . ucfirst($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
+                    $whatsappUrl = "https://wa.me/" . $phone . "?text=" . urlencode($message);
+                ?>
+                <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-whatsapp" style="padding: 15px; text-align: center; display: block; background-color: #25d366; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; transition: background-color 0.3s;">
+                    <i class="fab fa-whatsapp"></i> Falar no WhatsApp
+                </a>
+                @endif
                 <a href="{{ route('orders.search-form') }}" class="btn btn-secondary" style="padding: 15px; text-align: center; display: block;">
                     <i class="fas fa-search"></i> Consultar outro pedido
                 </a>

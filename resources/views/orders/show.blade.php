@@ -66,10 +66,10 @@
                                     {{ $item->quantity }}
                                 </td>
                                 <td style="padding: 16px; text-align: right; color: #6b7280; font-size: 14px;">
-                                    R$ {{ number_format($item->price, 2, ',', '.') }}
+                                    R$ {{ number_format($item->product_price, 2, ',', '.') }}
                                 </td>
                                 <td style="padding: 16px; text-align: right; color: #1f2937; font-weight: 600; font-size: 14px;">
-                                    R$ {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
+                                    R$ {{ number_format($item->product_price * $item->quantity, 2, ',', '.') }}
                                 </td>
                             </tr>
                             @empty
@@ -188,8 +188,26 @@
                         </div>
                     </form>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+
+                <!-- WhatsApp Button -->
+                @if($order->customer && $order->customer->phone)
+                <?php
+                    // Remove caracteres especiais do telefone
+                    $phone = preg_replace('/[^0-9]/', '', $order->customer->phone);
+                    // Adiciona código do país (55 para Brasil) se não tiver
+                    if (strlen($phone) === 11) {
+                        $phone = '55' . $phone;
+                    } elseif (strlen($phone) === 10) {
+                        $phone = '55' . $phone;
+                    }
+                    // Monta a mensagem
+                    $message = "Olá! Informação sobre o pedido " . $order->order_number . ". Status: " . ucfirst($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
+                    $whatsappUrl = "https://wa.me/" . $phone . "?text=" . urlencode($message);
+                ?>
+                <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px;">Contato</h3>
+                    <a href="{{ $whatsappUrl }}" target="_blank" style="display: block; width: 100%; padding: 12px; background-color: #25d366; color: white; border-radius: 4px; text-decoration: none; font-weight: 600; cursor: pointer; font-size: 14px; text-align: center; transition: background-color 0.3s;">
+                        <i class="fab fa-whatsapp"></i> Enviar mensagem via WhatsApp
+                    </a>
+                </div>
+                @endif

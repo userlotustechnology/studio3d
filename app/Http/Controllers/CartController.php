@@ -278,10 +278,31 @@ class CartController extends Controller
             throw new \Exception('Seu carrinho está vazio!');
         }
 
-        $order = Order::with('items', 'customer')->find($draftOrderId);
+        $order = Order::with('items.product', 'customer')->find($draftOrderId);
         
         if (!$order || count($order->items) === 0) {
             throw new \Exception('Seu carrinho está vazio!');
+        }
+
+        // Validar estoque de produtos físicos
+        $outOfStockItems = [];
+        foreach ($order->items as $item) {
+            $product = $item->product;
+            if ($product && $product->type === 'physical' && $product->stock < $item->quantity) {
+                $outOfStockItems[] = [
+                    'name' => $item->product_name,
+                    'requested' => $item->quantity,
+                    'available' => $product->stock
+                ];
+            }
+        }
+
+        if (!empty($outOfStockItems)) {
+            $message = "Os seguintes produtos não possuem estoque suficiente:\n\n";
+            foreach ($outOfStockItems as $item) {
+                $message .= "• {$item['name']}: solicitado {$item['requested']}, disponível {$item['available']}\n";
+            }
+            return redirect()->route('cart.index')->with('error', $message);
         }
 
         $items = $order->items;
@@ -312,10 +333,31 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
         }
 
-        $order = Order::with('items', 'customer')->find($draftOrderId);
+        $order = Order::with('items.product', 'customer')->find($draftOrderId);
         
         if (!$order || count($order->items) === 0) {
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
+        }
+
+        // Validar estoque de produtos físicos
+        $outOfStockItems = [];
+        foreach ($order->items as $item) {
+            $product = $item->product;
+            if ($product && $product->type === 'physical' && $product->stock < $item->quantity) {
+                $outOfStockItems[] = [
+                    'name' => $item->product_name,
+                    'requested' => $item->quantity,
+                    'available' => $product->stock
+                ];
+            }
+        }
+
+        if (!empty($outOfStockItems)) {
+            $message = "Os seguintes produtos não possuem estoque suficiente:\n\n";
+            foreach ($outOfStockItems as $item) {
+                $message .= "• {$item['name']}: solicitado {$item['requested']}, disponível {$item['available']}\n";
+            }
+            return redirect()->route('cart.index')->with('error', $message);
         }
 
         // Verificar se há produtos físicos no pedido
@@ -327,7 +369,10 @@ class CartController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email',
             'customer_phone' => 'required|string|max:20',
-            'billing_address' => 'required|string',
+            'billing_street' => 'required|string',
+            'billing_number' => 'required|string',
+            'billing_complement' => 'nullable|string',
+            'billing_neighborhood' => 'required|string',
             'billing_city' => 'required|string',
             'billing_state' => 'required|string|size:2',
             'billing_postal_code' => 'required|string',
@@ -339,7 +384,10 @@ class CartController extends Controller
             // Se o endereço de entrega é diferente, validar seus campos
             if ($request->input('different_address') === 'on' || $request->input('different_address') === 'true' || $request->input('different_address') === '1') {
                 $rules = array_merge($rules, [
-                    'shipping_address' => 'required|string',
+                    'shipping_street' => 'required|string',
+                    'shipping_number' => 'required|string',
+                    'shipping_complement' => 'nullable|string',
+                    'shipping_neighborhood' => 'required|string',
                     'shipping_city' => 'required|string',
                     'shipping_state' => 'required|string|size:2',
                     'shipping_postal_code' => 'required|string',
@@ -361,11 +409,13 @@ class CartController extends Controller
         $billingAddress = Address::create([
             'customer_id' => $customer->id,
             'type' => 'residential',
-            'street' => $validated['billing_address'],
-            'number' => '0',
+            'street' => $validated['billing_street'],
+            'number' => $validated['billing_number'],
+            'complement' => $validated['billing_complement'] ?? null,
             'city' => $validated['billing_city'],
             'state' => $validated['billing_state'],
             'postal_code' => $validated['billing_postal_code'],
+            'notes' => $validated['billing_neighborhood'],
         ]);
 
         // Criar endereço de entrega apenas se houver produtos físicos
@@ -376,22 +426,26 @@ class CartController extends Controller
                 $shippingAddress = Address::create([
                     'customer_id' => $customer->id,
                     'type' => 'shipping',
-                    'street' => $validated['shipping_address'],
-                    'number' => '0',
+                    'street' => $validated['shipping_street'],
+                    'number' => $validated['shipping_number'],
+                    'complement' => $validated['shipping_complement'] ?? null,
                     'city' => $validated['shipping_city'],
                     'state' => $validated['shipping_state'],
                     'postal_code' => $validated['shipping_postal_code'],
+                    'notes' => $validated['shipping_neighborhood'],
                 ]);
             } else {
                 // Usar o mesmo endereço de cobrança como entrega
                 $shippingAddress = Address::create([
                     'customer_id' => $customer->id,
                     'type' => 'shipping',
-                    'street' => $validated['billing_address'],
-                    'number' => '0',
+                    'street' => $validated['billing_street'],
+                    'number' => $validated['billing_number'],
+                    'complement' => $validated['billing_complement'] ?? null,
                     'city' => $validated['billing_city'],
                     'state' => $validated['billing_state'],
                     'postal_code' => $validated['billing_postal_code'],
+                    'notes' => $validated['billing_neighborhood'],
                 ]);
             }
         }
