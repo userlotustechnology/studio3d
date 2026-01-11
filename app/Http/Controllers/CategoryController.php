@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -30,7 +31,8 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
+            $disk = app()->environment('production') ? 's3' : 'public';
+            $path = $request->file('image')->store('categories', $disk);
             $validated['image'] = $path;
         }
 
@@ -57,7 +59,13 @@ class CategoryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
+            // delete previous image from both disks (if any)
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+                Storage::disk('s3')->delete($category->image);
+            }
+            $disk = app()->environment('production') ? 's3' : 'public';
+            $path = $request->file('image')->store('categories', $disk);
             $validated['image'] = $path;
         }
 
@@ -79,6 +87,12 @@ class CategoryController extends Controller
         // Verifica se há produtos nessa categoria
         if ($category->products()->exists()) {
             return back()->with('error', 'Não é possível deletar uma categoria com produtos. Remova os produtos primeiro.');
+        }
+
+        // delete image from both disks (if any)
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
+            Storage::disk('s3')->delete($category->image);
         }
 
         $category->delete();

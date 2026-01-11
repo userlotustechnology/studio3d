@@ -138,9 +138,10 @@
                     
                     <!-- Imagem Atual -->
                     @if($product->image)
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="max-width: 150px; border-radius: 6px;">
                     <div style="margin-bottom: 16px;">
                         <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">Imagem Atual:</p>
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="max-width: 150px; border-radius: 6px;">
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="max-width: 150px; border-radius: 6px;">
                     </div>
                     @endif
 

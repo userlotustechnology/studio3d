@@ -23,7 +23,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
             <!-- Product Image -->
             <div>
-                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
             </div>
 
             <!-- Product Information -->
@@ -184,7 +184,7 @@
                     @foreach($relatedProducts as $related)
                         <div class="product-card">
                             <a href="{{ route('shop.show', $related->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                                <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}" class="product-image">
+                                <img src="{{ $related->image_url }}" alt="{{ $related->name }}" class="product-image">
                                 <div class="product-info">
                                     <div class="product-category">{{ $related->category?->name ?? 'Sem categoria' }}</div>
                                     <h3 class="product-name">{{ $related->name }}</h3>

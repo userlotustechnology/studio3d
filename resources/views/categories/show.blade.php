@@ -37,7 +37,7 @@
                 <!-- Imagem -->
                 <div style="margin-bottom: 24px;">
                     @if($category->image)
-                    <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" style="width: 100%; border-radius: 6px; object-fit: cover;">
+                    <img src="{{ $category->image_url }}" alt="{{ $category->name }}" style="width: 100%; border-radius: 6px; object-fit: cover;">
                     @else
                     <div style="width: 100%; aspect-ratio: 1; background-color: #e5e7eb; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-image" style="font-size: 64px; color: #9ca3af;"></i>
@@ -95,7 +95,7 @@
                             <a href="{{ route('admin.products.show', $product->id) }}" style="display: flex; flex-direction: column; gap: 8px; text-decoration: none; cursor: pointer; transition: all 0.3s;">
                                 <div style="aspect-ratio: 1; background-color: #f3f4f6; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                     @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                     @else
                                     <i class="fas fa-box" style="font-size: 32px; color: #9ca3af;"></i>
                                     @endif

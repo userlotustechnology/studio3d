@@ -34,7 +34,7 @@
             <div style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
                 <!-- Imagem -->
                 @if($category->image)
-                <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" style="width: 100%; height: 180px; object-fit: cover;">
+                <img src="{{ $category->image_url }}" alt="{{ $category->name }}" style="width: 100%; height: 180px; object-fit: cover;">
                 @else
                 <div style="width: 100%; height: 180px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-image" style="color: #9ca3af; font-size: 48px;"></i>

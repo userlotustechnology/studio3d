@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -95,7 +96,8 @@ class ProductController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
+            $disk = app()->environment('production') ? 's3' : 'public';
+            $path = $request->file('image')->store('products', $disk);
             $validated['image'] = $path;
         }
 
@@ -141,7 +143,13 @@ class ProductController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
+            // delete previous image from both disks (if any)
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+                Storage::disk('s3')->delete($product->image);
+            }
+            $disk = app()->environment('production') ? 's3' : 'public';
+            $path = $request->file('image')->store('products', $disk);
             $validated['image'] = $path;
         }
 
@@ -155,6 +163,12 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        // delete image from both disks (if any)
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+            Storage::disk('s3')->delete($product->image);
+        }
+
         $product->delete();
 
         return redirect()->route('admin.products.index')

@@ -42,7 +42,7 @@
                         <td style="padding: 16px; color: #6b7280; font-size: 14px;">#{{ $product->id }}</td>
                         <td style="padding: 16px;">
                             @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
                             @else
                             <div style="width: 40px; height: 40px; background-color: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-image" style="color: #9ca3af; font-size: 18px;"></i>

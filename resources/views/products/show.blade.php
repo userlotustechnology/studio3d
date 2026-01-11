@@ -35,7 +35,7 @@
                 <!-- Imagem -->
                 <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
                     @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 6px; object-fit: cover; max-height: 400px;">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 6px; object-fit: cover; max-height: 400px;">
                     @else
                     <div style="width: 100%; height: 400px; background-color: #e5e7eb; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-image" style="font-size: 64px; color: #9ca3af;"></i>
