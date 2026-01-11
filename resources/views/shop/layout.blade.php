@@ -51,51 +51,293 @@
                 padding: 0 20px;
             }
 
-            /* Header */
-            header {
-                background-color: white;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            /* Header Modern */
+            .header-modern {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 position: sticky;
                 top: 0;
-                z-index: 100;
+                z-index: 1000;
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
             }
 
             .header-content {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 20px 0;
+                padding: 12px 0;
             }
 
-            .logo {
-                font-size: 28px;
-                font-weight: 600;
-                color: var(--primary-color);
+            /* Logo Modern */
+            .logo-modern {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-decoration: none;
+            }
+
+            .logo-icon {
+                width: 45px;
+                height: 45px;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .logo-icon i {
+                font-size: 20px;
+                color: white;
+            }
+
+            .logo-modern:hover .logo-icon {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(15deg);
+            }
+
+            .logo-text {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .logo-name {
+                font-size: 20px;
+                font-weight: 700;
+                color: white;
+                line-height: 1.2;
+            }
+
+            .logo-tagline {
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.8);
+                font-weight: 500;
+                letter-spacing: 0.5px;
+            }
+
+            /* Navigation Modern */
+            .nav-modern {
+                display: flex;
+                gap: 8px;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 18px;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 500;
+                font-size: 14px;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                background: transparent;
+            }
+
+            .nav-link:hover,
+            .nav-link.active {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+
+            .nav-link i {
+                font-size: 14px;
+            }
+
+            /* Header Actions */
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            /* Cart Button Modern */
+            .cart-btn-modern {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                padding: 10px 18px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
             }
 
-            .nav-links {
+            .cart-btn-modern:hover {
+                background: rgba(255, 255, 255, 0.25);
+                transform: translateY(-2px);
+            }
+
+            .cart-icon-wrapper {
+                position: relative;
+            }
+
+            .cart-icon-wrapper i {
+                font-size: 18px;
+            }
+
+            .cart-badge {
+                position: absolute;
+                top: -8px;
+                right: -10px;
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                color: white;
+                font-size: 11px;
+                font-weight: 700;
+                min-width: 20px;
+                height: 20px;
+                border-radius: 10px;
                 display: flex;
-                gap: 30px;
                 align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
             }
 
-            .nav-links a {
-                color: var(--text-dark);
-                transition: color 0.3s;
+            .cart-text {
+                display: none;
             }
 
-            .nav-links a:hover {
-                color: var(--primary-color);
-            }
-
-            .auth-buttons {
+            /* User Button Modern */
+            .user-btn-modern {
                 display: flex;
-                gap: 15px;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 16px 8px 8px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border-radius: 25px;
+                color: white;
+                font-weight: 500;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.2);
             }
 
+            .user-btn-modern:hover {
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .user-avatar i {
+                font-size: 14px;
+                color: white;
+            }
+
+            /* Login Button Modern */
+            .login-btn-modern {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 20px;
+                background: white;
+                border-radius: 10px;
+                color: #667eea;
+                font-weight: 600;
+                font-size: 14px;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .login-btn-modern:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Mobile Actions */
+            .mobile-actions {
+                display: none;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .mobile-cart-btn {
+                position: relative;
+                width: 44px;
+                height: 44px;
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+            }
+
+            .mobile-cart-btn i {
+                font-size: 18px;
+            }
+
+            .cart-badge-mobile {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                color: white;
+                font-size: 10px;
+                font-weight: 700;
+                min-width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Hamburger Button */
+            .hamburger-btn {
+                width: 44px;
+                height: 44px;
+                background: rgba(255, 255, 255, 0.15);
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                padding: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .hamburger-btn:hover {
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+            .hamburger-line {
+                width: 20px;
+                height: 2px;
+                background: white;
+                border-radius: 1px;
+                transition: all 0.3s ease;
+            }
+
+            .hamburger-btn.active .hamburger-line:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger-btn.active .hamburger-line:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger-btn.active .hamburger-line:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            /* Legacy Button Styles */
             .btn {
                 padding: 10px 20px;
                 border: none;
@@ -333,10 +575,6 @@
                 padding: 10px;
             }
 
-            .mobile-cart-btn {
-                display: none;
-            }
-
             .mobile-menu-overlay {
                 display: none;
                 position: fixed;
@@ -345,6 +583,7 @@
                 right: 0;
                 bottom: 0;
                 background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
                 z-index: 998;
             }
 
@@ -356,13 +595,13 @@
                 display: none;
                 position: fixed;
                 top: 0;
-                right: -300px;
-                width: 300px;
+                right: -320px;
+                width: 320px;
                 height: 100%;
-                background-color: white;
+                background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
                 z-index: 999;
                 transition: right 0.3s ease;
-                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+                box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
                 overflow-y: auto;
             }
 
@@ -375,15 +614,29 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 20px;
-                border-bottom: 1px solid var(--border-color);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .mobile-menu-header .logo-modern {
+                color: white;
             }
 
             .mobile-menu-close {
-                background: none;
+                background: rgba(255, 255, 255, 0.15);
                 border: none;
-                font-size: 24px;
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                font-size: 20px;
                 cursor: pointer;
-                color: var(--text-dark);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .mobile-menu-close:hover {
+                background: rgba(255, 255, 255, 0.25);
             }
 
             .mobile-menu-links {
@@ -391,33 +644,47 @@
             }
 
             .mobile-menu-links a {
-                display: block;
-                padding: 15px 0;
-                border-bottom: 1px solid var(--border-color);
-                color: var(--text-dark);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 14px 16px;
+                margin-bottom: 8px;
+                border-radius: 12px;
+                color: white;
                 font-weight: 500;
-                font-size: 16px;
+                font-size: 15px;
+                transition: all 0.3s ease;
             }
 
-            .mobile-menu-links a:hover {
-                color: var(--primary-color);
+            .mobile-menu-links a:hover,
+            .mobile-menu-links a.active {
+                background: rgba(255, 255, 255, 0.2);
             }
 
             .mobile-menu-links a i {
-                width: 25px;
-                margin-right: 10px;
+                width: 24px;
+                text-align: center;
+                font-size: 16px;
             }
 
             .mobile-auth-buttons {
                 padding: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
             }
 
             .mobile-auth-buttons .btn {
                 width: 100%;
                 text-align: center;
+                background: white;
+                color: #667eea;
+                font-weight: 600;
+                border-radius: 12px;
+                padding: 14px;
+            }
+
+            .mobile-auth-buttons .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             }
 
             /* Responsive - Desktop Large */
@@ -453,32 +720,38 @@
 
             /* Responsive - Mobile Landscape / Small Tablet */
             @media (max-width: 768px) {
-                .mobile-menu-toggle {
-                    display: block;
+                .mobile-actions {
+                    display: flex;
                 }
 
-                .mobile-cart-btn {
-                    display: block !important;
+                .nav-modern,
+                .header-actions {
+                    display: none;
                 }
 
                 .mobile-menu {
                     display: block;
                 }
 
-                .nav-links {
-                    display: none;
-                }
-
-                .auth-buttons {
-                    display: none !important;
-                }
-
                 .header-content {
-                    padding: 15px 0;
+                    padding: 10px 0;
                 }
 
-                .logo {
-                    font-size: 22px;
+                .logo-name {
+                    font-size: 18px;
+                }
+
+                .logo-tagline {
+                    font-size: 10px;
+                }
+
+                .logo-icon {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .logo-icon i {
+                    font-size: 18px;
                 }
 
                 .hero {
@@ -700,8 +973,17 @@
 
             /* Responsive - Extra Small Mobile */
             @media (max-width: 360px) {
-                .logo {
+                .logo-name {
                     font-size: 16px;
+                }
+
+                .logo-tagline {
+                    display: none;
+                }
+
+                .logo-icon {
+                    width: 36px;
+                    height: 36px;
                 }
 
                 .hero h1 {
@@ -718,6 +1000,12 @@
 
                 .product-price {
                     font-size: 16px;
+                }
+
+                .mobile-cart-btn,
+                .hamburger-btn {
+                    width: 40px;
+                    height: 40px;
                 }
             }
 
@@ -755,46 +1043,68 @@
 </head>
 <body>
     <!-- Header -->
-    <header>
+    <header class="header-modern">
         <div class="container">
             <div class="header-content">
-                <a href="{{ route('shop.index') }}" class="logo">
-                    <i class="fas fa-store"></i>
-                    Minha Loja
+                <!-- Logo -->
+                <a href="{{ route('shop.index') }}" class="logo-modern">
+                    <div class="logo-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-name">Studio3D</span>
+                        <span class="logo-tagline">Loja Online</span>
+                    </div>
                 </a>
-                <nav class="nav-links">
-                    <a href="{{ route('orders.search-form') }}" style="color: var(--primary-color); font-weight: 600;">
-                        <i class="fas fa-search"></i> Consultar Pedido
+
+                <!-- Navigation -->
+                <nav class="nav-modern">
+                    <a href="{{ route('shop.index') }}" class="nav-link {{ request()->routeIs('shop.index') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="{{ route('orders.search-form') }}" class="nav-link">
+                        <i class="fas fa-box-open"></i>
+                        <span>Meus Pedidos</span>
                     </a>
                 </nav>
-                <div class="auth-buttons" style="gap: 20px;">
-                    <a href="{{ route('cart.index') }}" style="position: relative; color: var(--primary-color); font-weight: 600;">
-                        <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
-                        <span id="cart-count" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">0</span>
+
+                <!-- Actions -->
+                <div class="header-actions">
+                    <!-- Cart Button -->
+                    <a href="{{ route('cart.index') }}" class="cart-btn-modern">
+                        <div class="cart-icon-wrapper">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span id="cart-count" class="cart-badge">0</span>
+                        </div>
+                        <span class="cart-text">Carrinho</span>
                     </a>
+
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                            <i class="fas fa-user-circle"></i> Minha Conta
+                        <a href="{{ route('dashboard') }}" class="user-btn-modern">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>{{ Auth::user()->name }}</span>
                         </a>
-                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-primary">
-                                Sair
-                            </button>
-                        </form>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
+                        <a href="{{ route('login') }}" class="login-btn-modern">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Entrar</span>
+                        </a>
                     @endauth
                 </div>
 
-                <!-- Mobile Cart and Menu Toggle -->
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <a href="{{ route('cart.index') }}" class="mobile-cart-btn" style="position: relative; color: var(--primary-color); font-weight: 600; display: none;">
-                        <i class="fas fa-shopping-cart" style="font-size: 22px;"></i>Carrinho
-                        <span id="cart-count-mobile" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">0</span>
+                <!-- Mobile Toggle -->
+                <div class="mobile-actions">
+                    <a href="{{ route('cart.index') }}" class="mobile-cart-btn">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span id="cart-count-mobile" class="cart-badge-mobile">0</span>
                     </a>
-                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">
-                        <i class="fas fa-bars"></i>
+                    <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
                     </button>
                 </div>
             </div>
@@ -807,29 +1117,38 @@
     <!-- Mobile Menu -->
     <nav class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <span style="font-weight: 600; font-size: 18px; color: var(--text-dark);">Menu</span>
+            <a href="{{ route('shop.index') }}" class="logo-modern">
+                <div class="logo-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">Studio3D</span>
+                    <span class="logo-tagline">Loja Online</span>
+                </div>
+            </a>
             <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Fechar menu">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="mobile-menu-links">
-            <a href="{{ route('orders.search-form') }}"><i class="fas fa-search"></i> Consultar Pedido</a>
-            <a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Carrinho</a>
+            <a href="{{ route('shop.index') }}" class="{{ request()->routeIs('shop.index') ? 'active' : '' }}">
+                <i class="fas fa-home"></i> Início
+            </a>
+            <a href="{{ route('orders.search-form') }}">
+                <i class="fas fa-box-open"></i> Meus Pedidos
+            </a>
+            <a href="{{ route('cart.index') }}">
+                <i class="fas fa-shopping-bag"></i> Carrinho
+            </a>
         </div>
         <div class="mobile-auth-buttons">
             @auth
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                    <i class="fas fa-user-circle"></i> Minha Conta
+                <a href="{{ route('dashboard') }}" class="btn">
+                    <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
                 </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </button>
-                </form>
             @else
-                <a href="{{ route('login') }}" class="btn btn-secondary">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                <a href="{{ route('login') }}" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Entrar na Conta
                 </a>
             @endauth
         </div>
