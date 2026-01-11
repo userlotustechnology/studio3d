@@ -91,9 +91,6 @@
                     @else
                     <p style="color: #6b7280;">Nenhum endereço de entrega encontrado</p>
                     @endif
-                        <p style="margin: 0 0 12px 0;"><span style="color: #6b7280; font-size: 13px;">Estado:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->state }}</span></p>
-                        <p style="margin: 0;"><span style="color: #6b7280; font-size: 13px;">CEP:</span> <span style="color: #1f2937; font-weight: 600;">{{ $order->zip_code }}</span></p>
-                    </div>
                 </div>
             </div>
 

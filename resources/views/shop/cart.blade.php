@@ -122,10 +122,10 @@
                         </div>
 
                         <a href="{{ route('cart.checkout') }}" class="btn btn-primary" style="width: 100%; padding: 15px; text-align: center; display: block; margin-bottom: 10px;">
-                            <i class="fas fa-lock"></i> Ir para Checkout
+                            <i class="fas fa-lock"></i> Finalizar compra
                         </a>
                         <a href="{{ route('shop.index') }}" class="btn btn-secondary" style="width: 100%; padding: 15px; text-align: center; display: block;">
-                            Continuar Comprando
+                            Continuar comprando
                         </a>
 
                         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 13px; color: var(--text-light); text-align: center;">
