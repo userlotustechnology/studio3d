@@ -38,7 +38,7 @@
                             {{ $order->created_at->format('d/m/Y H:i') }}
                         </td>
                         <td style="padding: 16px; color: #6b7280; font-size: 14px;">
-                            {{ $order->order_items->count() }} item(ns)
+                            {{ $order->items->count() }} item(ns)
                         </td>
                         <td style="padding: 16px; color: #1f2937; font-weight: 600; font-size: 14px;">
                             R$ {{ number_format($order->total, 2, ',', '.') }}
