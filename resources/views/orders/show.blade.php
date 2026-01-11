@@ -15,23 +15,19 @@
                 <p style="color: #6b7280; font-size: 14px; margin-top: 8px;">Detalhes do pedido</p>
             </div>
             <div style="text-align: right;">
-                @switch($order->status)
-                    @case('pending')
-                        <span style="background-color: #fef3c7; color: #92400e; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">Pendente</span>
-                    @break
-                    @case('processing')
-                        <span style="background-color: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">Processando</span>
-                    @break
-                    @case('shipped')
-                        <span style="background-color: #e0e7ff; color: #3730a3; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">Enviado</span>
-                    @break
-                    @case('delivered')
-                        <span style="background-color: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">Entregue</span>
-                    @break
-                    @case('cancelled')
-                        <span style="background-color: #fee2e2; color: #7f1d1d; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">Cancelado</span>
-                    @break
-                @endswitch
+                @php
+                    $statusColors = [
+                        'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                        'processing' => ['bg' => '#dbeafe', 'text' => '#1e40af'],
+                        'shipped' => ['bg' => '#e0e7ff', 'text' => '#3730a3'],
+                        'delivered' => ['bg' => '#d1fae5', 'text' => '#065f46'],
+                        'cancelled' => ['bg' => '#fee2e2', 'text' => '#7f1d1d'],
+                    ];
+                    $colors = $statusColors[$order->status] ?? ['bg' => '#f3f4f6', 'text' => '#6b7280'];
+                @endphp
+                <span style="background-color: {{ $colors['bg'] }}; color: {{ $colors['text'] }}; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;">
+                    {{ translateOrderStatus($order->status) }}
+                </span>
             </div>
         </div>
 
@@ -200,8 +196,8 @@
                     } elseif (strlen($phone) === 10) {
                         $phone = '55' . $phone;
                     }
-                    // Monta a mensagem
-                    $message = "Olá! Informação sobre o pedido " . $order->order_number . ". Status: " . ucfirst($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
+                    // Monta a mensagem com status traduzido
+                    $message = "Olá! Informação sobre o pedido " . $order->order_number . ". Status: " . translateOrderStatus($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
                     $whatsappUrl = "https://wa.me/" . $phone . "?text=" . urlencode($message);
                 ?>
                 <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">

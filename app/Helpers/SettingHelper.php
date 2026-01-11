@@ -31,3 +31,24 @@ if (!function_exists('set_setting')) {
         return Setting::set($key, $value, $type, $description);
     }
 }
+
+if (!function_exists('translateOrderStatus')) {
+    /**
+     * Translate order status to Portuguese.
+     *
+     * @param string $status
+     * @return string
+     */
+    function translateOrderStatus(string $status): string
+    {
+        $translations = [
+            'pending' => 'Pendente',
+            'processing' => 'Processando',
+            'shipped' => 'Enviado',
+            'delivered' => 'Entregue',
+            'cancelled' => 'Cancelado',
+        ];
+
+        return $translations[$status] ?? ucfirst($status);
+    }
+}

@@ -59,7 +59,7 @@
                                 <span style="display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
                                     background-color: {{ $order->status === 'pending' ? '#fef3c7' : ($order->status === 'delivered' ? '#d1fae5' : '#e0e7ff') }};
                                     color: {{ $order->status === 'pending' ? '#92400e' : ($order->status === 'delivered' ? '#065f46' : '#3730a3') }};">
-                                    {{ ucfirst($order->status) }}
+                                    {{ translateOrderStatus($order->status) }}
                                 </span>
                             </td>
                             <td style="padding: 16px; text-align: center;">

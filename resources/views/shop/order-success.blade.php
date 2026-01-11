@@ -30,7 +30,7 @@
                     <div>
                         <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Status</div>
                         <div style="font-size: 16px; font-weight: 600; color: #f59e0b;">
-                            <i class="fas fa-clock"></i> Pendente
+                            <i class="fas fa-clock"></i> {{ translateOrderStatus($order->status) }}
                         </div>
                     </div>
                 </div>

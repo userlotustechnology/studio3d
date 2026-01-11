@@ -28,37 +28,27 @@
                     <div>
                         <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Status</div>
                         <div style="font-size: 16px; font-weight: 600;">
-                            @switch($order->status)
-                                @case('pending')
-                                    <span style="color: #f59e0b;">
-                                        <i class="fas fa-clock"></i> Pendente
-                                    </span>
-                                    @break
-                                @case('processing')
-                                    <span style="color: #3b82f6;">
-                                        <i class="fas fa-cog"></i> Processando
-                                    </span>
-                                    @break
-                                @case('shipped')
-                                    <span style="color: #8b5cf6;">
-                                        <i class="fas fa-box"></i> Enviado
-                                    </span>
-                                    @break
-                                @case('delivered')
-                                    <span style="color: #10b981;">
-                                        <i class="fas fa-check-circle"></i> Entregue
-                                    </span>
-                                    @break
-                                @case('cancelled')
-                                    <span style="color: #ef4444;">
-                                        <i class="fas fa-times-circle"></i> Cancelado
-                                    </span>
-                                    @break
-                                @default
-                                    <span style="color: var(--text-light);">
-                                        {{ ucfirst($order->status) }}
-                                    </span>
-                            @endswitch
+                            @php
+                                $statusIcons = [
+                                    'pending' => 'fa-clock',
+                                    'processing' => 'fa-cog',
+                                    'shipped' => 'fa-box',
+                                    'delivered' => 'fa-check-circle',
+                                    'cancelled' => 'fa-times-circle',
+                                ];
+                                $statusColors = [
+                                    'pending' => '#f59e0b',
+                                    'processing' => '#3b82f6',
+                                    'shipped' => '#8b5cf6',
+                                    'delivered' => '#10b981',
+                                    'cancelled' => '#ef4444',
+                                ];
+                                $icon = $statusIcons[$order->status] ?? 'fa-info-circle';
+                                $color = $statusColors[$order->status] ?? '#6b7280';
+                            @endphp
+                            <span style="color: {{ $color }};">
+                                <i class="fas {{ $icon }}"></i> {{ translateOrderStatus($order->status) }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -192,8 +182,8 @@
                     } elseif (strlen($phone) === 10) {
                         $phone = '55' . $phone;
                     }
-                    // Monta a mensagem
-                    $message = "Olá! Gostaria de informações sobre o pedido " . $order->order_number . ". Status atual: " . ucfirst($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
+                    // Monta a mensagem com status traduzido
+                    $message = "Olá! Gostaria de informações sobre o pedido " . $order->order_number . ". Status atual: " . translateOrderStatus($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
                     $whatsappUrl = "https://wa.me/" . $phone . "?text=" . urlencode($message);
                 ?>
                 <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-whatsapp" style="padding: 15px; text-align: center; display: block; background-color: #25d366; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; transition: background-color 0.3s;">
