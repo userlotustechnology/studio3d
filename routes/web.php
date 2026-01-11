@@ -18,6 +18,7 @@ Route::get('/produto/{id}', [ProductController::class, 'show'])->name('shop.show
 
 // Rotas do Carrinho
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
+Route::get('/carrinho/count', [CartController::class, 'count'])->name('cart.count');
 Route::get('/carrinho/cpf', [CartController::class, 'requestCpf'])->name('cart.request-cpf');
 Route::post('/carrinho/adicionar/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/carrinho/atualizar/{product}', [CartController::class, 'update'])->name('cart.update');

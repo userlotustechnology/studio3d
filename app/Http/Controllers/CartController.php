@@ -469,4 +469,22 @@ class CartController extends Controller
 
         return view('shop.order-details', compact('order'));
     }
+
+    /**
+     * Retorna a contagem de itens no carrinho (para o contador do header)
+     */
+    public function count()
+    {
+        $draftOrderId = session()->get('draft_order_id');
+        $count = 0;
+
+        if ($draftOrderId) {
+            $order = Order::find($draftOrderId);
+            if ($order) {
+                $count = $order->items()->count();
+            }
+        }
+
+        return response()->json(['count' => $count]);
+    }
 }

@@ -76,10 +76,6 @@
                     </p>
                 </div>
 
-                <p style="font-size: 16px; color: var(--text-light); line-height: 1.8; margin-bottom: 30px;">
-                    {{ $product->description }}
-                </p>
-
                 <div style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 20px 0; margin-bottom: 30px;">
                     <div style="display: flex; gap: 20px; align-items: center;">
                         <div>
@@ -141,12 +137,6 @@
                 <p style="font-size: 16px; color: var(--text-light); line-height: 1.8;">
                     {{ $product->description }}
                 </p>
-                <ul style="margin-top: 20px; margin-left: 20px; color: var(--text-light);">
-                    <li style="margin-bottom: 10px;">Produto de alta qualidade e durabilidade</li>
-                    <li style="margin-bottom: 10px;">Certificado e testado antes do envio</li>
-                    <li style="margin-bottom: 10px;">Embalagem segura e profissional</li>
-                    <li style="margin-bottom: 10px;">Suporte técnico disponível</li>
-                </ul>
             </div>
 
             <div id="specifications-content" class="tab-content" style="display: none;">
@@ -203,7 +193,7 @@
                                         <div class="product-price">
                                             R$ {{ number_format($related->price, 2, ',', '.') }}
                                         </div>
-                                        <button type="button" class="btn-add-cart" onclick="addToCart({{ $related->id }}, {{ json_encode($related->name) }}, {{ $related->price }}); return false;">
+                                        <button type="button" class="btn-add-cart" data-product-id="{{ $related->id }}" data-product-name="{{ $related->name }}" data-product-price="{{ $related->price }}">
                                             <i class="fas fa-shopping-cart"></i> Comprar
                                         </button>
                                     </div>

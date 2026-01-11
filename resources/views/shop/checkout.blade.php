@@ -190,11 +190,11 @@
                     <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
                         @foreach($items as $item)
                             <div style="display: flex; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
-                                <img src="{{ $item['product']->image }}" alt="{{ $item['product']->name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ $item['product']->name }}</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Qtd: {{ $item['quantity'] }}</div>
-                                    <div style="font-weight: 600; color: var(--primary-color);">R$ {{ number_format($item['total'], 2, ',', '.') }}</div>
+                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ $item->product->name }}</div>
+                                    <div style="font-size: 13px; color: var(--text-light);">Qtd: {{ $item->quantity }}</div>
+                                    <div style="font-weight: 600; color: var(--primary-color);">R$ {{ number_format($item->subtotal, 2, ',', '.') }}</div>
                                 </div>
                             </div>
                         @endforeach

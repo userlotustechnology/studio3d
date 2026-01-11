@@ -122,7 +122,7 @@
                         </div>
 
                         <a href="{{ route('cart.checkout') }}" class="btn btn-primary" style="width: 100%; padding: 15px; text-align: center; display: block; margin-bottom: 10px;">
-                            <i class="fas fa-lock"></i> Ir para Checkout
+                            <i class="fas fa-lock"></i> Finalizar Compra
                         </a>
                         <a href="{{ route('shop.index') }}" class="btn btn-secondary" style="width: 100%; padding: 15px; text-align: center; display: block;">
                             Continuar Comprando

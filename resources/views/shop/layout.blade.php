@@ -362,14 +362,11 @@
                     </a>
                 </nav>
                 <div class="auth-buttons" style="gap: 20px;">
-                    <a href="{{ route('cart.index') }}" style="position: relative; color: var(--primary-color); font-weight: 600;">
+                    <a href="{{ route('cart.index') }}" style="position: relative; color: black; font-weight: 600;">
                         <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                         <span id="cart-count" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">0</span>
                     </a>
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                            <i class="fas fa-user-circle"></i> Minha Conta
-                        </a>
                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn btn-primary">
@@ -378,9 +375,6 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn btn-primary">Cadastre-se</a>
-                        @endif
                     @endauth
                 </div>
             </div>
@@ -434,8 +428,20 @@
     <script>
         // Atualizar contador de carrinho via servidor
         function updateCartCount() {
-            // O contador agora é atualizado automaticamente pelo servidor
-            // Podemos fazer uma requisição AJAX se necessário para atualizar dinamicamente
+            fetch('/carrinho/count', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = data.count || 0;
+                }
+            })
+            .catch(error => console.error('Erro ao atualizar contador:', error));
         }
 
         // Adicionar ao carrinho via POST
@@ -476,6 +482,9 @@
                 
                 console.log('Submitting form to:', form.action);
                 form.submit();
+                
+                // Atualizar contador após adicionar
+                setTimeout(updateCartCount, 500);
             } catch (error) {
                 console.error('Erro ao adicionar ao carrinho:', error);
                 alert('Erro ao processar sua solicitação. Por favor, tente novamente.');
@@ -484,7 +493,23 @@
         }
 
         // Chamar ao carregar a página
-        document.addEventListener('DOMContentLoaded', updateCartCount);
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            
+            // Handler para botões de adicionar ao carrinho com data-attributes
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-add-cart');
+                if (btn) {
+                    e.preventDefault();
+                    const productId = btn.dataset.productId;
+                    const productName = btn.dataset.productName;
+                    const productPrice = btn.dataset.productPrice;
+                    if (productId && productName && productPrice) {
+                        addToCart(productId, productName, productPrice);
+                    }
+                }
+            });
+        });
     </script>
 
     @yield('scripts')
