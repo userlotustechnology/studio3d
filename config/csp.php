@@ -38,7 +38,10 @@ return [
             'https:',
             'blob:'
         ],
-        'connect-src' => ["'self'"],
+        'connect-src' => [
+            "'self'",
+            'https://viacep.com.br'
+        ],
         'frame-src' => ["'none'"],
         'object-src' => ["'none'"],
         'base-uri' => ["'self'"],

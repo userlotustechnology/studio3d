@@ -137,7 +137,7 @@
                     <i class="fas fa-truck"></i>
                 </div>
                 <h3>Entrega Rápida</h3>
-                <p>Receba em até 3 dias úteis</p>
+                <p>Receba em até 10 dias úteis</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">

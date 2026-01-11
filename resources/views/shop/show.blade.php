@@ -140,7 +140,7 @@
                 <div class="product-features-modern">
                     <div class="feature-item">
                         <i class="fas fa-truck"></i>
-                        <span>Entrega em até 3 dias úteis</span>
+                        <span>Entrega em até 10 dias úteis</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-shield-alt"></i>
