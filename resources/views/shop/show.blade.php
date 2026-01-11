@@ -184,7 +184,7 @@
                     @foreach($relatedProducts as $related)
                         <div class="product-card">
                             <a href="{{ route('shop.show', $related->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                                <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}" class="product-image">
+                                <img src="{{ $related->image_url }}" alt="{{ $related->name }}" class="product-image">
                                 <div class="product-info">
                                     <div class="product-category">{{ $related->category?->name ?? 'Sem categoria' }}</div>
                                     <h3 class="product-name">{{ $related->name }}</h3>
@@ -193,12 +193,14 @@
                                         <div class="product-price">
                                             R$ {{ number_format($related->price, 2, ',', '.') }}
                                         </div>
-                                        <button type="button" class="btn-add-cart" onclick="addToCart({{ $related->id }}, {{ json_encode($related->name) }}, {{ $related->price }}); return false;">
-                                            <i class="fas fa-shopping-cart"></i> Comprar
-                                        </button>
                                     </div>
                                 </div>
                             </a>
+                            <div style="padding: 0 15px 15px;">
+                                <button type="button" class="btn-add-cart" style="width: 100%;" onclick="event.stopPropagation(); addToCart({{ $related->id }}, '{{ addslashes($related->name) }}', {{ $related->price }}); return false;">
+                                    <i class="fas fa-shopping-cart"></i> Comprar
+                                </button>
+                            </div>
                         </div>
                     @endforeach
                 </div>

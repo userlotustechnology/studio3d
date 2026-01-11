@@ -42,12 +42,14 @@
                                     <div class="product-price">
                                         R$ {{ number_format($product->price, 2, ',', '.') }}
                                     </div>
-                                    <button type="button" class="btn-add-cart" data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-price="{{ $product->price }}">
-                                        <i class="fas fa-shopping-cart"></i> Comprar
-                                    </button>
                                 </div>
                             </div>
                         </a>
+                        <div style="padding: 0 15px 15px;">
+                            <button type="button" class="btn-add-cart" style="width: 100%;" onclick="event.stopPropagation(); addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}); return false;">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </div>
                     </div>
                 @endforeach
             </div>
