@@ -121,26 +121,21 @@
                     <span class="menu-title-text">FINANCEIRO</span>
                 </li>
 
-                <li class="menu-item {{ request()->routeIs('financeiro.*') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('financeiro.*') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->routeIs('admin.finance.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined menu-icon">payments</span>
                         <span class="title">Financeiro</span>
                     </a>
                     <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Dízimos
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Ofertas
-                            </a>
-                        </li>
                         @if(Auth::user()->role === 'admin')
                         <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                Relatórios
+                            <a href="{{ route('admin.finance.index') }}" class="menu-link {{ request()->routeIs('admin.finance.index') ? 'active' : '' }}">
+                                Relatório Geral
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.finance.sales') }}" class="menu-link {{ request()->routeIs('admin.finance.sales') ? 'active' : '' }}">
+                                Vendas Detalhadas
                             </a>
                         </li>
                         @endif
@@ -503,16 +498,16 @@
     <script src="{{ asset('js/menu-toggle.js') }}"></script>
     <script src="{{ asset('assets/js/quill.min.js') }}"></script>
     <script src="{{ asset('assets/js/data-table.js') }}"></script>
-    {{-- <script src="{{ asset('assets/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/js/prism.js') }}"></script>
     <script src="{{ asset('assets/js/clipboard.min.js') }}"></script>
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/js/echarts.min.js') }}"></script>
     <script src="{{ asset('assets/js/swiper-bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/fullcalendar.main.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/fullcalendar.main.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/jsvectormap.min.js') }}"></script> --}}
     {{-- <script src="{{ asset('assets/js/world-merc.js') }}"></script> --}}
-    {{-- <script src="{{ asset('assets/js/custom/apexcharts.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/custom/apexcharts.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/custom/echarts.js') }}"></script> --}}
     {{-- <script src="{{ asset('assets/js/custom/maps.js') }}"></script> --}}
     <script src="{{ asset('assets/js/custom/custom.js') }}"></script>

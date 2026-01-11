@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\FinanceController;
 use App\Models\Category;
 
 // Rotas públicas - Loja
@@ -99,5 +100,9 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'admin.categories.destroy'
             ]
         ]);
+
+        // Rotas de Financeiro
+        Route::get('/admin/financeiro', [FinanceController::class, 'index'])->name('admin.finance.index');
+        Route::get('/admin/financeiro/vendas', [FinanceController::class, 'sales'])->name('admin.finance.sales');
     });
 });
