@@ -291,14 +291,14 @@
                         @foreach($items as $item)
                             <div class="checkout-item-modern">
                                 <div class="checkout-item-image">
-                                    <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}">
+                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}">
                                 </div>
                                 <div class="checkout-item-info">
-                                    <div class="checkout-item-name">{{ $item['product']->name }}</div>
-                                    <div class="checkout-item-qty">Qtd: <strong>{{ $item['quantity'] }}</strong></div>
+                                    <div class="checkout-item-name">{{ $item->product->name }}</div>
+                                    <div class="checkout-item-qty">Qtd: <strong>{{ $item->quantity }}</strong></div>
                                 </div>
                                 <div class="checkout-item-price">
-                                    R$ {{ number_format($item['total'], 2, ',', '.') }}
+                                    R$ {{ number_format($item->subtotal, 2, ',', '.') }}
                                 </div>
                             </div>
                         @endforeach
@@ -399,6 +399,10 @@
             font-size: 16px;
             color: #667eea;
             text-align: right;
+            white-space: nowrap;
+            padding-left: 10px;
+            min-width: 90px;
+            flex-shrink: 0;
         }
 
         /* Checkout Page Responsive Styles */
@@ -461,6 +465,7 @@
 
             .checkout-item-price {
                 font-size: 14px;
+                min-width: 80px;
             }
         }
         
@@ -514,6 +519,7 @@
 
             .checkout-item-price {
                 font-size: 13px;
+                min-width: 70px;
             }
         }
     </style>
