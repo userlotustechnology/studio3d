@@ -98,6 +98,10 @@ class CartController extends Controller
             session()->put('draft_order_id', $order->id);
         } else {
             $order = Order::find($order);
+            if (!$order) {
+                session()->forget('draft_order_id');
+                return redirect()->route('cart.index')->with('error', 'Carrinho inválido. Por favor, comece novamente.');
+            }
         }
 
         // Verificar se o produto já está no pedido
