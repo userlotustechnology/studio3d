@@ -237,14 +237,18 @@
                 <div class="checkout-summary" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 100px;">
                     <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Resumo do Pedido</h2>
 
-                    <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+                    <div class="checkout-items-list">
                         @foreach($items as $item)
-                            <div style="display: flex; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
-                                <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ $item['product']->name }}</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Qtd: {{ $item['quantity'] }}</div>
-                                    <div style="font-weight: 600; color: var(--primary-color);">R$ {{ number_format($item['total'], 2, ',', '.') }}</div>
+                            <div class="checkout-item-modern">
+                                <div class="checkout-item-image">
+                                    <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}">
+                                </div>
+                                <div class="checkout-item-info">
+                                    <div class="checkout-item-name">{{ $item['product']->name }}</div>
+                                    <div class="checkout-item-qty">Qtd: <strong>{{ $item['quantity'] }}</strong></div>
+                                </div>
+                                <div class="checkout-item-price">
+                                    R$ {{ number_format($item['total'], 2, ',', '.') }}
                                 </div>
                             </div>
                         @endforeach
@@ -327,6 +331,72 @@
     </script>
 
     <style>
+        /* Checkout Items List */
+        .checkout-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0;
+        }
+
+        .checkout-item-modern {
+            display: grid;
+            grid-template-columns: 70px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-item-modern:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .checkout-item-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .checkout-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .checkout-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .checkout-item-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1f2937;
+            line-height: 1.3;
+        }
+
+        .checkout-item-qty {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .checkout-item-price {
+            font-weight: 800;
+            font-size: 16px;
+            color: #667eea;
+            text-align: right;
+        }
+
         /* Checkout Page Responsive Styles */
         @media (max-width: 992px) {
             .checkout-layout {
@@ -373,6 +443,25 @@
             .payment-methods label {
                 padding: 12px !important;
             }
+
+            .checkout-item-modern {
+                grid-template-columns: 60px 1fr auto;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .checkout-item-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .checkout-item-name {
+                font-size: 13px;
+            }
+
+            .checkout-item-price {
+                font-size: 14px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -403,6 +492,29 @@
             
             .checkout-summary {
                 padding: 15px !important;
+            }
+
+            .checkout-item-modern {
+                grid-template-columns: 55px 1fr auto;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .checkout-item-image {
+                width: 55px;
+                height: 55px;
+            }
+
+            .checkout-item-name {
+                font-size: 12px;
+            }
+
+            .checkout-item-qty {
+                font-size: 11px;
+            }
+
+            .checkout-item-price {
+                font-size: 13px;
             }
         }
     </style>
