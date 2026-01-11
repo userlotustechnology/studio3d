@@ -580,20 +580,28 @@
                     cepCheck.style.display = 'inline';
                     cepError.style.display = 'none';
 
-                    // Se houver endereço de entrega visível, preencher também
+                    // Verificar se há endereço de entrega diferente
+                    const isDifferentAddress = document.getElementById('different_address_toggle')?.checked;
                     const shippingSection = document.getElementById('shipping_address_section');
-                    if (shippingSection.style.display !== 'none') {
+                    
+                    if (isDifferentAddress && shippingSection.style.display !== 'none') {
+                        // Há endereço de entrega diferente
                         const shippingStreet = document.querySelector('input[name="shipping_street"]');
                         const shippingNeighborhood = document.querySelector('input[name="shipping_neighborhood"]');
                         const shippingCity = document.querySelector('input[name="shipping_city"]');
                         const shippingState = document.querySelector('input[name="shipping_state"]');
 
-                        if (shippingStreet && !shippingStreet.value) {
+                        // Se os campos de entrega estão vazios, preencher com dados do CEP de cobrança
+                        if (!shippingStreet.value) {
                             shippingStreet.value = data.logradouro;
                             shippingNeighborhood.value = data.bairro;
                             shippingCity.value = data.localidade;
                             shippingState.value = data.uf;
                         }
+                        // NÃO calcular frete aqui - esperar pelo CEP de entrega
+                    } else {
+                        // Não há endereço de entrega diferente, então calcular frete com CEP de cobrança
+                        calculateShippingCost(cep);
                     }
                 })
                 .catch(error => {
@@ -657,13 +665,14 @@
                     document.querySelector('input[name="shipping_city"]').value = data.localidade;
                     document.querySelector('input[name="shipping_state"]').value = data.uf;
 
-                    // Calcular frete baseado no CEP
-                    calculateShippingCost(cep);
-
                     // Mostrar campos de endereço de entrega
                     shippingAddressFields.style.display = 'block';
                     shippingCepCheck.style.display = 'inline';
                     shippingCepError.style.display = 'none';
+
+                    // SEMPRE calcular frete baseado no CEP de entrega
+                    // Isso sobrescreve qualquer cálculo anterior com CEP de cobrança
+                    calculateShippingCost(cep);
                 })
                 .catch(error => {
                     console.error('Erro ao consultar CEP de entrega:', error);
@@ -676,6 +685,13 @@
 
         // Função para calcular frete baseado no CEP
         function calculateShippingCost(cep) {
+            // Validar se o CEP foi fornecido e tem 8 dígitos
+            if (!cep || cep.replace(/\D/g, '').length !== 8) {
+                console.error('CEP inválido para cálculo de frete');
+                return;
+            }
+
+            // Fazer requisição para calcular frete
             fetch('{{ route("cart.calculate-shipping") }}', {
                 method: 'POST',
                 headers: {
@@ -742,10 +758,22 @@
                     shippingAddressSection.style.display = 'block';
                     // Tornar os inputs obrigatórios
                     shippingInputs.forEach(input => input.required = true);
+                    
+                    // Se o CEP de entrega estiver preenchido, recalcular frete
+                    const shippingCep = document.getElementById('shipping_postal_code')?.value?.replace(/\D/g, '');
+                    if (shippingCep && shippingCep.length === 8) {
+                        calculateShippingCost(shippingCep);
+                    }
                 } else {
                     shippingAddressSection.style.display = 'none';
                     // Remover obrigatoriedade quando desabilitado
                     shippingInputs.forEach(input => input.required = false);
+                    
+                    // Usar CEP de cobrança para frete
+                    const billingCep = document.getElementById('billing_postal_code')?.value?.replace(/\D/g, '');
+                    if (billingCep && billingCep.length === 8) {
+                        calculateShippingCost(billingCep);
+                    }
                 }
             });
         }

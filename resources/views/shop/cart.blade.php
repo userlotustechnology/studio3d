@@ -126,19 +126,40 @@
                     <div class="cart-summary-modern" style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 100px;">
                         <h2 style="font-size: 22px; margin-bottom: 30px; color: var(--text-dark); font-weight: 700;">Resumo do Pedido</h2>
 
+                        <!-- CEP Input Section -->
+                        <div style="margin-bottom: 30px; padding-bottom: 30px; border-bottom: 2px solid #e5e7eb;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #1f2937; font-size: 14px;">
+                                <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #667eea;"></i>CEP para Cálculo de Frete
+                            </label>
+                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: flex-end;">
+                                <input type="text" id="cep-input" placeholder="Digite seu CEP" maxlength="9" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;" value="{{ session('cep') ?? '' }}">
+                                <button type="button" id="calc-shipping-btn" onclick="calculateShippingCost()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; white-space: nowrap;">
+                                    <i class="fas fa-calculator"></i> Calcular
+                                </button>
+                            </div>
+                            <div id="cep-error" style="display: none; color: #ef4444; font-size: 14px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span id="cep-error-text"></span>
+                            </div>
+                            <div id="cep-loading" style="display: none; color: #667eea; font-size: 14px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Calculando frete...</span>
+                            </div>
+                        </div>
+
                         <div style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                                 <span style="color: #6b7280; font-weight: 500;">Subtotal</span>
-                                <span style="font-weight: 700; color: #1f2937;">R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
+                                <span style="font-weight: 700; color: #1f2937;">R$ <span id="subtotal-amount">{{ number_format($subtotal, 2, ',', '.') }}</span></span>
                             </div>
                             <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
                                 <span style="color: #6b7280; font-weight: 500;">Frete</span>
-                                <span style="font-weight: 700; color: #1f2937;">R$ {{ number_format($shippingCost, 2, ',', '.') }}</span>
+                                <span style="font-weight: 700; color: #667eea;">R$ <span id="shipping-amount">{{ number_format($shippingCost, 2, ',', '.') }}</span></span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px;">
                                 <span style="font-size: 18px; font-weight: 700; color: #1f2937;">Total</span>
                                 <span style="font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                    R$ {{ number_format($total, 2, ',', '.') }}
+                                    R$ <span id="total-amount">{{ number_format($total, 2, ',', '.') }}</span>
                                 </span>
                             </div>
                         </div>
@@ -446,6 +467,10 @@
     </style>
 
     <script>
+        // Variáveis globais
+        const subtotalAmount = {{ $subtotal }};
+        let currentShippingCost = {{ $shippingCost }};
+
         // Funções para incrementar/decrementar quantidade
         function incrementQuantity(btn) {
             const input = btn.parentElement.querySelector('.qty-input-modern');
@@ -474,6 +499,93 @@
                 }
                 submitForm(this.parentElement);
             });
+        });
+
+        // Função para calcular frete
+        async function calculateShippingCost() {
+            const cepInput = document.getElementById('cep-input');
+            const cep = cepInput.value.replace(/\D/g, '');
+            const errorDiv = document.getElementById('cep-error');
+            const loadingDiv = document.getElementById('cep-loading');
+            const errorText = document.getElementById('cep-error-text');
+
+            // Validar CEP
+            if (!cep || cep.length !== 8) {
+                errorDiv.style.display = 'flex';
+                errorText.textContent = 'Digite um CEP válido com 8 dígitos';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'flex';
+
+            try {
+                // Chamar API de cálculo de frete
+                const response = await fetch('{{ route("cart.calculate-shipping") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({
+                        cep: cep,
+                        isShippingAddress: true
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erro ao calcular frete');
+                }
+
+                // Atualizar valores na tela
+                currentShippingCost = data.shippingCost;
+                
+                // Formatar valores para exibição
+                const shippingFormatted = new Intl.NumberFormat('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(currentShippingCost);
+
+                const total = subtotalAmount + currentShippingCost;
+                const totalFormatted = new Intl.NumberFormat('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(total);
+
+                // Atualizar elementos na tela
+                document.getElementById('shipping-amount').textContent = shippingFormatted;
+                document.getElementById('total-amount').textContent = totalFormatted;
+
+                // Formatar CEP para exibição (XXXXX-XXX)
+                cepInput.value = cep.substring(0, 5) + '-' + cep.substring(5);
+
+                loadingDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.style.display = 'flex';
+                errorText.textContent = error.message || 'Erro ao calcular frete';
+                console.error('Erro ao calcular frete:', error);
+            }
+        }
+
+        // Permitir cálculo ao pressionar Enter no campo CEP
+        document.getElementById('cep-input')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateShippingCost();
+            }
+        });
+
+        // Formatar CEP enquanto digita
+        document.getElementById('cep-input')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            e.target.value = value;
         });
     </script>
 @endsection
