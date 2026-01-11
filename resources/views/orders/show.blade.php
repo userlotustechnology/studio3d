@@ -57,7 +57,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($order->order_items as $item)
+                            @forelse($order->items as $item)
                             <tr style="border-bottom: 1px solid #e5e7eb;">
                                 <td style="padding: 16px;">
                                     <p style="color: #1f2937; font-weight: 600; margin: 0; font-size: 14px;">{{ $item->product_name }}</p>
@@ -72,7 +72,13 @@
                                     R$ {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="4" style="padding: 40px; text-align: center; color: #6b7280;">
+                                    Nenhum item encontrado
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

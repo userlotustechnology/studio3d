@@ -88,9 +88,9 @@
                 @else
                     <div style="background-color: var(--bg-light); padding: 60px 20px; text-align: center; border-radius: 8px;">
                         <i class="fas fa-shopping-cart" style="font-size: 48px; color: var(--border-color); margin-bottom: 20px;"></i>
-                        <h2 style="color: var(--text-dark); margin-bottom: 10px;">Carrinho Vazio</h2>
+                        <h2 style="color: var(--text-dark); margin-bottom: 10px;">Carrinho vazio</h2>
                         <p style="color: var(--text-light); margin-bottom: 20px;">Você ainda não adicionou nenhum produto ao carrinho.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary">Continuar Comprando</a>
+                        <a href="{{ route('shop.index') }}" class="btn btn-primary">Continuar comprando</a>
                     </div>
                 @endif
             </div>

@@ -146,10 +146,10 @@
             <!-- Action Buttons -->
             <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <a href="{{ route('shop.index') }}" class="btn btn-primary" style="padding: 15px; text-align: center; display: block;">
-                    <i class="fas fa-shopping-bag"></i> Continuar Comprando
+                    <i class="fas fa-shopping-bag"></i> Continuar comprando
                 </a>
                 <a href="{{ route('shop.index') }}" class="btn btn-secondary" style="padding: 15px; text-align: center; display: block;">
-                    <i class="fas fa-home"></i> Voltar à Página Inicial
+                    <i class="fas fa-home"></i> Voltar à página inicial
                 </a>
             </div>
         </div>
