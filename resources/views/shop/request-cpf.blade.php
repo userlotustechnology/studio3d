@@ -3,8 +3,8 @@
 @section('title', 'Informe seu CPF')
 
 @section('content')
-    <div class="container" style="padding: 60px 20px; max-width: 500px; margin: 0 auto;">
-        <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div class="container cpf-container" style="padding: 60px 20px; max-width: 500px; margin: 0 auto;">
+        <div class="cpf-card" style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 30px;">
                 <i class="fas fa-id-card" style="font-size: 48px; color: var(--primary-color); margin-bottom: 20px;"></i>
                 <h1 style="font-size: 28px; color: var(--text-dark); margin-bottom: 10px;">Informe seu CPF</h1>
@@ -128,6 +128,39 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* CPF Page Responsive Styles */
+        @media (max-width: 768px) {
+            .cpf-container {
+                padding: 40px 15px !important;
+            }
+            
+            .cpf-card {
+                padding: 25px !important;
+            }
+            
+            .cpf-card h1 {
+                font-size: 24px !important;
+            }
+            
+            .cpf-card i.fa-id-card {
+                font-size: 40px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cpf-container {
+                padding: 30px 12px !important;
+            }
+            
+            .cpf-card {
+                padding: 20px !important;
+            }
+            
+            .cpf-card h1 {
+                font-size: 22px !important;
+            }
         }
     </style>
 @endsection

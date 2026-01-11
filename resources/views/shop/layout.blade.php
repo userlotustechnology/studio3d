@@ -322,23 +322,432 @@
                 color: var(--text-light);
             }
 
-            /* Responsive */
-            @media (max-width: 768px) {
+            /* Mobile Menu Toggle */
+            .mobile-menu-toggle {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: var(--text-dark);
+                padding: 10px;
+            }
+
+            .mobile-cart-btn {
+                display: none;
+            }
+
+            .mobile-menu-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+            }
+
+            .mobile-menu-overlay.active {
+                display: block;
+            }
+
+            .mobile-menu {
+                display: none;
+                position: fixed;
+                top: 0;
+                right: -300px;
+                width: 300px;
+                height: 100%;
+                background-color: white;
+                z-index: 999;
+                transition: right 0.3s ease;
+                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+                overflow-y: auto;
+            }
+
+            .mobile-menu.active {
+                right: 0;
+            }
+
+            .mobile-menu-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .mobile-menu-close {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: var(--text-dark);
+            }
+
+            .mobile-menu-links {
+                padding: 20px;
+            }
+
+            .mobile-menu-links a {
+                display: block;
+                padding: 15px 0;
+                border-bottom: 1px solid var(--border-color);
+                color: var(--text-dark);
+                font-weight: 500;
+                font-size: 16px;
+            }
+
+            .mobile-menu-links a:hover {
+                color: var(--primary-color);
+            }
+
+            .mobile-menu-links a i {
+                width: 25px;
+                margin-right: 10px;
+            }
+
+            .mobile-auth-buttons {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .mobile-auth-buttons .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* Responsive - Desktop Large */
+            @media (max-width: 1200px) {
+                .container {
+                    padding: 0 15px;
+                }
+            }
+
+            /* Responsive - Tablet */
+            @media (max-width: 992px) {
+                .hero {
+                    padding: 60px 20px;
+                }
+
                 .hero h1 {
-                    font-size: 32px;
+                    font-size: 36px;
                 }
 
                 .hero p {
-                    font-size: 16px;
+                    font-size: 18px;
                 }
 
                 .products-grid {
-                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                    gap: 20px;
+                    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                    gap: 25px;
+                }
+
+                .footer-content {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            /* Responsive - Mobile Landscape / Small Tablet */
+            @media (max-width: 768px) {
+                .mobile-menu-toggle {
+                    display: block;
+                }
+
+                .mobile-cart-btn {
+                    display: block !important;
+                }
+
+                .mobile-menu {
+                    display: block;
                 }
 
                 .nav-links {
                     display: none;
+                }
+
+                .auth-buttons {
+                    display: none !important;
+                }
+
+                .header-content {
+                    padding: 15px 0;
+                }
+
+                .logo {
+                    font-size: 22px;
+                }
+
+                .hero {
+                    padding: 50px 20px;
+                    margin-bottom: 40px;
+                }
+
+                .hero h1 {
+                    font-size: 28px;
+                    margin-bottom: 15px;
+                }
+
+                .hero p {
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                }
+
+                .categories {
+                    gap: 10px;
+                    margin-bottom: 30px;
+                    padding-bottom: 10px;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .category-btn {
+                    padding: 8px 16px;
+                    font-size: 14px;
+                }
+
+                .products-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                    gap: 15px;
+                    margin-bottom: 40px;
+                }
+
+                .product-card {
+                    border-radius: 8px;
+                }
+
+                .product-image {
+                    height: 180px;
+                }
+
+                .product-info {
+                    padding: 15px;
+                }
+
+                .product-category {
+                    font-size: 11px;
+                }
+
+                .product-name {
+                    font-size: 15px;
+                    margin-bottom: 6px;
+                }
+
+                .product-description {
+                    font-size: 13px;
+                    margin-bottom: 12px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .product-footer {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .product-price {
+                    font-size: 20px;
+                }
+
+                .btn-add-cart {
+                    width: 100%;
+                    padding: 10px;
+                    font-size: 13px;
+                }
+
+                footer {
+                    padding: 30px 15px;
+                    margin-top: 50px;
+                }
+
+                .footer-content {
+                    grid-template-columns: 1fr;
+                    gap: 25px;
+                }
+
+                .footer-section h3 {
+                    font-size: 15px;
+                }
+
+                .footer-bottom {
+                    font-size: 13px;
+                }
+
+                .empty-state {
+                    padding: 40px 15px;
+                }
+
+                .empty-state i {
+                    font-size: 36px;
+                }
+
+                .empty-state h2 {
+                    font-size: 20px;
+                }
+            }
+
+            /* Responsive - Mobile Portrait */
+            @media (max-width: 480px) {
+                .container {
+                    padding: 0 12px;
+                }
+
+                .header-content {
+                    padding: 12px 0;
+                }
+
+                .logo {
+                    font-size: 18px;
+                    gap: 6px;
+                }
+
+                .logo i {
+                    font-size: 20px;
+                }
+
+                .hero {
+                    padding: 40px 15px;
+                    margin-bottom: 30px;
+                }
+
+                .hero h1 {
+                    font-size: 24px;
+                    line-height: 1.3;
+                }
+
+                .hero p {
+                    font-size: 14px;
+                }
+
+                .categories {
+                    margin-left: -12px;
+                    margin-right: -12px;
+                    padding-left: 12px;
+                    padding-right: 12px;
+                }
+
+                .category-btn {
+                    padding: 8px 14px;
+                    font-size: 13px;
+                    border-radius: 20px;
+                }
+
+                .products-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                }
+
+                .product-image {
+                    height: 150px;
+                }
+
+                .product-info {
+                    padding: 12px;
+                }
+
+                .product-name {
+                    font-size: 14px;
+                }
+
+                .product-description {
+                    font-size: 12px;
+                    -webkit-line-clamp: 2;
+                }
+
+                .product-price {
+                    font-size: 18px;
+                }
+
+                .btn-add-cart {
+                    padding: 8px;
+                    font-size: 12px;
+                }
+
+                .btn-add-cart i {
+                    display: none;
+                }
+
+                .btn {
+                    padding: 10px 16px;
+                    font-size: 13px;
+                }
+
+                footer {
+                    padding: 25px 12px;
+                    margin-top: 40px;
+                }
+
+                .footer-section {
+                    text-align: center;
+                }
+
+                .footer-section ul {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 10px;
+                }
+
+                .footer-section ul li {
+                    margin-bottom: 5px;
+                }
+            }
+
+            /* Responsive - Extra Small Mobile */
+            @media (max-width: 360px) {
+                .logo {
+                    font-size: 16px;
+                }
+
+                .hero h1 {
+                    font-size: 22px;
+                }
+
+                .products-grid {
+                    gap: 10px;
+                }
+
+                .product-info {
+                    padding: 10px;
+                }
+
+                .product-price {
+                    font-size: 16px;
+                }
+            }
+
+            /* Touch-friendly styles for mobile */
+            @media (hover: none) and (pointer: coarse) {
+                .product-card:hover {
+                    transform: none;
+                }
+
+                .btn:hover,
+                .btn-add-cart:hover,
+                .category-btn:hover {
+                    opacity: 0.9;
+                }
+            }
+
+            /* Landscape orientation adjustments */
+            @media (max-height: 500px) and (orientation: landscape) {
+                .hero {
+                    padding: 30px 20px;
+                    margin-bottom: 30px;
+                }
+
+                .hero h1 {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
+
+                .hero p {
+                    font-size: 14px;
                 }
             }
         </style>
@@ -362,11 +771,14 @@
                     </a>
                 </nav>
                 <div class="auth-buttons" style="gap: 20px;">
-                    <a href="{{ route('cart.index') }}" style="position: relative; color: black; font-weight: 600;">
+                    <a href="{{ route('cart.index') }}" style="position: relative; color: var(--primary-color); font-weight: 600;">
                         <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>
                         <span id="cart-count" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">0</span>
                     </a>
                     @auth
+                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-user-circle"></i> Minha Conta
+                        </a>
                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn btn-primary">
@@ -375,11 +787,67 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn btn-primary">Cadastre-se</a>
+                        @endif
                     @endauth
+                </div>
+
+                <!-- Mobile Cart and Menu Toggle -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="{{ route('cart.index') }}" class="mobile-cart-btn" style="position: relative; color: var(--primary-color); font-weight: 600; display: none;">
+                        <i class="fas fa-shopping-cart" style="font-size: 22px;"></i>
+                        <span id="cart-count-mobile" style="position: absolute; top: -8px; right: -8px; background-color: var(--secondary-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">0</span>
+                    </a>
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Mobile Menu -->
+    <nav class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span style="font-weight: 600; font-size: 18px; color: var(--text-dark);">Menu</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Fechar menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="{{ route('shop.index') }}"><i class="fas fa-home"></i> Produtos</a>
+            <a href="#about"><i class="fas fa-info-circle"></i> Sobre</a>
+            <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+            <a href="{{ route('orders.search-form') }}"><i class="fas fa-search"></i> Consultar Pedido</a>
+            <a href="{{ route('cart.index') }}"><i class="fas fa-shopping-cart"></i> Carrinho</a>
+        </div>
+        <div class="mobile-auth-buttons">
+            @auth
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-user-circle"></i> Minha Conta
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Cadastre-se
+                    </a>
+                @endif
+            @endauth
+        </div>
+    </nav>
 
     <!-- Main Content -->
     <main>
@@ -426,22 +894,34 @@
     </footer>
 
     <script>
+        // Mobile Menu Functions
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.querySelector('.mobile-menu-overlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.querySelector('.mobile-menu-overlay');
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
         // Atualizar contador de carrinho via servidor
         function updateCartCount() {
-            fetch('/carrinho/count', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const cartCountElement = document.getElementById('cart-count');
-                if (cartCountElement) {
-                    cartCountElement.textContent = data.count || 0;
-                }
-            })
-            .catch(error => console.error('Erro ao atualizar contador:', error));
+            // O contador agora é atualizado automaticamente pelo servidor
+            // Podemos fazer uma requisição AJAX se necessário para atualizar dinamicamente
         }
 
         // Adicionar ao carrinho via POST
@@ -482,9 +962,6 @@
                 
                 console.log('Submitting form to:', form.action);
                 form.submit();
-                
-                // Atualizar contador após adicionar
-                setTimeout(updateCartCount, 500);
             } catch (error) {
                 console.error('Erro ao adicionar ao carrinho:', error);
                 alert('Erro ao processar sua solicitação. Por favor, tente novamente.');
@@ -493,23 +970,7 @@
         }
 
         // Chamar ao carregar a página
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-            
-            // Handler para botões de adicionar ao carrinho com data-attributes
-            document.addEventListener('click', function(e) {
-                const btn = e.target.closest('.btn-add-cart');
-                if (btn) {
-                    e.preventDefault();
-                    const productId = btn.dataset.productId;
-                    const productName = btn.dataset.productName;
-                    const productPrice = btn.dataset.productPrice;
-                    if (productId && productName && productPrice) {
-                        addToCart(productId, productName, productPrice);
-                    }
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', updateCartCount);
     </script>
 
     @yield('scripts')

@@ -3,16 +3,16 @@
 @section('title', 'Consultar Pedido')
 
 @section('content')
-    <div class="container" style="padding: 60px 20px;">
-        <div style="max-width: 500px; margin: 0 auto;">
+    <div class="container order-search-container" style="padding: 60px 20px;">
+        <div class="order-search-content" style="max-width: 500px; margin: 0 auto;">
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 40px;">
-                <h1 style="font-size: 32px; color: var(--text-dark); margin-bottom: 15px;">Consultar Pedido</h1>
+                <h1 class="search-title" style="font-size: 32px; color: var(--text-dark); margin-bottom: 15px;">Consultar Pedido</h1>
                 <p style="font-size: 16px; color: var(--text-light);">Digite seu CPF e o ID do pedido para rastrear sua compra</p>
             </div>
 
             <!-- Search Form -->
-            <div style="background-color: white; border-radius: 8px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div class="search-card" style="background-color: white; border-radius: 8px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 @if($errors->any())
                     <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 25px; border-radius: 4px; color: #7f1d1d;">
                         <div style="font-weight: 700; margin-bottom: 10px;">
@@ -88,7 +88,7 @@
             </div>
 
             <!-- Help Section -->
-            <div style="background-color: #eff6ff; border-left: 4px solid var(--primary-color); padding: 20px; border-radius: 4px; margin-top: 30px;">
+            <div class="help-section" style="background-color: #eff6ff; border-left: 4px solid var(--primary-color); padding: 20px; border-radius: 4px; margin-top: 30px;">
                 <h3 style="font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">
                     <i class="fas fa-lightbulb"></i> Dúvidas?
                 </h3>
@@ -100,6 +100,46 @@
             </div>
         </div>
     </div>
+
+    <style>
+        /* Order Search Page Responsive Styles */
+        @media (max-width: 768px) {
+            .order-search-container {
+                padding: 40px 15px !important;
+            }
+            
+            .search-title {
+                font-size: 26px !important;
+            }
+            
+            .search-card {
+                padding: 25px !important;
+            }
+            
+            .help-section {
+                padding: 15px !important;
+            }
+            
+            .help-section ul {
+                margin-left: 15px !important;
+                font-size: 13px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-title {
+                font-size: 22px !important;
+            }
+            
+            .search-card {
+                padding: 20px !important;
+            }
+            
+            .search-card input {
+                font-size: 16px !important;
+            }
+        }
+    </style>
 
     <script>
         // Mascarar CPF em tempo real

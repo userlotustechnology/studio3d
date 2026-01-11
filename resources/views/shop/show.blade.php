@@ -4,7 +4,7 @@
 
 @section('content')
     <!-- Breadcrumb -->
-    <div class="container" style="padding: 30px 0; border-bottom: 1px solid var(--border-color);">
+    <div class="container breadcrumb-container" style="padding: 30px 0; border-bottom: 1px solid var(--border-color);">
         <nav style="font-size: 14px; color: var(--text-light);">
             <a href="{{ route('shop.index') }}" style="color: var(--primary-color);">Produtos</a>
             <span> / </span>
@@ -20,33 +20,23 @@
 
     <!-- Product Details -->
     <div class="container" style="padding: 60px 20px;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
+        <div class="product-detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 60px;">
             <!-- Product Image -->
-            <div>
-                <div style="margin-bottom:12px;">
-                    <img id="main-product-image" src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
-                </div>
-
-                @if($product->images->count() > 0)
-                <div style="display:flex; gap:8px; margin-top:12px;">
-                    @foreach($product->images as $img)
-                        <img src="{{ $img->image_url }}" alt="{{ $product->name }}" style="width:80px; height:80px; object-fit: cover; border-radius:6px; cursor:pointer;" onclick="document.getElementById('main-product-image').src='{{ $img->image_url }}'">
-                    @endforeach
-                </div>
-                @endif
+            <div class="product-image-container">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
             </div>
 
             <!-- Product Information -->
-            <div>
+            <div class="product-detail-info">
                 <div class="product-category" style="margin-bottom: 15px;">{{ $product->category?->name ?? 'Sem categoria' }}</div>
                 
-                <h1 style="font-size: 36px; margin-bottom: 20px; color: var(--text-dark);">{{ $product->name }}</h1>
+                <h1 class="product-detail-title" style="font-size: 36px; margin-bottom: 20px; color: var(--text-dark);">{{ $product->name }}</h1>
                 
-                <div style="font-size: 48px; font-weight: 700; color: var(--primary-color); margin-bottom: 30px;">
+                <div class="product-detail-price" style="font-size: 48px; font-weight: 700; color: var(--primary-color); margin-bottom: 30px;">
                     R$ {{ number_format($product->price, 2, ',', '.') }}
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; font-size: 14px;">
+                <div class="product-meta-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; font-size: 14px;">
                     @if($product->sku)
                     <div>
                         <span style="color: var(--text-light);">SKU:</span>
@@ -76,6 +66,10 @@
                     </p>
                 </div>
 
+                <p style="font-size: 16px; color: var(--text-light); line-height: 1.8; margin-bottom: 30px;">
+                    {{ $product->description }}
+                </p>
+
                 <div style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 20px 0; margin-bottom: 30px;">
                     <div style="display: flex; gap: 20px; align-items: center;">
                         <div>
@@ -89,7 +83,7 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                <div class="product-action-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
                     <button class="btn btn-primary" onclick="addToCartWithQuantity({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})" style="width: 100%; padding: 15px; font-size: 16px;">
                         <i class="fas fa-shopping-cart"></i> Adicionar ao Carrinho
                     </button>
@@ -98,11 +92,11 @@
                     </button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 20px;">
+                <div class="product-features-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 20px;">
                     <div style="text-align: center;">
                         <i class="fas fa-truck" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
                         <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Frete Rápido</h4>
-                        <p style="font-size: 12px; color: var(--text-light);">Entrega em até 10 dias úteis</p>
+                        <p style="font-size: 12px; color: var(--text-light);">Entrega em 2-3 dias</p>
                     </div>
                     <div style="text-align: center;">
                         <i class="fas fa-shield-alt" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
@@ -137,6 +131,12 @@
                 <p style="font-size: 16px; color: var(--text-light); line-height: 1.8;">
                     {{ $product->description }}
                 </p>
+                <ul style="margin-top: 20px; margin-left: 20px; color: var(--text-light);">
+                    <li style="margin-bottom: 10px;">Produto de alta qualidade e durabilidade</li>
+                    <li style="margin-bottom: 10px;">Certificado e testado antes do envio</li>
+                    <li style="margin-bottom: 10px;">Embalagem segura e profissional</li>
+                    <li style="margin-bottom: 10px;">Suporte técnico disponível</li>
+                </ul>
             </div>
 
             <div id="specifications-content" class="tab-content" style="display: none;">
@@ -184,7 +184,7 @@
                     @foreach($relatedProducts as $related)
                         <div class="product-card">
                             <a href="{{ route('shop.show', $related->id) }}" style="display: block; text-decoration: none; color: inherit;">
-                                <img src="{{ $related->image_url }}" alt="{{ $related->name }}" class="product-image">
+                                <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}" class="product-image">
                                 <div class="product-info">
                                     <div class="product-category">{{ $related->category?->name ?? 'Sem categoria' }}</div>
                                     <h3 class="product-name">{{ $related->name }}</h3>
@@ -193,7 +193,7 @@
                                         <div class="product-price">
                                             R$ {{ number_format($related->price, 2, ',', '.') }}
                                         </div>
-                                        <button type="button" class="btn-add-cart" data-product-id="{{ $related->id }}" data-product-name="{{ $related->name }}" data-product-price="{{ $related->price }}">
+                                        <button type="button" class="btn-add-cart" onclick="addToCart({{ $related->id }}, {{ json_encode($related->name) }}, {{ $related->price }}); return false;">
                                             <i class="fas fa-shopping-cart"></i> Comprar
                                         </button>
                                     </div>
@@ -269,4 +269,112 @@
             event.target.style.borderBottomColor = 'var(--primary-color)';
         }
     </script>
+
+    <style>
+        /* Product Detail Page Responsive Styles */
+        @media (max-width: 992px) {
+            .product-detail-grid {
+                gap: 30px !important;
+            }
+            
+            .product-detail-title {
+                font-size: 28px !important;
+            }
+            
+            .product-detail-price {
+                font-size: 36px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .breadcrumb-container {
+                padding: 20px 0 !important;
+            }
+            
+            .breadcrumb-container nav {
+                font-size: 12px !important;
+            }
+            
+            .product-detail-grid {
+                grid-template-columns: 1fr !important;
+                gap: 25px !important;
+            }
+            
+            .product-image-container img {
+                max-height: 350px !important;
+            }
+            
+            .product-detail-title {
+                font-size: 24px !important;
+            }
+            
+            .product-detail-price {
+                font-size: 32px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            .product-meta-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .product-action-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .product-action-grid button {
+                padding: 12px !important;
+                font-size: 14px !important;
+            }
+            
+            .product-features-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .product-features-grid > div {
+                display: flex !important;
+                align-items: center !important;
+                gap: 15px !important;
+                text-align: left !important;
+                padding: 15px !important;
+                background: var(--bg-light);
+                border-radius: 8px;
+            }
+            
+            .product-features-grid > div i {
+                font-size: 24px !important;
+                margin-bottom: 0 !important;
+            }
+            
+            .tab-button {
+                padding: 12px 15px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 15px !important;
+            }
+            
+            .product-image-container img {
+                max-height: 280px !important;
+            }
+            
+            .product-detail-title {
+                font-size: 20px !important;
+            }
+            
+            .product-detail-price {
+                font-size: 28px !important;
+            }
+            
+            .tab-button {
+                padding: 10px 12px !important;
+                font-size: 13px !important;
+            }
+        }
+    </style>
 @endsection

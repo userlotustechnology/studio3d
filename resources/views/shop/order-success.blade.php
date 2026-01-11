@@ -3,26 +3,26 @@
 @section('title', 'Pedido Confirmado')
 
 @section('content')
-    <div class="container" style="padding: 60px 20px;">
-        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <div class="container order-success-container" style="padding: 60px 20px;">
+        <div class="order-success-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
             <!-- Success Icon -->
             <div style="margin-bottom: 30px;">
-                <div style="width: 80px; height: 80px; margin: 0 auto 20px; background-color: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <div class="success-icon" style="width: 80px; height: 80px; margin: 0 auto 20px; background-color: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-check-circle" style="font-size: 48px; color: #10b981;"></i>
                 </div>
             </div>
 
-            <h1 style="font-size: 36px; color: var(--text-dark); margin-bottom: 15px;">Pedido Confirmado!</h1>
+            <h1 class="success-title" style="font-size: 36px; color: var(--text-dark); margin-bottom: 15px;">Pedido Confirmado!</h1>
             <p style="font-size: 18px; color: var(--text-light); margin-bottom: 30px;">Seu pedido foi realizado com sucesso.</p>
 
             <!-- Order Details -->
-            <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: left;">
+            <div class="order-card" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: left;">
                 <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
                     <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Número do Pedido</div>
-                    <div style="font-size: 24px; font-weight: 700; color: var(--primary-color);">{{ $order->order_number }}</div>
+                    <div class="order-number" style="font-size: 24px; font-weight: 700; color: var(--primary-color);">{{ $order->order_number }}</div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="order-meta-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Data do Pedido</div>
                         <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ $order->created_at->format('d/m/Y H:i') }}</div>
@@ -70,12 +70,12 @@
             </div>
 
             <!-- Order Items -->
-            <div style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px;">
+            <div class="order-items-card" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px;">
                 <div style="background-color: var(--bg-light); padding: 15px; font-weight: 700; color: var(--text-dark); text-align: left;">
                     Itens do Pedido
                 </div>
                 @foreach($order->items as $item)
-                    <div style="padding: 15px; border-bottom: 1px solid var(--border-color); text-align: left; display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center;">
+                    <div class="order-item" style="padding: 15px; border-bottom: 1px solid var(--border-color); text-align: left; display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center;">
                         <div>
                             <div style="font-weight: 600; color: var(--text-dark);">{{ $item->product_name }}</div>
                             <div style="font-size: 14px; color: var(--text-light);">Quantidade: {{ $item->quantity }}</div>
@@ -144,7 +144,7 @@
             </div>
 
             <!-- Action Buttons -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <a href="{{ route('shop.index') }}" class="btn btn-primary" style="padding: 15px; text-align: center; display: block;">
                     <i class="fas fa-shopping-bag"></i> Continuar Comprando
                 </a>
@@ -154,4 +154,74 @@
             </div>
         </div>
     </div>
+
+    <style>
+        /* Order Success Page Responsive Styles */
+        @media (max-width: 768px) {
+            .order-success-container {
+                padding: 40px 15px !important;
+            }
+            
+            .success-icon {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            
+            .success-icon i {
+                font-size: 40px !important;
+            }
+            
+            .success-title {
+                font-size: 28px !important;
+            }
+            
+            .order-card {
+                padding: 20px !important;
+            }
+            
+            .order-number {
+                font-size: 20px !important;
+                word-break: break-all;
+            }
+            
+            .order-meta-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .order-item {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+            
+            .order-item > div:last-child {
+                text-align: left !important;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .action-buttons a {
+                padding: 12px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .success-title {
+                font-size: 24px !important;
+            }
+            
+            .order-card,
+            .order-items-card {
+                padding: 15px !important;
+            }
+            
+            .order-number {
+                font-size: 18px !important;
+            }
+        }
+    </style>
 @endsection

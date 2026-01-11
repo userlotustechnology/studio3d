@@ -4,12 +4,12 @@
 
 @section('content')
     <div class="container" style="padding: 40px 20px;">
-        <h1 style="font-size: 32px; margin-bottom: 30px; color: var(--text-dark);">Finalizar Compra</h1>
+        <h1 class="checkout-title" style="font-size: 32px; margin-bottom: 30px; color: var(--text-dark);">Finalizar Compra</h1>
 
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+        <div class="checkout-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
             <!-- Checkout Form -->
-            <div>
-                <form method="POST" action="{{ route('cart.process-checkout') }}" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div class="checkout-form-section">
+                <form method="POST" action="{{ route('cart.process-checkout') }}" class="checkout-form" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     @csrf
 
                     <!-- Customer Information -->
@@ -23,7 +23,7 @@
                         @enderror
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Email *</label>
                             <input type="email" name="customer_email" value="{{ old('customer_email', $customer->email ?? '') }}" required placeholder="seu@email.com" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
@@ -51,7 +51,7 @@
                         @enderror
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                         <div>
                             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Cidade *</label>
                             <input type="text" name="billing_city" value="{{ old('billing_city') }}" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
@@ -110,7 +110,7 @@
                             @enderror
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                             <div>
                                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Cidade *</label>
                                 <input type="text" name="shipping_city" value="{{ old('shipping_city') }}" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
@@ -171,7 +171,7 @@
                         </div>
                     @enderror
 
-                    <div style="display: grid; gap: 10px;">
+                    <div class="checkout-buttons" style="display: grid; gap: 10px;">
                         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;">
                             <i class="fas fa-check-circle"></i> Confirmar Pedido
                         </button>
@@ -183,18 +183,18 @@
             </div>
 
             <!-- Order Summary -->
-            <div>
-                <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 100px;">
+            <div class="checkout-summary-section">
+                <div class="checkout-summary" style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 100px;">
                     <h2 style="font-size: 20px; margin-bottom: 20px; color: var(--text-dark);">Resumo do Pedido</h2>
 
                     <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
                         @foreach($items as $item)
                             <div style="display: flex; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
-                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                <img src="{{ $item['product']->image }}" alt="{{ $item['product']->name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ $item->product->name }}</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Qtd: {{ $item->quantity }}</div>
-                                    <div style="font-weight: 600; color: var(--primary-color);">R$ {{ number_format($item->subtotal, 2, ',', '.') }}</div>
+                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-dark);">{{ $item['product']->name }}</div>
+                                    <div style="font-size: 13px; color: var(--text-light);">Qtd: {{ $item['quantity'] }}</div>
+                                    <div style="font-weight: 600; color: var(--primary-color);">R$ {{ number_format($item['total'], 2, ',', '.') }}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -275,4 +275,85 @@
             }
         });
     </script>
+
+    <style>
+        /* Checkout Page Responsive Styles */
+        @media (max-width: 992px) {
+            .checkout-layout {
+                gap: 30px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-title {
+                font-size: 24px !important;
+            }
+            
+            .checkout-layout {
+                grid-template-columns: 1fr !important;
+                gap: 25px !important;
+            }
+            
+            .checkout-form {
+                padding: 20px !important;
+            }
+            
+            .checkout-form h2 {
+                font-size: 18px !important;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+            
+            .checkout-summary {
+                position: static !important;
+                padding: 20px !important;
+            }
+            
+            .checkout-summary h2 {
+                font-size: 18px !important;
+            }
+            
+            .checkout-summary-section {
+                order: -1;
+            }
+            
+            .payment-methods label {
+                padding: 12px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px 12px !important;
+            }
+            
+            .checkout-title {
+                font-size: 22px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            .checkout-form {
+                padding: 15px !important;
+            }
+            
+            .checkout-form input,
+            .checkout-form select {
+                padding: 10px !important;
+                font-size: 16px !important;
+            }
+            
+            .checkout-buttons button,
+            .checkout-buttons a {
+                padding: 12px !important;
+                font-size: 14px !important;
+            }
+            
+            .checkout-summary {
+                padding: 15px !important;
+            }
+        }
+    </style>
 @endsection
