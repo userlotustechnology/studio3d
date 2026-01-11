@@ -96,7 +96,7 @@
                     <div style="text-align: center;">
                         <i class="fas fa-truck" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
                         <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Frete Rápido</h4>
-                        <p style="font-size: 12px; color: var(--text-light);">Entrega em 2-3 dias</p>
+                        <p style="font-size: 12px; color: var(--text-light);">Entrega em até 10 dias úteis</p>
                     </div>
                     <div style="text-align: center;">
                         <i class="fas fa-shield-alt" style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;"></i>
