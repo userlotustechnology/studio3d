@@ -26,8 +26,8 @@
                         @foreach($items as $item)
                             <div class="cart-item" style="display: grid; grid-template-columns: 100px 1fr auto auto; gap: 20px; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color);">
                                 <!-- Product Image -->
-                                @if($item->product && $item->product->image)
-                                    <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product_name }}" class="cart-item-image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">
+                                @if($item->product && $item->product->image_url)
+                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product_name }}" class="cart-item-image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px;">
                                 @else
                                     <div class="cart-item-image" style="width: 100px; height: 100px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-box" style="font-size: 32px; color: #9ca3af;"></i>
