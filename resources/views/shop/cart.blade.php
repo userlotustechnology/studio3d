@@ -403,7 +403,7 @@
             }
 
             .cart-item-info-modern {
-                grid-column: 2;
+                grid-column: 2 / -1;
                 grid-row: 1;
             }
 
@@ -413,7 +413,7 @@
             
             .cart-item-quantity-modern {
                 grid-column: 3;
-                grid-row: 1 / 3;
+                grid-row: 2;
                 align-self: center;
             }
             
@@ -429,14 +429,13 @@
             .cart-item-total-modern {
                 grid-column: 2;
                 grid-row: 2;
-                align-self: flex-end;
-                margin-bottom: 8px;
+                align-self: center;
                 font-size: 16px !important;
             }
 
             .cart-item-remove {
                 grid-column: 4;
-                grid-row: 1 / 3;
+                grid-row: 2;
                 align-self: center;
             }
             
