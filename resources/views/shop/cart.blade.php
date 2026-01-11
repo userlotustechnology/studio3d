@@ -87,7 +87,7 @@
                                 </div>
 
                                 <!-- Remove -->
-                                <div style="display: flex; justify-content: center;">
+                                <div class="cart-item-remove" style="display: flex; justify-content: center;">
                                     <form method="POST" action="{{ route('cart.remove', $item->product_id) }}" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
@@ -329,20 +329,37 @@
                 grid-template-columns: 100px 1fr auto auto !important;
                 gap: 20px !important;
                 padding: 20px !important;
+                align-items: flex-start !important;
             }
             
             .cart-item-image-wrapper {
                 width: 100px;
                 height: 100px;
+                grid-row: 1 / 3;
+            }
+
+            .cart-item-info-modern {
+                grid-column: 2;
+                grid-row: 1;
             }
             
             .cart-item-quantity-modern {
-                order: -1;
-                grid-column: 1 / -1;
+                grid-column: 3;
+                grid-row: 1 / 3;
+                align-self: center;
             }
             
             .cart-item-total-modern {
-                order: 0;
+                grid-column: 2;
+                grid-row: 2;
+                align-self: flex-end;
+                margin-bottom: 8px;
+            }
+
+            .cart-item-remove {
+                grid-column: 4;
+                grid-row: 1 / 3;
+                align-self: center;
             }
             
             .cart-summary-modern {
@@ -373,18 +390,31 @@
             }
             
             .cart-item-modern {
-                grid-template-columns: 80px 1fr !important;
+                grid-template-columns: 80px 1fr auto auto !important;
                 gap: 15px !important;
                 padding: 15px !important;
+                align-items: flex-start !important;
             }
             
             .cart-item-image-wrapper {
                 width: 80px;
                 height: 80px;
+                grid-row: 1 / 3;
             }
-            
+
+            .cart-item-info-modern {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
             .cart-item-info-modern h3 {
                 font-size: 14px !important;
+            }
+            
+            .cart-item-quantity-modern {
+                grid-column: 3;
+                grid-row: 1 / 3;
+                align-self: center;
             }
             
             .qty-btn-modern {
@@ -395,13 +425,23 @@
                 width: 45px !important;
                 padding: 6px !important;
             }
+
+            .cart-item-total-modern {
+                grid-column: 2;
+                grid-row: 2;
+                align-self: flex-end;
+                margin-bottom: 8px;
+                font-size: 16px !important;
+            }
+
+            .cart-item-remove {
+                grid-column: 4;
+                grid-row: 1 / 3;
+                align-self: center;
+            }
             
             .cart-summary-modern {
                 padding: 24px !important;
-            }
-
-            .cart-item-modern {
-                grid-template-columns: 80px 1fr auto;
             }
         }
     </style>
