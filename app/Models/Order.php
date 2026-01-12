@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\OrderCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,10 @@ class Order extends Model
         'paid_at' => 'datetime',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => OrderCreated::class,
     ];
 
     public function customer(): BelongsTo
