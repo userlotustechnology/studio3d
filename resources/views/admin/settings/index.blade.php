@@ -74,7 +74,7 @@
                     </div>
 
                     <!-- Endereço -->
-                    <div style="margin-bottom: 24px;">
+                    <div style="margin-bottom: 20px;">
                         <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
                             Endereço
                         </label>
@@ -82,6 +82,20 @@
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; font-family: inherit;"
                             placeholder="Endereço completo da sua loja">{{ $settings['store_address'] }}</textarea>
                         @error('store_address')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Valor Mínimo do Pedido -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Valor Mínimo do Pedido (R$)
+                        </label>
+                        <input type="number" name="minimum_order_value" value="{{ $settings['minimum_order_value'] }}" step="0.01" min="0"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="Ex: 50.00">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Deixe 0 para sem limite mínimo</p>
+                        @error('minimum_order_value')
                         <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
                         @enderror
                     </div>

@@ -331,6 +331,26 @@
                     <div style="margin-top: 25px; padding: 18px; background-color: #f0fdf4; border-radius: 10px; font-size: 13px; color: #065f46; text-align: center; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <i class="fas fa-shield-alt"></i> Seus dados estão seguros e criptografados
                     </div>
+
+                    @php
+                        $minimumOrderValue = \App\Models\Setting::get('minimum_order_value', 0);
+                        $meetsMinimum = $minimumOrderValue <= 0 || $subtotal >= $minimumOrderValue;
+                    @endphp
+
+                    @if($minimumOrderValue > 0)
+                    <div style="margin-top: 15px; padding: 15px; background-color: {{ $meetsMinimum ? '#d1fae5' : '#fee2e2' }}; border-radius: 10px; font-size: 13px; color: {{ $meetsMinimum ? '#065f46' : '#991b1b' }}; border: 1px solid {{ $meetsMinimum ? '#bbf7d0' : '#fecaca' }}; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-{{ $meetsMinimum ? 'check-circle' : 'exclamation-circle' }}"></i>
+                        <div>
+                            @if($meetsMinimum)
+                                Valor mínimo atendido ✓
+                            @else
+                                Valor mínimo: R$ {{ number_format($minimumOrderValue, 2, ',', '.') }}
+                                <br>
+                                Faltam: R$ {{ number_format($minimumOrderValue - $subtotal, 2, ',', '.') }}
+                            @endif
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

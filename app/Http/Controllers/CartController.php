@@ -445,6 +445,15 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
         }
 
+        // Validar valor mínimo do pedido (não incluindo frete)
+        $minimumOrderValue = \App\Models\Setting::get('minimum_order_value', 0);
+        if ($minimumOrderValue > 0 && $order->subtotal < $minimumOrderValue) {
+            return redirect()->route('cart.index')->with('error', 
+                "Valor mínimo do pedido é R$ " . number_format($minimumOrderValue, 2, ',', '.') . 
+                ". Seu carrinho tem R$ " . number_format($order->subtotal, 2, ',', '.')
+            );
+        }
+
         // Validar estoque de produtos físicos
         $outOfStockItems = [];
         foreach ($order->items as $item) {
