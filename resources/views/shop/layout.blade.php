@@ -1069,7 +1069,7 @@
                     <a href="{{ route('cart.index') }}" class="cart-btn-modern">
                         <div class="cart-icon-wrapper">
                             <i class="fas fa-shopping-bag"></i>
-                            <span id="cart-count" class="cart-badge">0</span>
+                            <span id="cart-count" class="cart-badge">{{ \App\Helpers\CartHelper::getCartCount() }}</span>
                         </div>
                         <span class="cart-text">Carrinho</span>
                     </a>
@@ -1093,7 +1093,7 @@
                 <div class="mobile-actions">
                     <a href="{{ route('cart.index') }}" class="mobile-cart-btn">
                         <i class="fas fa-shopping-bag"></i>
-                        <span id="cart-count-mobile" class="cart-badge-mobile">0</span>
+                        <span id="cart-count-mobile" class="cart-badge-mobile">{{ \App\Helpers\CartHelper::getCartCount() }}</span>
                     </a>
                     <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
                         <span class="hamburger-line"></span>
@@ -1219,8 +1219,20 @@
 
         // Atualizar contador de carrinho via servidor
         function updateCartCount() {
-            // O contador agora é atualizado automaticamente pelo servidor
-            // Podemos fazer uma requisição AJAX se necessário para atualizar dinamicamente
+            fetch('{{ route("cart.count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const cartCountElement = document.getElementById('cart-count');
+                    const cartCountMobileElement = document.getElementById('cart-count-mobile');
+                    
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.count;
+                    }
+                    if (cartCountMobileElement) {
+                        cartCountMobileElement.textContent = data.count;
+                    }
+                })
+                .catch(error => console.error('Erro ao atualizar contador:', error));
         }
 
         // Adicionar ao carrinho via POST
@@ -1260,7 +1272,12 @@
                 }
                 
                 console.log('Submitting form to:', form.action);
+                
+                // Submeter o formulário
                 form.submit();
+                
+                // Atualizar o contador após submissão (será refletido na página de redirecionamento)
+                setTimeout(updateCartCount, 500);
             } catch (error) {
                 console.error('Erro ao adicionar ao carrinho:', error);
                 alert('Erro ao processar sua solicitação. Por favor, tente novamente.');
@@ -1269,7 +1286,18 @@
         }
 
         // Chamar ao carregar a página
-        document.addEventListener('DOMContentLoaded', updateCartCount);
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            
+            // Interceptar todos os formulários de adição ao carrinho
+            const addToCartForms = document.querySelectorAll('.add-cart-form, #addToCartForm');
+            addToCartForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Permitir o envio normal, mas atualizar o contador após retorno
+                    setTimeout(updateCartCount, 1000);
+                });
+            });
+        });
     </script>
 
     @yield('scripts')

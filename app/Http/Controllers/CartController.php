@@ -633,7 +633,7 @@ class CartController extends Controller
         if ($draftOrderId) {
             $order = Order::find($draftOrderId);
             if ($order) {
-                $count = $order->items()->count();
+                $count = $order->items()->sum('quantity');
             }
         }
 

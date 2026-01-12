@@ -295,7 +295,9 @@
                                 </div>
                                 <div class="checkout-item-info">
                                     <div class="checkout-item-name">{{ $item->product->name }}</div>
-                                    <div class="checkout-item-qty">Qtd: <strong>{{ $item->quantity }}</strong></div>
+                                    <div class="checkout-item-details">
+                                        <span class="checkout-item-qty">Qtd: <strong>{{ $item->quantity }}</strong></span>
+                                    </div>
                                 </div>
                                 <div class="checkout-item-price">
                                     R$ {{ number_format($item->subtotal, 2, ',', '.') }}
@@ -348,7 +350,7 @@
             display: grid;
             grid-template-columns: 70px 1fr auto;
             gap: 15px;
-            align-items: center;
+            align-items: start;
             padding: 15px;
             background: #f9fafb;
             border-radius: 12px;
@@ -378,14 +380,22 @@
         .checkout-item-info {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .checkout-item-name {
             font-weight: 700;
             font-size: 14px;
             color: #1f2937;
-            line-height: 1.3;
+            line-height: 1.4;
+            grid-column: 2;
+            width: 100%;
+        }
+
+        .checkout-item-details {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
 
         .checkout-item-qty {
@@ -403,6 +413,7 @@
             padding-left: 10px;
             min-width: 90px;
             flex-shrink: 0;
+            align-self: center;
         }
 
         /* Checkout Page Responsive Styles */
