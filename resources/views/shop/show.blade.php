@@ -127,13 +127,34 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
-                        @csrf
-                        <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                        <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
-                            <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
-                        </button>
-                    </form>
+                    <div class="buttons-group">
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
+                            @csrf
+                            <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                            <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
+                                <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
+                            </button>
+                        </form>
+
+                        <!-- WhatsApp Button -->
+                        @php
+                            $whatsappPhone = \App\Models\Setting::where('key', 'store_phone')->first()?->value;
+                            $whatsappPhone = preg_replace('/[^0-9]/', '', $whatsappPhone ?? '');
+                            if ($whatsappPhone && !str_starts_with($whatsappPhone, '55')) {
+                                $whatsappPhone = '55' . $whatsappPhone;
+                            }
+                            $productUrl = route('shop.show', $product->id);
+                            $whatsappMessage = "Olá! Gostaria de comprar o produto: " . $product->name . " - R$ " . number_format($product->price, 2, ',', '.') . "\n\nLink: " . $productUrl;
+                            $whatsappUrl = $whatsappPhone ? "https://wa.me/{$whatsappPhone}?text=" . urlencode($whatsappMessage) : '#';
+                        @endphp
+                        
+                        @if($whatsappPhone)
+                            <a href="{{ $whatsappUrl }}" target="_blank" class="btn-whatsapp-floating">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Comprar no WhatsApp</span>
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Features -->
@@ -550,11 +571,18 @@
 
         /* Purchase Section */
         .purchase-section {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr;
             gap: 20px;
             padding: 20px 0;
             border-bottom: 2px solid #e5e7eb;
             align-items: flex-end;
+        }
+
+        .buttons-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
         .quantity-selector {
@@ -600,7 +628,7 @@
         }
 
         .add-to-cart-form {
-            flex: 1;
+            width: 100%;
         }
 
         .btn-cart-checkout {
@@ -629,6 +657,35 @@
         .btn-cart-checkout:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        /* WhatsApp Button */
+        .btn-whatsapp-floating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #25d366 0%, #1ead55 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-whatsapp-floating:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5);
+        }
+
+        .btn-whatsapp-floating i {
+            font-size: 18px;
         }
 
         /* Product Features */
@@ -1010,6 +1067,26 @@
 
             .btn-cart-checkout {
                 min-height: 50px;
+            }
+
+            @media (min-width: 768px) {
+                .purchase-section {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    gap: 20px;
+                    align-items: center;
+                }
+
+                .buttons-group {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                }
+
+                .btn-cart-checkout,
+                .btn-whatsapp-floating {
+                    width: 100%;
+                }
             }
 
             .product-meta-modern {
