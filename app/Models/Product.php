@@ -41,6 +41,13 @@ class Product extends Model
                 $model->uuid = Str::uuid();
             }
         });
+
+        static::retrieved(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+                $model->save();
+            }
+        });
     }
 
     // append computed URL attribute
