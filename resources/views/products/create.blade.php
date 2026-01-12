@@ -45,17 +45,31 @@
                     @enderror
                 </div>
 
-                <!-- Preço e Categoria -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-                    <!-- Preço -->
+                <!-- Preço, Custo e Categoria -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                    <!-- Preço de Venda -->
                     <div>
                         <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            Preço (R$) *
+                            Preço de Venda (R$) *
                         </label>
                         <input type="number" name="price" value="{{ old('price') }}" required step="0.01" min="0.01"
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
                             placeholder="0.00">
                         @error('price')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Preço de Custo -->
+                    <div>
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Preço de Custo (R$)
+                            <span style="color: #6b7280; font-weight: 400;">(opcional)</span>
+                        </label>
+                        <input type="number" name="cost_price" value="{{ old('cost_price') }}" step="0.01" min="0"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="0.00">
+                        @error('cost_price')
                         <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
                         @enderror
                     </div>
