@@ -127,7 +127,6 @@
                         </div>
                     </div>
 
-                    <div class="buttons-group">
                         <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
                             @csrf
                             <input type="hidden" name="quantity" id="cartQuantity" value="1">
@@ -155,7 +154,6 @@
                             </a>
                         @endif
                     </div>
-                </div>
 
                 <!-- Instagram Link -->
                 @if($product->instagram_url)
@@ -581,18 +579,11 @@
 
         /* Purchase Section */
         .purchase-section {
-            display: grid;
-            grid-template-columns: auto 1fr;
+            display: flex;
             gap: 20px;
             padding: 20px 0;
             border-bottom: 2px solid #e5e7eb;
             align-items: flex-end;
-        }
-
-        .buttons-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
         }
 
         .quantity-selector {
@@ -638,7 +629,7 @@
         }
 
         .add-to-cart-form {
-            width: 100%;
+            flex: 1;
         }
 
         .btn-cart-checkout {
@@ -667,35 +658,6 @@
         .btn-cart-checkout:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        /* WhatsApp Button */
-        .btn-whatsapp-floating {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px 28px;
-            background: linear-gradient(135deg, #25d366 0%, #1ead55 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .btn-whatsapp-floating:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5);
-        }
-
-        .btn-whatsapp-floating i {
-            font-size: 18px;
         }
 
         /* Instagram Section */
@@ -1110,26 +1072,6 @@
 
             .btn-cart-checkout {
                 min-height: 50px;
-            }
-
-            @media (min-width: 768px) {
-                .purchase-section {
-                    display: grid;
-                    grid-template-columns: auto 1fr;
-                    gap: 20px;
-                    align-items: center;
-                }
-
-                .buttons-group {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 15px;
-                }
-
-                .btn-cart-checkout,
-                .btn-whatsapp-floating {
-                    width: 100%;
-                }
             }
 
             .product-meta-modern {
