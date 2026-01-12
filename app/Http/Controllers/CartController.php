@@ -570,8 +570,8 @@ class CartController extends Controller
         \Illuminate\Support\Facades\Log::info('Dispatching OrderConfirmed event for order: ' . $order->id);
         OrderConfirmed::dispatch($order);
 
-        // Enviar email de confirmação de pedido
-        Mail::send(new OrderConfirmationMail($order));
+        // Enviar email de confirmação de pedido (assíncrono com delay de 1 minuto)
+        Mail::queue(new OrderConfirmationMail($order));
 
         // Limpar sessão do carrinho
         session()->forget('draft_order_id');

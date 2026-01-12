@@ -51,8 +51,8 @@ class OrderController extends Controller
         // Atualizar status
         $order->update(['status' => $status]);
 
-        // Enviar email de atualização de status
-        Mail::send(new OrderStatusUpdateMail($order, $previousStatus, $status));
+        // Enviar email de atualização de status (assíncrono com delay de 1 minuto)
+        Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, $status));
 
         return back()->with('success', 'Status do pedido atualizado com sucesso!');
     }

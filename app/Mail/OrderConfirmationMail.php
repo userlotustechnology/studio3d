@@ -18,6 +18,9 @@ class OrderConfirmationMail extends Mailable
      */
     public function __construct(public Order $order)
     {
+        // Configurar para envio na fila com delay de 1 minuto
+        $this->queue = 'default';
+        $this->delay = now()->addMinute();
     }
 
     /**

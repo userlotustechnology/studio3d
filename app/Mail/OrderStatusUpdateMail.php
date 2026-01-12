@@ -21,6 +21,9 @@ class OrderStatusUpdateMail extends Mailable
         public string $previousStatus,
         public string $newStatus
     ) {
+        // Configurar para envio na fila com delay de 1 minuto
+        $this->queue = 'default';
+        $this->delay = now()->addMinute();
     }
 
     /**
