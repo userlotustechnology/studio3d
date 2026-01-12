@@ -93,7 +93,7 @@ class OrderStatusTransitionService
      */
     private function sendSlackNotification(Order $order, string $previousStatus, string $newStatus, ?string $reason = null): void
     {
-        $webhookUrl = env('SLACK_WEBHOOK_URL');
+        $webhookUrl = config('services.slack.webhook_url');
 
         if (!$webhookUrl) {
             Log::debug('SLACK_WEBHOOK_URL não configurada');
