@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\Admin\ShippingRateController;
 use App\Models\Category;
 
@@ -120,6 +121,16 @@ Route::middleware('auth')->group(function () {
             ]
         ]);
         Route::post('/admin/shipping-rates/{shippingRate}/toggle-active', [ShippingRateController::class, 'toggleActive'])->name('admin.shipping-rates.toggle-active');
+
+        // Rotas do PDV
+        Route::get('/admin/pos', [App\Http\Controllers\Admin\PosController::class, 'index'])->name('admin.pos.index');
+        Route::get('/admin/pos/create', [App\Http\Controllers\Admin\PosController::class, 'create'])->name('admin.pos.create');
+        Route::post('/admin/pos/store', [App\Http\Controllers\Admin\PosController::class, 'store'])->name('admin.pos.store');
+        Route::get('/admin/pos/search-products', [App\Http\Controllers\Admin\PosController::class, 'searchProducts'])->name('admin.pos.searchProducts');
+        Route::get('/admin/pos/search-customers', [App\Http\Controllers\Admin\PosController::class, 'searchCustomers'])->name('admin.pos.searchCustomers');
+        Route::get('/admin/pos/search-by-cpf', [App\Http\Controllers\Admin\PosController::class, 'searchByCpf'])->name('admin.pos.searchByCpf');
+        Route::post('/admin/pos/create-customer', [App\Http\Controllers\Admin\PosController::class, 'createCustomer'])->name('admin.pos.createCustomer');
+        Route::post('/admin/pos/calculate-shipping', [App\Http\Controllers\Admin\PosController::class, 'calculateShipping'])->name('admin.pos.calculateShipping');
 
     });
 });

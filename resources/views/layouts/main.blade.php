@@ -197,6 +197,25 @@
                     </ul>
                 </li>
 
+                <li class="menu-item {{ request()->routeIs('admin.pos.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.pos.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">point_of_sale</span>
+                        <span class="title">PDV</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.pos.index') }}" class="menu-link {{ request()->routeIs('admin.pos.index') ? 'active' : '' }}">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.pos.create') }}" class="menu-link {{ request()->routeIs('admin.pos.create') ? 'active' : '' }}">
+                                Nova Venda
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('admin.categories.*') ? 'open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined menu-icon">category</span>
