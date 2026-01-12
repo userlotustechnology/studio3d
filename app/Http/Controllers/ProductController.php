@@ -77,6 +77,8 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'sku' => 'nullable|string|unique:products,sku',
             'type' => 'required|in:physical,digital',
+            'product_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
@@ -143,6 +145,8 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'type' => 'required|in:physical,digital',
+            'product_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'remove_images' => 'nullable|array',

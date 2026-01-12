@@ -16,6 +16,8 @@ class Product extends Model
         'type',
         'stock',
         'is_active',
+        'product_url',
+        'instagram_url',
     ];
 
     protected $casts = [

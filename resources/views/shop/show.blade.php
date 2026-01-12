@@ -157,6 +157,16 @@
                     </div>
                 </div>
 
+                <!-- Instagram Link -->
+                @if($product->instagram_url)
+                    <div class="instagram-section">
+                        <a href="{{ $product->instagram_url }}" target="_blank" rel="noopener noreferrer" class="btn-instagram-link">
+                            <i class="fab fa-instagram"></i>
+                            <span>Ver no Instagram</span>
+                        </a>
+                    </div>
+                @endif
+
                 <!-- Features -->
                 <div class="product-features-modern">
                     <div class="feature-item">
@@ -686,6 +696,39 @@
 
         .btn-whatsapp-floating i {
             font-size: 18px;
+        }
+
+        /* Instagram Section */
+        .instagram-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(240, 148, 51, 0.3);
+        }
+
+        .btn-instagram-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(240, 148, 51, 0.4);
+        }
+
+        .btn-instagram-link i {
+            font-size: 16px;
         }
 
         /* Product Features */

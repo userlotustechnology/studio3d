@@ -130,6 +130,37 @@
                     </div>
                 </div>
 
+                <!-- URLs -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                    <!-- URL Interna do Produto -->
+                    <div>
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            URL Interna do Produto
+                        </label>
+                        <input type="url" name="product_url" value="{{ old('product_url', $product->product_url) }}"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="https://exemplo.com/produto">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Visível apenas no admin</p>
+                        @error('product_url')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- URL Instagram -->
+                    <div>
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Link do Instagram
+                        </label>
+                        <input type="url" name="instagram_url" value="{{ old('instagram_url', $product->instagram_url) }}"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="https://instagram.com/seu_perfil/p/ABC123">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Aparecerá na página do produto</p>
+                        @error('instagram_url')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Imagem -->
                 <div style="margin-bottom: 24px;">
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
