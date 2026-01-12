@@ -16,6 +16,7 @@ class Order extends Model
         'shipping_address_id',
         'subtotal',
         'shipping_cost',
+        'carrier_shipping_cost',
         'tracking_code',
         'shipping_company_id',
         'discount',
@@ -33,6 +34,7 @@ class Order extends Model
     protected $casts = [
         'subtotal' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
+        'carrier_shipping_cost' => 'decimal:2',
         'discount' => 'decimal:2',
         'total' => 'decimal:2',
         'is_draft' => 'boolean',

@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/orders/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
         Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
         Route::post('/admin/orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+        Route::patch('/admin/orders/{order}/carrier-cost', [OrderController::class, 'updateCarrierCost'])->name('admin.orders.updateCarrierCost');
         
         // Rotas de Gerenciamento de Categorias
         Route::resource('admin/categories', CategoryController::class, [

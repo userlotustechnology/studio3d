@@ -150,13 +150,103 @@
                         <span style="color: #1f2937; font-weight: 600;">R$ {{ number_format($order->subtotal ?? ($order->total - 15), 2, ',', '.') }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-                        <span style="color: #6b7280;">Frete:</span>
-                        <span style="color: #1f2937; font-weight: 600;">R$ 15,00</span>
+                        <span style="color: #6b7280;">Frete cobrado:</span>
+                        <span style="color: #1f2937; font-weight: 600;">R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}</span>
                     </div>
+                    @if($order->carrier_shipping_cost)
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <span style="color: #6b7280; font-size: 13px;">
+                            <i class="fas fa-truck" style="margin-right: 4px;"></i>
+                            Custo transportadora:
+                        </span>
+                        <span style="color: #dc2626; font-weight: 600;">R$ {{ number_format($order->carrier_shipping_cost, 2, ',', '.') }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <span style="color: #059669; font-weight: 600; font-size: 13px;">
+                            <i class="fas fa-chart-line" style="margin-right: 4px;"></i>
+                            Margem do frete:
+                        </span>
+                        <span style="color: #059669; font-weight: 700;">
+                            R$ {{ number_format($order->shipping_cost - $order->carrier_shipping_cost, 2, ',', '.') }}
+                            @if($order->shipping_cost > 0)
+                                ({{ number_format((($order->shipping_cost - $order->carrier_shipping_cost) / $order->shipping_cost) * 100, 1) }}%)
+                            @endif
+                        </span>
+                    </div>
+                    @endif
                     <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700;">
                         <span style="color: #1f2937;">Total:</span>
                         <span style="color: #3b82f6;">R$ {{ number_format($order->total, 2, ',', '.') }}</span>
                     </div>
+                </div>
+
+                <!-- Custos Internos (Admin Only) -->
+                <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px;">
+                        <i class="fas fa-cogs" style="color: #6b7280; margin-right: 8px;"></i>
+                        Custos Internos
+                    </h3>
+                    
+                    @php
+                        $canEditCarrierCost = in_array($order->status, ['pending', 'processing']);
+                    @endphp
+                    
+                    <form method="POST" action="{{ route('admin.orders.updateCarrierCost', $order->id) }}" style="display: flex; flex-direction: column; gap: 16px;">
+                        @csrf
+                        @method('PATCH')
+                        
+                        <div>
+                            <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">
+                                Custo Real do Frete (pago à transportadora):
+                            </label>
+                            
+                            @if(!$canEditCarrierCost)
+                                <div style="padding: 12px; background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; color: #92400e; font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Este campo só pode ser alterado até o status "Processando".</span>
+                                </div>
+                            @endif
+                            
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span style="color: #6b7280; font-weight: 600;">R$</span>
+                                <input type="number" name="carrier_shipping_cost" step="0.01" min="0" 
+                                       value="{{ $order->carrier_shipping_cost ?? '' }}" 
+                                       placeholder="0,00"
+                                       {{ !$canEditCarrierCost ? 'readonly' : '' }}
+                                       style="flex: 1; padding: 10px; border: 1px solid {{ $canEditCarrierCost ? '#d1d5db' : '#e5e7eb' }}; border-radius: 6px; font-size: 14px; background-color: {{ $canEditCarrierCost ? '#ffffff' : '#f9fafb' }}; color: {{ $canEditCarrierCost ? '#1f2937' : '#6b7280' }};">
+                                @if($canEditCarrierCost)
+                                    <button type="submit" style="padding: 10px 16px; background-color: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                                        <i class="fas fa-save"></i> Salvar
+                                    </button>
+                                @else
+                                    <button type="button" disabled style="padding: 10px 16px; background-color: #e5e7eb; color: #9ca3af; border: none; border-radius: 6px; font-weight: 600; cursor: not-allowed; font-size: 14px;">
+                                        <i class="fas fa-lock"></i> Bloqueado
+                                    </button>
+                                @endif
+                            </div>
+                            <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">
+                                <i class="fas fa-info-circle"></i> 
+                                Este valor é apenas para controle interno e não afeta o valor cobrado do cliente
+                                @if(!$canEditCarrierCost)
+                                    <br><strong>Atenção:</strong> Só pode ser alterado nos status "Pendente" e "Processando"
+                                @endif
+                            </p>
+                        </div>
+                        
+                        @if($order->carrier_shipping_cost)
+                        <div style="background-color: #f0f9ff; padding: 12px; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #1e40af; font-weight: 600;">Margem do Frete:</span>
+                                <span style="color: #1e40af; font-weight: 700;">
+                                    R$ {{ number_format($order->shipping_cost - $order->carrier_shipping_cost, 2, ',', '.') }}
+                                    @if($order->shipping_cost > 0)
+                                        ({{ number_format((($order->shipping_cost - $order->carrier_shipping_cost) / $order->shipping_cost) * 100, 1) }}%)
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+                    </form>
                 </div>
 
                 <!-- Atualizar Status -->

@@ -6,6 +6,7 @@ use App\Mail\OrderStatusUpdateMail;
 use App\Mail\OrderCancelledMail;
 use App\Models\Order;
 use App\Services\OrderStatusTransitionService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
 
@@ -78,6 +79,30 @@ class OrderController extends Controller
             return back()->with('success', 'Status do pedido atualizado com sucesso!');
         } catch (\InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function updateCarrierCost(Order $order, Request $request): \Illuminate\Http\RedirectResponse
+    {
+        // Verificar se o pedido ainda pode ter o custo alterado
+        $allowedStatuses = ['pending', 'processing'];
+        
+        if (!in_array($order->status, $allowedStatuses)) {
+            return back()->with('error', 'O custo da transportadora só pode ser alterado até o status "Processando".');
+        }
+
+        $validated = $request->validate([
+            'carrier_shipping_cost' => 'nullable|numeric|min:0|max:9999.99'
+        ]);
+
+        try {
+            $order->update([
+                'carrier_shipping_cost' => $validated['carrier_shipping_cost']
+            ]);
+
+            return back()->with('success', 'Custo da transportadora atualizado com sucesso!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao atualizar custo: ' . $e->getMessage());
         }
     }
 }
