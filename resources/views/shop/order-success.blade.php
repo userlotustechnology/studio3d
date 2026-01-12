@@ -137,9 +137,10 @@
             <div style="background-color: #eff6ff; border-left: 4px solid var(--primary-color); padding: 20px; border-radius: 4px; margin-bottom: 30px; text-align: left;">
                 <h3 style="font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">Próximos Passos</h3>
                 <ul style="margin-left: 20px; color: var(--text-light);">
-                    <li style="margin-bottom: 8px;">Você receberá um email de confirmação em {{ $order->customer_email }}</li>
-                    <li style="margin-bottom: 8px;">Após a confirmação do pagamento, seu pedido será processado</li>
-                    <li>Você receberá atualizações sobre o envio por email e SMS</li>
+                    <li style="margin-bottom: 8px;">- Você receberá um email de confirmação em {{ $order->customer->email }}</li>
+                    <li style="margin-bottom: 8px;">- Entraremos em contato para confirmar os detalhes do seu pedido e realizar o pagamento</li>
+                    <li style="margin-bottom: 8px;">- Após a confirmação do pagamento, seu pedido será processado</li>
+                    <li>- Você receberá atualizações sobre o envio por email e WhatsApp</li>
                 </ul>
             </div>
 

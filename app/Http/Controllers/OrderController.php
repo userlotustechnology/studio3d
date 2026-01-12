@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderStatusUpdateMail;
 use App\Models\Order;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -43,7 +45,14 @@ class OrderController extends Controller
             return back()->with('error', 'Status inválido');
         }
 
+        // Capturar status anterior
+        $previousStatus = $order->status;
+
+        // Atualizar status
         $order->update(['status' => $status]);
+
+        // Enviar email de atualização de status
+        Mail::send(new OrderStatusUpdateMail($order, $previousStatus, $status));
 
         return back()->with('success', 'Status do pedido atualizado com sucesso!');
     }

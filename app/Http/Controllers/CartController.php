@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderConfirmed;
+use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -12,6 +13,7 @@ use App\Models\ShippingRate;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 
 class CartController extends Controller
 {
@@ -565,7 +567,11 @@ class CartController extends Controller
         ]);
 
         // Disparar evento de pedido confirmado para notificação no Slack
+        \Illuminate\Support\Facades\Log::info('Dispatching OrderConfirmed event for order: ' . $order->id);
         OrderConfirmed::dispatch($order);
+
+        // Enviar email de confirmação de pedido
+        Mail::send(new OrderConfirmationMail($order));
 
         // Limpar sessão do carrinho
         session()->forget('draft_order_id');

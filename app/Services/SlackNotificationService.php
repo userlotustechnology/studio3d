@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class SlackNotificationService
 {
     private Client $client;
-    private string $webhookUrl;
+    private ?string $webhookUrl;
 
     public function __construct()
     {
@@ -62,6 +62,8 @@ class SlackNotificationService
      */
     public function notifyOrderCreated($order): bool
     {
+        \Illuminate\Support\Facades\Log::info('SlackNotificationService.notifyOrderCreated called for order: ' . $order->id);
+        
         $customer = $order->customer;
         
         $fields = [
