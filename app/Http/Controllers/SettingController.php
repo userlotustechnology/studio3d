@@ -40,6 +40,9 @@ class SettingController extends Controller
             'store_address' => 'required|string',
         ]);
 
+        // Remove mask from phone (keep only numbers)
+        $validated['store_phone'] = preg_replace('/[^0-9]/', '', $validated['store_phone']);
+
         Setting::set('store_name', $validated['store_name'], 'string', 'Nome da loja');
         Setting::set('store_email', $validated['store_email'], 'string', 'Email da loja');
         Setting::set('store_phone', $validated['store_phone'], 'string', 'Telefone da loja');

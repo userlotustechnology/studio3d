@@ -63,9 +63,11 @@
                         <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
                             Telefone da Loja
                         </label>
-                        <input type="text" name="store_phone" value="{{ $settings['store_phone'] }}"
+                        <input type="text" name="store_phone" id="store_phone" value="{{ $settings['store_phone'] }}"
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
-                            placeholder="(11) 9999-9999">
+                            placeholder="(11) 99999-9999"
+                            data-mask="(##) #####-####">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Será salvo apenas os números</p>
                         @error('store_phone')
                         <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
                         @enderror
@@ -192,5 +194,37 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Phone mask function
+    function applyPhoneMask(input) {
+        let value = input.value.replace(/\D/g, '');
+        let mask = input.getAttribute('data-mask') || '(##) #####-####';
+        let masked = '';
+        let inputIndex = 0;
+
+        for (let i = 0; i < mask.length && inputIndex < value.length; i++) {
+            if (mask[i] === '#') {
+                masked += value[inputIndex];
+                inputIndex++;
+            } else {
+                masked += mask[i];
+            }
+        }
+
+        input.value = masked;
+    }
+
+    // Apply mask on input
+    document.getElementById('store_phone').addEventListener('input', function() {
+        applyPhoneMask(this);
+    });
+
+    // Remove mask on form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const phoneInput = document.getElementById('store_phone');
+        phoneInput.value = phoneInput.value.replace(/\D/g, '');
+    });
+</script>
 @endsection
 
