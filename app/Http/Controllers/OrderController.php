@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OrderStatusUpdateMail;
+use App\Mail\OrderCancelledMail;
 use App\Models\Order;
 use App\Services\OrderStatusTransitionService;
 use Illuminate\View\View;
@@ -37,7 +38,12 @@ class OrderController extends Controller
     public function show(Order $order): View
     {
         $order->load('items', 'customer', 'shippingAddress', 'billingAddress');
-        return view('orders.show', compact('order'));
+        
+        // Obter transições permitidas para o status atual
+        $allowedTransitions = $this->transitionService->getPossibleTransitionsLabeled($order->status);
+        $allowedStatuses = array_column($allowedTransitions, 'status');
+        
+        return view('orders.show', compact('order', 'allowedStatuses', 'allowedTransitions'));
     }
 
     public function updateStatus(Order $order, string $status): \Illuminate\Http\RedirectResponse
@@ -57,8 +63,12 @@ class OrderController extends Controller
             // Recarregar para pegar o status atualizado
             $order->refresh();
 
-            // Enviar email de atualização de status (assíncrono com delay de 1 minuto)
-            Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, $status));
+            // Disparar email específico para cancelamento, ou email genérico para outros status
+            if ($status === 'cancelled') {
+                Mail::queue(new OrderCancelledMail($order, $reason));
+            } else {
+                Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, $status));
+            }
 
             return back()->with('success', 'Status do pedido atualizado com sucesso!');
         } catch (\InvalidArgumentException $e) {

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
+use App\Notifications\OrderStatusUpdated;
+use Illuminate\Support\Facades\Notification;
 
 class OrderStatusTransitionService
 {
@@ -81,6 +83,31 @@ class OrderStatusTransitionService
         };
 
         $order->update($updateData);
+
+        // Disparar notificação para Slack
+        Notification::route('slack', config('services.slack.webhook_url'))
+            ->notify(new OrderStatusUpdated($order, $currentStatus, $newStatus, $reason));
+    }
+
+    /**
+     * Obtém as transições permitidas com labels traduzidos
+     */
+    public function getPossibleTransitionsLabeled(string $status): array
+    {
+        $possible = $this->getPossibleTransitions($status);
+        
+        $labels = [
+            'pending' => 'Pendente',
+            'processing' => 'Processando',
+            'shipped' => 'Enviado',
+            'delivered' => 'Entregue',
+            'cancelled' => 'Cancelado',
+        ];
+
+        return array_map(fn($s) => [
+            'status' => $s,
+            'label' => $labels[$s] ?? $s
+        ], $possible);
     }
 
     /**

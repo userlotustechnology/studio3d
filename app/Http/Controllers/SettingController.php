@@ -19,6 +19,7 @@ class SettingController extends Controller
             'store_email' => Setting::get('store_email', ''),
             'store_phone' => Setting::get('store_phone', ''),
             'store_address' => Setting::get('store_address', ''),
+            'support_email' => Setting::get('support_email', ''),
             'minimum_order_value' => Setting::get('minimum_order_value', 0),
             'system_name' => Setting::get('system_name', 'Studio3D'),
             'system_version' => Setting::get('system_version', '1.0.0'),
@@ -39,6 +40,7 @@ class SettingController extends Controller
             'store_email' => 'required|email',
             'store_phone' => 'required|string|max:20',
             'store_address' => 'required|string',
+            'support_email' => 'required|email',
             'minimum_order_value' => 'required|numeric|min:0',
         ]);
 
@@ -49,6 +51,7 @@ class SettingController extends Controller
         Setting::set('store_email', $validated['store_email'], 'string', 'Email da loja');
         Setting::set('store_phone', $validated['store_phone'], 'string', 'Telefone da loja');
         Setting::set('store_address', $validated['store_address'], 'string', 'Endereço da loja');
+        Setting::set('support_email', $validated['support_email'], 'string', 'Email de suporte');
         Setting::set('minimum_order_value', $validated['minimum_order_value'], 'decimal', 'Valor mínimo do pedido');
 
         return redirect()->route('admin.settings.index')->with('success', 'Informações da loja atualizadas com sucesso!');

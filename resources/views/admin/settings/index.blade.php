@@ -58,6 +58,20 @@
                         @enderror
                     </div>
 
+                    <!-- Email de Suporte -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Email de Suporte
+                        </label>
+                        <input type="email" name="support_email" value="{{ $settings['support_email'] }}"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="suporte@meuloja.com.br">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Email usado para notificações de suporte em cancelamentos e issues</p>
+                        @error('support_email')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Telefone -->
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
