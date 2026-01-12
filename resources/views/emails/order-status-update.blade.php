@@ -252,7 +252,7 @@
 
                 <!-- CTA Button -->
                 <div style="text-align: center;">
-                    <a href="{{ route('order.track', ['orderNumber' => $order->order_number]) }}" class="cta-button">Acompanhar Pedido</a>
+                    <a href="{{ route('order.track', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" class="cta-button">Acompanhar Pedido</a>
                 </div>
 
 

@@ -33,7 +33,7 @@ Route::get('/pedido/{order}/sucesso', [CartController::class, 'orderSuccess'])->
 // Rotas de Consulta de Pedidos (público)
 Route::get('/consultar-pedido', [CartController::class, 'searchOrdersForm'])->name('orders.search-form');
 Route::post('/consultar-pedido', [CartController::class, 'searchOrders'])->name('orders.search');
-Route::get('/acompanhar/{orderNumber}', [CartController::class, 'trackOrder'])->name('order.track');
+Route::get('/acompanhar/{orderNumber}/{token}', [CartController::class, 'trackOrder'])->name('order.track');
 
 // Rotas de autenticação
 Route::middleware('guest')->group(function () {

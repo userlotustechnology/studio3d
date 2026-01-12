@@ -10,6 +10,7 @@ class Order extends Model
 {
     protected $fillable = [
         'order_number',
+        'access_token',
         'customer_id',
         'billing_address_id',
         'shipping_address_id',
@@ -73,6 +74,14 @@ class Order extends Model
     public function generateOrderNumber(): string
     {
         return 'PED-' . date('Y') . '-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Gera um token de acesso único e seguro para o pedido
+     */
+    public function generateAccessToken(): string
+    {
+        return hash('sha256', $this->id . $this->order_number . uniqid() . time());
     }
 
     /**

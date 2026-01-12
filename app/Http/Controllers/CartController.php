@@ -573,6 +573,7 @@ class CartController extends Controller
             'status' => 'pending',
             'is_draft' => false,
             'order_number' => 'PED-' . date('Y') . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+            'access_token' => $order->generateAccessToken(),
         ]);
 
         // Disparar evento de pedido confirmado para notificação no Slack
@@ -670,14 +671,20 @@ class CartController extends Controller
 
     /**
      * Acompanha um pedido pelo número do pedido (para links nos emails)
+     * Requer um token de acesso válido para evitar acesso indevido
      */
-    public function trackOrder(string $orderNumber): View
+    public function trackOrder(string $orderNumber, string $token): View
     {
         // Buscar pedido pelo order_number
         $order = Order::with('items', 'customer', 'billingAddress', 'shippingAddress')
             ->where('order_number', $orderNumber)
             ->where('is_draft', false)
             ->firstOrFail();
+
+        // Validar token de acesso
+        if (!$order->access_token || $order->access_token !== $token) {
+            abort(403, 'Acesso negado. Token inválido ou expirado.');
+        }
 
         return view('shop.order-tracking', compact('order'));
     }
