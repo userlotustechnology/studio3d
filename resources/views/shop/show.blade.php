@@ -92,30 +92,6 @@
                     <p>{{ $product->description }}</p>
                 </div>
 
-                <!-- Meta Information -->
-                <div class="product-meta-modern">
-                    <div class="meta-item">
-                        <span class="meta-label">Categoria:</span>
-                        <span class="meta-value">{{ $product->category?->name ?? 'Sem categoria' }}</span>
-                    </div>
-                    @if($product->sku)
-                        <div class="meta-item">
-                            <span class="meta-label">SKU:</span>
-                            <span class="meta-value">{{ $product->sku }}</span>
-                        </div>
-                    @endif
-                    <div class="meta-item">
-                        <span class="meta-label">Tipo:</span>
-                        <span class="meta-value">
-                            @if($product->type === 'digital')
-                                <i class="fas fa-download"></i> Digital
-                            @else
-                                <i class="fas fa-box"></i> Físico
-                            @endif
-                        </span>
-                    </div>
-                </div>
-
                 <!-- Quantity & Add to Cart -->
                 <div class="purchase-section">
                     <div class="quantity-selector">
@@ -400,7 +376,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 60px;
-            margin-bottom: 80px;
+            margin-bottom: 20px;
         }
 
         /* Product Image Section */
@@ -472,7 +448,7 @@
         .product-info-section {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 10px;
         }
 
         .product-header-info {
@@ -539,7 +515,7 @@
 
         /* Product Description */
         .product-description-modern {
-            padding: 20px 0;
+            padding: 10px 0;
             border-bottom: 2px solid #e5e7eb;
         }
 
@@ -581,8 +557,8 @@
         /* Purchase Section */
         .purchase-section {
             display: flex;
-            gap: 20px;
-            padding: 20px 0;
+            gap: 10px;
+            padding: 10px 0;
             border-bottom: 2px solid #e5e7eb;
             align-items: flex-end;
         }
@@ -666,7 +642,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            padding: 20px 0;
+            padding: 5px 0;
             border-bottom: 2px solid #e5e7eb;
         }
 
@@ -739,14 +715,14 @@
 
         /* Tabs Section */
         .tabs-section-modern {
-            padding: 40px 0;
-            margin-bottom: 60px;
+            padding: 10px 0;
+            margin-bottom: 10px;
         }
 
         .tabs-header {
             display: flex;
             border-bottom: 2px solid #e5e7eb;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .tab-btn {
