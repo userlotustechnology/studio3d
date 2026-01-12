@@ -229,4 +229,153 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para sugerir WhatsApp -->
+<div id="whatsappModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 24px; max-width: 500px; margin: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+        <h3 style="font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 16px; text-align: center;">
+            <i class="fas fa-paper-plane" style="color: #3b82f6; margin-right: 8px;"></i>
+            Notificar cliente?
+        </h3>
+        
+        <p style="color: #6b7280; margin-bottom: 20px; text-align: center;">
+            O status do pedido foi alterado. Deseja enviar uma mensagem no WhatsApp para o cliente informando sobre a atualização?
+        </p>
+        
+        <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+            <strong style="color: #374151;">Mensagem que será enviada:</strong>
+            <p id="whatsappMessage" style="margin: 8px 0 0 0; color: #1f2937; font-style: italic;"></p>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button id="cancelWhatsApp" style="padding: 10px 20px; background-color: #6b7280; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                Não, apenas alterar status
+            </button>
+            <button id="sendWhatsApp" style="padding: 10px 20px; background-color: #25d366; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                <i class="fab fa-whatsapp"></i> Sim, enviar WhatsApp
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusForms = document.querySelectorAll('form[method="POST"]');
+    const modal = document.getElementById('whatsappModal');
+    const cancelBtn = document.getElementById('cancelWhatsApp');
+    const sendBtn = document.getElementById('sendWhatsApp');
+    const messageDiv = document.getElementById('whatsappMessage');
+    
+    let pendingForm = null;
+    let pendingAction = null;
+    
+    // Interceptar cliques nos botões de status
+    statusForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            // Verificar se é um botão de status sendo clicado
+            const submitter = e.submitter;
+            if (submitter && submitter.hasAttribute('formaction')) {
+                e.preventDefault();
+                
+                // Extrair o status do formaction
+                const action = submitter.getAttribute('formaction');
+                const statusMatch = action.match(/\/status\/(\w+)$/);
+                if (statusMatch) {
+                    const newStatus = statusMatch[1];
+                    
+                    // Verificar se o cliente tem WhatsApp
+                    @if($order->customer && $order->customer->phone)
+                        showWhatsAppModal(this, submitter, newStatus);
+                    @else
+                        // Se não tem WhatsApp, submeter diretamente
+                        this.submit();
+                    @endif
+                } else {
+                    // Não é um botão de status, submeter normalmente
+                    this.submit();
+                }
+            }
+        });
+    });
+    
+    function showWhatsAppModal(form, button, status) {
+        pendingForm = form;
+        pendingAction = button.getAttribute('formaction');
+        
+        // Traduzir status para português
+        const statusTranslations = {
+            'processing': 'Em processamento',
+            'shipped': 'Enviado',
+            'delivered': 'Entregue',
+            'cancelled': 'Cancelado'
+        };
+        
+        const statusText = statusTranslations[status] || status;
+        const message = `Olá! Seu pedido {{ $order->order_number }} foi atualizado.\n\nStatus: ${statusText}\nTotal: R$ {{ number_format($order->total, 2, ',', '.') }}\n\nQualquer dúvida, entre em contato conosco!`;
+        
+        messageDiv.textContent = message;
+        modal.style.display = 'flex';
+    }
+    
+    // Cancelar e apenas alterar status
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        if (pendingForm) {
+            // Criar input hidden para o action e submeter
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = '_action';
+            actionInput.value = pendingAction;
+            pendingForm.appendChild(actionInput);
+            pendingForm.action = pendingAction;
+            pendingForm.submit();
+        }
+    });
+    
+    // Enviar WhatsApp e alterar status
+    sendBtn.addEventListener('click', function() {
+        @if($order->customer && $order->customer->phone)
+            // Calcular novo status e montar mensagem
+            const action = pendingAction;
+            const statusMatch = action.match(/\/status\/(\w+)$/);
+            if (statusMatch) {
+                const newStatus = statusMatch[1];
+                const statusTranslations = {
+                    'processing': 'Em processamento',
+                    'shipped': 'Enviado', 
+                    'delivered': 'Entregue',
+                    'cancelled': 'Cancelado'
+                };
+                
+                const statusText = statusTranslations[newStatus] || newStatus;
+                const phone = '{{ $phone }}';
+                const message = `Olá! Seu pedido {{ $order->order_number }} foi atualizado.\n\nStatus: ${statusText}\nTotal: R$ {{ number_format($order->total, 2, ',', '.') }}\n\nQualquer dúvida, entre em contato conosco!`;
+                const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                
+                // Abrir WhatsApp
+                window.open(whatsappUrl, '_blank');
+            }
+        @endif
+        
+        // Fechar modal e submeter formulário
+        modal.style.display = 'none';
+        if (pendingForm) {
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = '_action'; 
+            actionInput.value = pendingAction;
+            pendingForm.appendChild(actionInput);
+            pendingForm.action = pendingAction;
+            pendingForm.submit();
+        }
+    });
+    
+    // Fechar modal ao clicar fora
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+</script>
 @endsection
