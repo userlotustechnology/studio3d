@@ -127,43 +127,44 @@
                         </div>
                     </div>
 
-                        <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
-                            @csrf
-                            <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                            <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
-                                <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
-                            </button>
-                        </form>
+                    <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
+                        @csrf
+                        <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                        <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
+                            <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
+                        </button>
+                    </form>
+                </div>
 
-                        <!-- WhatsApp Button -->
-                        @php
-                            $whatsappPhone = \App\Models\Setting::where('key', 'store_phone')->first()?->value;
-                            $whatsappPhone = preg_replace('/[^0-9]/', '', $whatsappPhone ?? '');
-                            if ($whatsappPhone && !str_starts_with($whatsappPhone, '55')) {
-                                $whatsappPhone = '55' . $whatsappPhone;
-                            }
-                            $productUrl = route('shop.show', $product->id);
-                            $whatsappMessage = "Olá! Gostaria de comprar o produto: " . $product->name . " - R$ " . number_format($product->price, 2, ',', '.') . "\n\nLink: " . $productUrl;
-                            $whatsappUrl = $whatsappPhone ? "https://wa.me/{$whatsappPhone}?text=" . urlencode($whatsappMessage) : '#';
-                        @endphp
-                        
-                        @if($whatsappPhone)
-                            <a href="{{ $whatsappUrl }}" target="_blank" class="btn-whatsapp-floating">
-                                <i class="fab fa-whatsapp"></i>
-                                <span>Comprar no WhatsApp</span>
-                            </a>
-                        @endif
-                    </div>
+                <!-- Secondary Action Buttons -->
+                <div class="secondary-actions">
+                    <!-- WhatsApp Button -->
+                    @php
+                        $whatsappPhone = \App\Models\Setting::where('key', 'store_phone')->first()?->value;
+                        $whatsappPhone = preg_replace('/[^0-9]/', '', $whatsappPhone ?? '');
+                        if ($whatsappPhone && !str_starts_with($whatsappPhone, '55')) {
+                            $whatsappPhone = '55' . $whatsappPhone;
+                        }
+                        $productUrl = route('shop.show', $product->id);
+                        $whatsappMessage = "Olá! Gostaria de comprar o produto: " . $product->name . " - R$ " . number_format($product->price, 2, ',', '.') . "\n\nLink: " . $productUrl;
+                        $whatsappUrl = $whatsappPhone ? "https://wa.me/{$whatsappPhone}?text=" . urlencode($whatsappMessage) : '#';
+                    @endphp
+                    
+                    @if($whatsappPhone)
+                        <a href="{{ $whatsappUrl }}" target="_blank" class="btn-action-secondary btn-whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Comprar no WhatsApp</span>
+                        </a>
+                    @endif
 
-                <!-- Instagram Link -->
-                @if($product->instagram_url)
-                    <div class="instagram-section">
-                        <a href="{{ $product->instagram_url }}" target="_blank" rel="noopener noreferrer" class="btn-instagram-link">
+                    <!-- Instagram Link -->
+                    @if($product->instagram_url)
+                        <a href="{{ $product->instagram_url }}" target="_blank" rel="noopener noreferrer" class="btn-action-secondary btn-instagram">
                             <i class="fab fa-instagram"></i>
                             <span>Ver no Instagram</span>
                         </a>
-                    </div>
-                @endif
+                    @endif
+                </div>
 
                 <!-- Features -->
                 <div class="product-features-modern">
@@ -660,19 +661,21 @@
             cursor: not-allowed;
         }
 
-        /* Instagram Section */
-        .instagram-section {
-            margin-top: 20px;
-            text-align: center;
+        /* Secondary Action Buttons */
+        .secondary-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+            border-bottom: 2px solid #e5e7eb;
         }
 
-        .btn-instagram-link {
-            display: inline-flex;
+        .btn-action-secondary {
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -681,16 +684,32 @@
             text-decoration: none;
             cursor: pointer;
             transition: all 0.3s;
+        }
+
+        .btn-action-secondary i {
+            font-size: 16px;
+        }
+
+        /* WhatsApp Button */
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366 0%, #1ead55 100%);
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Instagram Button */
+        .btn-instagram {
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
             box-shadow: 0 4px 20px rgba(240, 148, 51, 0.3);
         }
 
-        .btn-instagram-link:hover {
+        .btn-instagram:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(240, 148, 51, 0.4);
-        }
-
-        .btn-instagram-link i {
-            font-size: 16px;
         }
 
         /* Product Features */
