@@ -123,11 +123,11 @@
                         <div>
                             <h3 style="margin: 0; font-size: 14px; color: #6b7280; font-weight: 500;">Estoque Baixo</h3>
                             <p style="margin: 0; font-size: 20px; font-weight: 700; color: #1f2937;">
-                                {{ \App\Models\Product::where('stock_quantity', '<=', 5)->where('is_active', true)->count() }}
+                                {{ \App\Models\Product::where('stock', '<=', 5)->where('is_active', true)->count() }}
                             </p>
                         </div>
                     </div>
-                    @if(\App\Models\Product::where('stock_quantity', '<=', 5)->where('is_active', true)->count() > 0)
+                    @if(\App\Models\Product::where('stock', '<=', 5)->where('is_active', true)->count() > 0)
                         <div style="margin-top: 12px;">
                             <a href="{{ route('admin.products.index') }}" style="color: #f59e0b; text-decoration: none; font-size: 12px; font-weight: 600;">
                                 <i class="fas fa-arrow-right"></i> Ver Produtos

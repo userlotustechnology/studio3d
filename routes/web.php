@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\Admin\ShippingRateController;
+use App\Http\Controllers\Admin\CustomerCrmController;
 use App\Models\Category;
 
 // Rotas públicas - Loja
@@ -104,6 +105,13 @@ Route::middleware('auth')->group(function () {
             ]
         ]);
 
+        // Rotas do CRM de Clientes
+        Route::get('/admin/crm/clientes', [CustomerCrmController::class, 'index'])->name('admin.crm.customers.index');
+        Route::get('/admin/crm/clientes/{customer}', [CustomerCrmController::class, 'show'])->name('admin.crm.customers.show');
+        Route::get('/admin/crm/clientes/{customer}/pedidos/{orderId}', [CustomerCrmController::class, 'showOrder'])->name('admin.crm.customers.order-detail');
+        Route::get('/admin/crm/clientes/search', [CustomerCrmController::class, 'search'])->name('admin.crm.customers.search');
+        Route::get('/admin/crm/clientes/export/csv', [CustomerCrmController::class, 'export'])->name('admin.crm.customers.export');
+
         // Rotas de Financeiro
         Route::get('/admin/financeiro', [FinanceController::class, 'index'])->name('admin.finance.index');
         Route::get('/admin/financeiro/vendas', [FinanceController::class, 'sales'])->name('admin.finance.sales');
@@ -130,6 +138,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/pos/search-customers', [App\Http\Controllers\Admin\PosController::class, 'searchCustomers'])->name('admin.pos.searchCustomers');
         Route::get('/admin/pos/search-by-cpf', [App\Http\Controllers\Admin\PosController::class, 'searchByCpf'])->name('admin.pos.searchByCpf');
         Route::post('/admin/pos/create-customer', [App\Http\Controllers\Admin\PosController::class, 'createCustomer'])->name('admin.pos.createCustomer');
+        Route::post('/admin/pos/create-address', [App\Http\Controllers\Admin\PosController::class, 'createAddress'])->name('admin.pos.createAddress');
         Route::post('/admin/pos/calculate-shipping', [App\Http\Controllers\Admin\PosController::class, 'calculateShipping'])->name('admin.pos.calculateShipping');
 
     });

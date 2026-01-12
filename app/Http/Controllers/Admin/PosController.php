@@ -127,6 +127,67 @@ class PosController extends Controller
         ]);
     }
 
+    public function createAddress(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'customer_id' => 'required|exists:customers,id',
+                'street' => 'required|string|max:255',
+                'number' => 'required|string|max:20',
+                'complement' => 'nullable|string|max:100',
+                'neighborhood' => 'required|string|max:100',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|size:2',
+                'cep' => 'nullable|string|max:15'
+            ]);
+
+            // Padronizar CEP
+            $validated['cep'] = preg_replace('/[^0-9]/', '', $validated['cep'] ?? '');
+
+            // Criar endereço para entrega e cobrança
+            $address = Address::create([
+                'customer_id' => $validated['customer_id'],
+                'type' => 'shipping',
+                'street' => $validated['street'],
+                'number' => $validated['number'],
+                'complement' => $validated['complement'],
+                'neighborhood' => $validated['neighborhood'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'cep' => $validated['cep']
+            ]);
+
+            // Criar também como endereço de cobrança
+            Address::create([
+                'customer_id' => $validated['customer_id'],
+                'type' => 'billing',
+                'street' => $validated['street'],
+                'number' => $validated['number'],
+                'complement' => $validated['complement'],
+                'neighborhood' => $validated['neighborhood'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'cep' => $validated['cep']
+            ]);
+
+            // Recarregar cliente com endereços
+            $customer = Customer::with('addresses')->find($validated['customer_id']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Endereço cadastrado com sucesso!',
+                'address' => $address,
+                'customer' => $customer
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar endereço: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao cadastrar endereço: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function calculateShipping(Request $request): JsonResponse
     {
         $subtotal = $request->input('total', 0);

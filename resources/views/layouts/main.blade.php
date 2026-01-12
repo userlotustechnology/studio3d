@@ -197,6 +197,20 @@
                     </ul>
                 </li>
 
+                <li class="menu-item {{ request()->routeIs('admin.crm.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.crm.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">people</span>
+                        <span class="title">CRM</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.crm.customers.index') }}" class="menu-link {{ request()->routeIs('admin.crm.customers.index') ? 'active' : '' }}">
+                                Clientes
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('admin.pos.*') ? 'open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.pos.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined menu-icon">point_of_sale</span>
