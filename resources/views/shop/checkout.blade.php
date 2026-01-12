@@ -312,7 +312,13 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
                             <span style="color: var(--text-light); font-weight: 500;">Frete</span>
-                            <span style="font-weight: 700; color: var(--text-dark);" data-frete-value>R$ {{ number_format($shippingCost, 2, ',', '.') }}</span>
+                            <span style="font-weight: 700; color: var(--text-dark);" data-frete-value>
+                                @if($shippingCost == 0)
+                                    <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                @else
+                                    R$ {{ number_format($shippingCost, 2, ',', '.') }}
+                                @endif
+                            </span>
                         </div>
                         @if($discount > 0)
                             <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
@@ -320,6 +326,28 @@
                                 <span style="font-weight: 700; color: #10b981;">-R$ {{ number_format($discount, 2, ',', '.') }}</span>
                             </div>
                         @endif
+                        
+                        <!-- Indicador de Frete Grátis -->
+                        @php
+                            $freeShippingMinimum = \App\Models\Setting::get('free_shipping_minimum', 0);
+                        @endphp
+                        @if($freeShippingMinimum > 0)
+                            @if($subtotal >= $freeShippingMinimum)
+                                <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 10px 15px; border-radius: 6px; text-align: center; margin: 15px 0; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span style="font-weight: 600;">🎉 Você ganhou frete grátis!</span>
+                                </div>
+                            @else
+                                @php
+                                    $remaining = $freeShippingMinimum - $subtotal;
+                                @endphp
+                                <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; padding: 10px 15px; border-radius: 6px; text-align: center; margin: 15px 0; font-size: 13px;">
+                                    <div style="font-weight: 600; margin-bottom: 2px;">🚚 Frete grátis</div>
+                                    <div>Compre mais <strong>R$ {{ number_format($remaining, 2, ',', '.') }}</strong></div>
+                                </div>
+                            @endif
+                        @endif
+
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 20px 15px; border-radius: 10px; margin-top: 15px;">
                             <span style="font-size: 18px; font-weight: 700; color: var(--text-dark);">Total</span>
                             <span style="font-size: 28px; font-weight: 800; color: #667eea;" data-total-value data-subtotal="{{ $subtotal }}">
@@ -740,7 +768,12 @@
                     // Atualizar o valor do frete na tela
                     const freteElement = document.querySelector('[data-frete-value]');
                     if (freteElement) {
-                        freteElement.textContent = data.formattedCost;
+                        if (data.shippingCost === 0) {
+                            freteElement.innerHTML = '<span style="color: #10b981;">GRÁTIS 🎉</span>';
+                        } else {
+                            freteElement.textContent = data.formattedCost;
+                            freteElement.style.color = 'var(--text-dark)';
+                        }
                     }
                     
                     // Atualizar o total

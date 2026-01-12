@@ -214,7 +214,13 @@
                         </div>
                         <div class="summary-row">
                             <span>Frete:</span>
-                            <strong>R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}</strong>
+                            <strong>
+                                @if($order->shipping_cost == 0)
+                                    <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                @else
+                                    R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                @endif
+                            </strong>
                         </div>
                         <div class="summary-row total">
                             <span>Total do Pedido:</span>

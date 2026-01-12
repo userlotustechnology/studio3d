@@ -154,7 +154,13 @@
                             </div>
                             <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
                                 <span style="color: #6b7280; font-weight: 500;">Frete</span>
-                                <span style="font-weight: 700; color: #667eea;">R$ <span id="shipping-amount">{{ number_format($shippingCost, 2, ',', '.') }}</span></span>
+                                <span style="font-weight: 700; color: #667eea;">
+                                    @if($shippingCost == 0)
+                                        <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                    @else
+                                        R$ <span id="shipping-amount">{{ number_format($shippingCost, 2, ',', '.') }}</span>
+                                    @endif
+                                </span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px;">
                                 <span style="font-size: 18px; font-weight: 700; color: #1f2937;">Total</span>
@@ -163,6 +169,29 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Indicador de Frete Grátis -->
+                        @php
+                            $freeShippingMinimum = \App\Models\Setting::get('free_shipping_minimum', 0);
+                        @endphp
+                        @if($freeShippingMinimum > 0)
+                            <div id="free-shipping-indicator" style="margin-bottom: 20px;">
+                                @if($subtotal >= $freeShippingMinimum)
+                                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 16px; border-radius: 8px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span style="font-weight: 600;">🎉 Parabéns! Você ganhou frete grátis!</span>
+                                    </div>
+                                @else
+                                    @php
+                                        $remaining = $freeShippingMinimum - $subtotal;
+                                    @endphp
+                                    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; padding: 12px 16px; border-radius: 8px; text-align: center;">
+                                        <div style="margin-bottom: 4px; font-weight: 600;">🚚 Frete grátis</div>
+                                        <div style="font-size: 14px;">Compre mais <strong>R$ {{ number_format($remaining, 2, ',', '.') }}</strong> e ganhe frete grátis!</div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                         <div style="display: grid; gap: 12px;">
                             <a href="{{ route('cart.checkout') }}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; text-align: center; display: block; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);">
@@ -575,8 +604,21 @@
                 }).format(total);
 
                 // Atualizar elementos na tela
-                document.getElementById('shipping-amount').textContent = shippingFormatted;
+                const shippingElement = document.getElementById('shipping-amount');
+                if (shippingElement) {
+                    if (currentShippingCost === 0) {
+                        shippingElement.innerHTML = '<span style="color: #10b981;">GRÁTIS 🎉</span>';
+                        shippingElement.parentElement.style.color = '#10b981';
+                    } else {
+                        shippingElement.textContent = shippingFormatted;
+                        shippingElement.parentElement.style.color = '#667eea';
+                    }
+                }
+                
                 document.getElementById('total-amount').textContent = totalFormatted;
+
+                // Atualizar indicador de frete grátis
+                updateFreeShippingIndicator();
 
                 // Formatar CEP para exibição (XXXXX-XXX)
                 cepInput.value = cep.substring(0, 5) + '-' + cep.substring(5);
@@ -607,5 +649,41 @@
             }
             e.target.value = value;
         });
+
+        // Função para atualizar indicador de frete grátis
+        function updateFreeShippingIndicator() {
+            const freeShippingMinimum = {{ $freeShippingMinimum ?? 0 }};
+            if (freeShippingMinimum <= 0) return;
+
+            const subtotalText = document.getElementById('subtotal-amount').textContent;
+            const subtotal = parseFloat(subtotalText.replace('.', '').replace(',', '.'));
+            const indicator = document.getElementById('free-shipping-indicator');
+            
+            if (!indicator) return;
+
+            if (subtotal >= freeShippingMinimum) {
+                // Frete grátis conquistado
+                indicator.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 16px; border-radius: 8px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-check-circle"></i>
+                        <span style="font-weight: 600;">🎉 Parabéns! Você ganhou frete grátis!</span>
+                    </div>
+                `;
+            } else {
+                // Ainda não alcançou o mínimo
+                const remaining = freeShippingMinimum - subtotal;
+                const remainingFormatted = remaining.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                indicator.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; padding: 12px 16px; border-radius: 8px; text-align: center;">
+                        <div style="margin-bottom: 4px; font-weight: 600;">🚚 Frete grátis</div>
+                        <div style="font-size: 14px;">Compre mais <strong>R$ ${remainingFormatted}</strong> e ganhe frete grátis!</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Atualizar indicador quando a página carrega
+        updateFreeShippingIndicator();
     </script>
 @endsection

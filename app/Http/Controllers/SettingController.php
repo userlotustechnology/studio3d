@@ -21,6 +21,7 @@ class SettingController extends Controller
             'store_address' => Setting::get('store_address', ''),
             'support_email' => Setting::get('support_email', ''),
             'minimum_order_value' => Setting::get('minimum_order_value', 0),
+            'free_shipping_minimum' => Setting::get('free_shipping_minimum', 0),
             'system_name' => Setting::get('system_name', 'Studio3D'),
             'system_version' => Setting::get('system_version', '1.0.0'),
             'maintenance_mode' => Setting::get('maintenance_mode', false),
@@ -42,6 +43,7 @@ class SettingController extends Controller
             'store_address' => 'required|string',
             'support_email' => 'required|email',
             'minimum_order_value' => 'required|numeric|min:0',
+            'free_shipping_minimum' => 'required|numeric|min:0',
         ]);
 
         // Remove mask from phone (keep only numbers)
@@ -53,6 +55,7 @@ class SettingController extends Controller
         Setting::set('store_address', $validated['store_address'], 'string', 'Endereço da loja');
         Setting::set('support_email', $validated['support_email'], 'string', 'Email de suporte');
         Setting::set('minimum_order_value', $validated['minimum_order_value'], 'decimal', 'Valor mínimo do pedido');
+        Setting::set('free_shipping_minimum', $validated['free_shipping_minimum'], 'decimal', 'Valor mínimo para frete grátis');
 
         return redirect()->route('admin.settings.index')->with('success', 'Informações da loja atualizadas com sucesso!');
     }

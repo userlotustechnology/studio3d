@@ -187,13 +187,20 @@ class CartController extends Controller
         return true;
     }
 
-    private function calculateShippingCost($cep): float
+    private function calculateShippingCost($cep, $subtotal = null): float
     {
         // Remove máscara do CEP
         $cep = preg_replace('/[^0-9]/', '', $cep);
         
         if (strlen($cep) !== 8) {
             return 0;
+        }
+
+        // Verificar se qualifica para frete grátis
+        $freeShippingMinimum = \App\Models\Setting::get('free_shipping_minimum', 0);
+        
+        if ($freeShippingMinimum > 0 && $subtotal !== null && $subtotal >= $freeShippingMinimum) {
+            return 0; // Frete grátis!
         }
 
         // Pegar os 2 primeiros dígitos do CEP para mapear estado
@@ -255,17 +262,18 @@ class CartController extends Controller
         // Verificar se é endereço de entrega (shipping) ou cobrança (billing)
         $isShippingAddress = $request->input('isShippingAddress', false);
 
-        // Calcular novo frete
-        $shippingCost = $this->calculateShippingCost($cep);
+        // Calcular subtotal para verificação de frete grátis
+        $items = $order->items()->get();
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += $item->product_price * $item->quantity;
+        }
+
+        // Calcular novo frete (com verificação de frete grátis)
+        $shippingCost = $this->calculateShippingCost($cep, $subtotal);
 
         // Se for endereço de entrega, atualizar o pedido
         if ($isShippingAddress) {
-            $items = $order->items()->get();
-            $subtotal = 0;
-            foreach ($items as $item) {
-                $subtotal += $item->product_price * $item->quantity;
-            }
-
             $total = $subtotal + $shippingCost;
 
             $order->update([
@@ -289,7 +297,24 @@ class CartController extends Controller
             $subtotal += $item->product_price * $item->quantity;
         }
 
-        $shippingCost = $subtotal > 0 ? 15.00 : 0;
+        // Verificar se há CEP na sessão para calcular frete adequado
+        $cep = session('cep');
+        $shippingCost = 0;
+        
+        if ($subtotal > 0) {
+            if ($cep) {
+                $shippingCost = $this->calculateShippingCost($cep, $subtotal);
+            } else {
+                // Se não há CEP, verificar se qualifica para frete grátis
+                $freeShippingMinimum = \App\Models\Setting::get('free_shipping_minimum', 0);
+                if ($freeShippingMinimum > 0 && $subtotal >= $freeShippingMinimum) {
+                    $shippingCost = 0;
+                } else {
+                    $shippingCost = 15.00; // Valor padrão temporário
+                }
+            }
+        }
+
         $total = $subtotal + $shippingCost;
 
         $order->update([

@@ -114,6 +114,20 @@
                         @enderror
                     </div>
 
+                    <!-- Valor Mínimo para Frete Grátis -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            Valor Mínimo para Frete Grátis (R$)
+                        </label>
+                        <input type="number" name="free_shipping_minimum" value="{{ $settings['free_shipping_minimum'] ?? '0' }}" step="0.01" min="0"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                            placeholder="Ex: 200.00">
+                        <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Deixe 0 para desabilitar frete grátis. O frete grátis se aplica apenas ao valor dos produtos (sem desconto do frete)</p>
+                        @error('free_shipping_minimum')
+                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <button type="submit" style="background-color: #3b82f6; color: white; padding: 12px 24px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; width: 100%;">
                         <i class="fas fa-save"></i> Salvar Informações
                     </button>
