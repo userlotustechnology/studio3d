@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\OrderCreated;
+use App\Events\OrderConfirmed;
 use App\Services\SlackNotificationService;
 
 class SendOrderCreatedNotification
@@ -17,7 +17,7 @@ class SendOrderCreatedNotification
     /**
      * Handle the event.
      */
-    public function handle(OrderCreated $event): void
+    public function handle(OrderConfirmed $event): void
     {
         $this->slackService->notifyOrderCreated($event->order);
     }

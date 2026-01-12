@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderConfirmed;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -553,6 +554,9 @@ class CartController extends Controller
             'is_draft' => false,
             'order_number' => 'PED-' . date('Y') . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
         ]);
+
+        // Disparar evento de pedido confirmado para notificação no Slack
+        OrderConfirmed::dispatch($order);
 
         // Limpar sessão do carrinho
         session()->forget('draft_order_id');
