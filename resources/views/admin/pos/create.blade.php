@@ -854,8 +854,38 @@ document.getElementById('posForm').addEventListener('submit', function(e) {
     
     showNotification('Processando venda...', 'info');
     
-    // Enviar formulário
-    this.submit();
+    // Enviar formulário via AJAX
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            
+            // Redirecionar para a página do pedido após um breve delay
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 1500);
+        } else {
+            showNotification(data.message, 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Finalizar Venda';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Erro ao processar venda. Tente novamente.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Finalizar Venda';
+    });
 });
 
 // Inicialização

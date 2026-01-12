@@ -285,8 +285,11 @@ class PosController extends Controller
                 'payment_status' => 'pending',
                 'notes' => $validated['notes'],
                 'is_draft' => false,
-                'tracking_token' => Str::random(32)
             ]);
+
+            // Gerar access token após criar o pedido (precisa do ID)
+            $order->access_token = $order->generateAccessToken();
+            $order->save();
 
             // Criar itens do pedido
             foreach ($validated['items'] as $productId => $itemData) {
@@ -301,9 +304,10 @@ class PosController extends Controller
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'product_price' => $itemData['price'],
                     'quantity' => $itemData['quantity'],
-                    'unit_price' => $itemData['price'],
-                    'total_price' => $itemData['price'] * $itemData['quantity']
+                    'subtotal' => $itemData['price'] * $itemData['quantity']
                 ]);
                 
                 // Reduzir estoque
@@ -331,7 +335,8 @@ class PosController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Venda criada com sucesso!',
-                'order' => $order->load('customer', 'items.product')
+                'order' => $order->load('customer', 'items.product'),
+                'redirect_url' => route('admin.orders.show', $order->id)
             ]);
 
         } catch (\Exception $e) {

@@ -106,11 +106,11 @@ Route::middleware('auth')->group(function () {
         ]);
 
         // Rotas do CRM de Clientes
+        Route::get('/admin/crm/clientes/search', [CustomerCrmController::class, 'search'])->name('admin.crm.customers.search');
+        Route::get('/admin/crm/clientes/export/csv', [CustomerCrmController::class, 'export'])->name('admin.crm.customers.export');
         Route::get('/admin/crm/clientes', [CustomerCrmController::class, 'index'])->name('admin.crm.customers.index');
         Route::get('/admin/crm/clientes/{customer}', [CustomerCrmController::class, 'show'])->name('admin.crm.customers.show');
         Route::get('/admin/crm/clientes/{customer}/pedidos/{orderId}', [CustomerCrmController::class, 'showOrder'])->name('admin.crm.customers.order-detail');
-        Route::get('/admin/crm/clientes/search', [CustomerCrmController::class, 'search'])->name('admin.crm.customers.search');
-        Route::get('/admin/crm/clientes/export/csv', [CustomerCrmController::class, 'export'])->name('admin.crm.customers.export');
 
         // Rotas de Financeiro
         Route::get('/admin/financeiro', [FinanceController::class, 'index'])->name('admin.finance.index');
