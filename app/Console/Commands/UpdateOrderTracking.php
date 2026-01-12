@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Order;
+use App\Services\OrderStatusTransitionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderStatusUpdateMail;
@@ -25,7 +26,7 @@ class UpdateOrderTracking extends Command
      *
      * @var string
      */
-    protected $description = 'Atualiza o código de rastreio de um pedido e opcionalmente envia notificação por e-mail';
+    protected $description = 'Atualiza o código de rastreio de um pedido e marca como enviado';
 
     /**
      * Execute the console command.
@@ -44,37 +45,55 @@ class UpdateOrderTracking extends Command
             return 1;
         }
 
-        // Validar status
-        if ($order->status !== 'processing') {
-            $this->warn("Atenção: O pedido está com status '{$order->status}'. Normalmente pedidos devem estar em 'processing' antes de marcar como enviado.");
-        }
-
         $previousStatus = $order->status;
+        $transitionService = app(OrderStatusTransitionService::class);
 
-        // Atualizar rastreio
-        $order->update([
-            'tracking_code' => $trackingCode,
-            'shipping_company_id' => $shippingCompanyId,
-            'status' => 'shipped',
-            'shipped_at' => now(),
-        ]);
-
-        $this->info("✓ Rastreio atualizado com sucesso!");
-        $this->line("  Pedido: {$order->order_number}");
-        $this->line("  Código: {$trackingCode}");
-        $this->line("  Transportadora: {$order->shippingCompany->name}");
-
-        // Enviar e-mail de notificação
-        if ($sendEmail) {
-            try {
-                Mail::send(new OrderStatusUpdateMail($order, $previousStatus, 'shipped'));
-                $this->info("✓ E-mail de notificação enviado!");
-            } catch (\Exception $e) {
-                $this->error("✗ Erro ao enviar e-mail: " . $e->getMessage());
-                return 1;
-            }
+        // Validar transição para 'shipped'
+        if (!$transitionService->canTransition($previousStatus, 'shipped')) {
+            $validTransitions = implode(', ', $transitionService->getPossibleTransitions($previousStatus));
+            $this->error("✗ Transição inválida de '{$previousStatus}' para 'shipped'");
+            $this->line("Transições válidas: {$validTransitions}");
+            return 1;
         }
 
-        return 0;
+        try {
+            // Atualizar rastreio
+            $order->update([
+                'tracking_code' => $trackingCode,
+                'shipping_company_id' => $shippingCompanyId,
+            ]);
+
+            // Realizar transição de status
+            $transitionService->transitionStatus(
+                $order,
+                'shipped',
+                "Código de rastreio: {$trackingCode}",
+                'command'
+            );
+
+            $order->refresh();
+
+            $this->info("✓ Rastreio atualizado com sucesso!");
+            $this->line("  Pedido: {$order->order_number}");
+            $this->line("  Status: {$previousStatus} → shipped");
+            $this->line("  Código: {$trackingCode}");
+            $this->line("  Transportadora: {$order->shippingCompany->name}");
+
+            // Enviar e-mail de notificação (assíncrono com delay de 1 minuto)
+            if ($sendEmail) {
+                try {
+                    Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, 'shipped'));
+                    $this->info("✓ E-mail de notificação enfileirado e será enviado em 1 minuto!");
+                } catch (\Exception $e) {
+                    $this->error("✗ Erro ao enfileirar e-mail: " . $e->getMessage());
+                    return 1;
+                }
+            }
+
+            return 0;
+        } catch (\InvalidArgumentException $e) {
+            $this->error("✗ Erro: " . $e->getMessage());
+            return 1;
+        }
     }
 }

@@ -65,6 +65,11 @@ class Order extends Model
         return $this->belongsTo(ShippingCompany::class);
     }
 
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class);
+    }
+
     public function generateOrderNumber(): string
     {
         return 'PED-' . date('Y') . '-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);

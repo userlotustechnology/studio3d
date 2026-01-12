@@ -28,26 +28,31 @@
                         $currentStatus = $order->status;
                         $statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
                         $currentIndex = array_search($currentStatus, $statusOrder);
+                        
+                        // Se está cancelado, mostrar diferente
+                        if ($currentStatus === 'cancelled') {
+                            $currentIndex = -1;
+                        }
                     @endphp
 
                     @foreach($statusOrder as $index => $status)
                         <div style="display: flex; margin-bottom: 20px;">
                             <!-- Timeline dot -->
                             <div style="position: relative; width: 50px; text-align: center;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: {{ $index <= $currentIndex ? $statuses[$status]['color'] : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 18px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: {{ ($index <= $currentIndex && $currentIndex >= 0) ? $statuses[$status]['color'] : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 18px;">
                                     {{ $statuses[$status]['icon'] }}
                                 </div>
                                 @if($index < count($statusOrder) - 1)
-                                    <div style="width: 2px; height: 30px; background-color: {{ $index < $currentIndex ? $statuses[$status]['color'] : '#e5e7eb' }}; margin: 0 auto; margin-top: 5px;"></div>
+                                    <div style="width: 2px; height: 30px; background-color: {{ ($index < $currentIndex && $currentIndex >= 0) ? $statuses[$status]['color'] : '#e5e7eb' }}; margin: 0 auto; margin-top: 5px;"></div>
                                 @endif
                             </div>
                             
                             <!-- Status label -->
                             <div style="margin-left: 20px; padding-top: 8px;">
-                                <p style="margin: 0; font-weight: 600; font-size: 16px; color: {{ $index <= $currentIndex ? $statuses[$status]['color'] : '#999' }};">
+                                <p style="margin: 0; font-weight: 600; font-size: 16px; color: {{ ($index <= $currentIndex && $currentIndex >= 0) ? $statuses[$status]['color'] : '#999' }};">
                                     {{ $statuses[$status]['label'] }}
                                 </p>
-                                @if($index <= $currentIndex)
+                                @if($index <= $currentIndex && $currentIndex >= 0)
                                     <p style="margin: 5px 0 0 0; font-size: 13px; color: #999;">Concluído</p>
                                 @else
                                     <p style="margin: 5px 0 0 0; font-size: 13px; color: #999;">Aguardando</p>
@@ -55,7 +60,66 @@
                             </div>
                         </div>
                     @endforeach
+
+                    @if($currentStatus === 'cancelled')
+                    <div style="display: flex; margin-bottom: 20px;">
+                        <div style="position: relative; width: 50px; text-align: center;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 18px;">
+                                ✕
+                            </div>
+                        </div>
+                        <div style="margin-left: 20px; padding-top: 8px;">
+                            <p style="margin: 0; font-weight: 600; font-size: 16px; color: #ef4444;">Cancelado</p>
+                            <p style="margin: 5px 0 0 0; font-size: 13px; color: #999;">Pedido cancelado</p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
+
+                @php
+                    $statusService = app(\App\Services\OrderStatusTransitionService::class);
+                    $history = $statusService->getFormattedHistory($order);
+                @endphp
+
+                @if(count($history) > 0)
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px;">📋 Histórico de Mudanças</h3>
+                    <div style="space-y: 0;">
+                        @foreach($history as $change)
+                        <div style="padding: 12px; margin-bottom: 10px; background-color: #fafafa; border-left: 4px solid {{ $change['color'] }}; border-radius: 4px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0 0 5px 0; font-weight: 600; font-size: 14px; color: var(--text-dark);">
+                                        {{ $change['icon'] }} {{ $change['from_label'] }} → {{ $change['to_label'] }}
+                                    </p>
+                                    <p style="margin: 0 0 5px 0; font-size: 12px; color: var(--text-light);">
+                                        {{ $change['created_at_formatted'] }}
+                                    </p>
+                                    @if($change['reason'])
+                                    <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">
+                                        {{ $change['reason'] }}
+                                    </p>
+                                    @endif
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="display: inline-block; padding: 4px 8px; background-color: {{ $change['color'] }}; color: white; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                        @if($change['changed_by'] === 'system')
+                                            Sistema
+                                        @elseif($change['changed_by'] === 'admin')
+                                            Admin
+                                        @elseif($change['changed_by'] === 'command')
+                                            CLI
+                                        @else
+                                            {{ $change['changed_by'] }}
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Order Details -->
