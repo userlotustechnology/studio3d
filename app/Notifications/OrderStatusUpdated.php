@@ -6,7 +6,8 @@ use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Slack\SlackMessage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OrderStatusUpdated extends Notification implements ShouldQueue
 {
@@ -32,14 +33,21 @@ class OrderStatusUpdated extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['slack'];
+        return ['slack_webhook'];
     }
 
     /**
-     * Get the Slack representation of the notification.
+     * Send the notification via Slack webhook.
      */
-    public function toSlack(object $notifiable): SlackMessage
+    public function toSlackWebhook(object $notifiable): void
     {
+        $webhookUrl = config('services.slack.webhook_url');
+
+        if (!$webhookUrl) {
+            Log::warning('Slack webhook URL not configured');
+            return;
+        }
+
         $statusLabels = [
             'pending' => 'Pendente',
             'processing' => 'Processando',
@@ -58,31 +66,72 @@ class OrderStatusUpdated extends Notification implements ShouldQueue
 
         $previousLabel = $statusLabels[$this->previousStatus] ?? ucfirst($this->previousStatus);
         $newLabel = $statusLabels[$this->newStatus] ?? ucfirst($this->newStatus);
-        $color = $statusColors[$this->newStatus] ?? '#gray';
+        $color = $statusColors[$this->newStatus] ?? '#999999';
 
-        $message = (new SlackMessage)
-            ->color($color)
-            ->from('Studio3D Bot')
-            ->title("📦 Atualização de Pedido #" . $this->order->order_number)
-            ->attachment(function ($attachment) use ($previousLabel, $newLabel) {
-                $attachment
-                    ->field('Status Anterior', $previousLabel, true)
-                    ->field('Novo Status', $newLabel, true)
-                    ->field('Cliente', $this->order->customer?->name ?? 'N/A', true)
-                    ->field('Email', $this->order->customer?->email ?? 'N/A', true)
-                    ->field('Total', 'R$ ' . number_format($this->order->total, 2, ',', '.'), true)
-                    ->field('Data', $this->order->created_at->format('d/m/Y H:i:s'), true);
+        $payload = [
+            'username' => 'Studio3D Bot',
+            'icon_emoji' => ':package:',
+            'attachments' => [
+                [
+                    'color' => $color,
+                    'title' => '📦 Atualização de Pedido #' . $this->order->order_number,
+                    'fields' => [
+                        [
+                            'title' => 'Status Anterior',
+                            'value' => $previousLabel,
+                            'short' => true,
+                        ],
+                        [
+                            'title' => 'Novo Status',
+                            'value' => $newLabel,
+                            'short' => true,
+                        ],
+                        [
+                            'title' => 'Cliente',
+                            'value' => $this->order->customer?->name ?? 'N/A',
+                            'short' => true,
+                        ],
+                        [
+                            'title' => 'Email',
+                            'value' => $this->order->customer?->email ?? 'N/A',
+                            'short' => true,
+                        ],
+                        [
+                            'title' => 'Total',
+                            'value' => 'R$ ' . number_format($this->order->total, 2, ',', '.'),
+                            'short' => true,
+                        ],
+                        [
+                            'title' => 'Data',
+                            'value' => $this->order->created_at->format('d/m/Y H:i:s'),
+                            'short' => true,
+                        ],
+                    ],
+                    'footer' => 'Studio3D - E-commerce',
+                    'ts' => time(),
+                ]
+            ]
+        ];
 
-                if ($this->reason) {
-                    $attachment->field('Motivo', $this->reason, false);
-                }
+        if ($this->reason) {
+            $payload['attachments'][0]['fields'][] = [
+                'title' => 'Motivo',
+                'value' => $this->reason,
+                'short' => false,
+            ];
+        }
 
-                $attachment->field('Itens', $this->formatItems(), false);
-                $attachment->footer('Studio3D - E-commerce');
-                $attachment->timestamp();
-            });
+        $payload['attachments'][0]['fields'][] = [
+            'title' => 'Itens',
+            'value' => $this->formatItems(),
+            'short' => false,
+        ];
 
-        return $message;
+        try {
+            Http::post($webhookUrl, $payload);
+        } catch (\Exception $e) {
+            Log::error('Falha ao enviar notificação para Slack: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -97,3 +146,4 @@ class OrderStatusUpdated extends Notification implements ShouldQueue
         return $items ?: "Sem itens";
     }
 }
+

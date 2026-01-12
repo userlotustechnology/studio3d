@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
-use App\Notifications\OrderStatusUpdated;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OrderStatusTransitionService
 {
@@ -84,9 +84,110 @@ class OrderStatusTransitionService
 
         $order->update($updateData);
 
-        // Disparar notificação para Slack
-        Notification::route('slack', config('services.slack.webhook_url'))
-            ->notify(new OrderStatusUpdated($order, $currentStatus, $newStatus, $reason));
+        // Disparar notificação para Slack via webhook
+        $this->sendSlackNotification($order, $currentStatus, $newStatus, $reason);
+    }
+
+    /**
+     * Envia notificação ao Slack via webhook
+     */
+    private function sendSlackNotification(Order $order, string $previousStatus, string $newStatus, ?string $reason = null): void
+    {
+        $webhookUrl = env('SLACK_WEBHOOK_URL');
+
+        if (!$webhookUrl) {
+            Log::debug('SLACK_WEBHOOK_URL não configurada');
+            return;
+        }
+
+        $statusLabels = [
+            'pending' => 'Pendente',
+            'processing' => 'Processando',
+            'shipped' => 'Enviado',
+            'delivered' => 'Entregue',
+            'cancelled' => 'Cancelado',
+        ];
+
+        $statusColors = [
+            'pending' => '#f59e0b',      // Amarelo
+            'processing' => '#3b82f6',   // Azul
+            'shipped' => '#8b5cf6',      // Roxo
+            'delivered' => '#10b981',    // Verde
+            'cancelled' => '#ef4444',    // Vermelho
+        ];
+
+        $previousLabel = $statusLabels[$previousStatus] ?? ucfirst($previousStatus);
+        $newLabel = $statusLabels[$newStatus] ?? ucfirst($newStatus);
+        $color = $statusColors[$newStatus] ?? '#999999';
+
+        $fields = [
+            [
+                'title' => 'Status Anterior',
+                'value' => $previousLabel,
+                'short' => true,
+            ],
+            [
+                'title' => 'Novo Status',
+                'value' => $newLabel,
+                'short' => true,
+            ],
+            [
+                'title' => 'Cliente',
+                'value' => $order->customer?->name ?? 'N/A',
+                'short' => true,
+            ],
+            [
+                'title' => 'Email',
+                'value' => $order->customer?->email ?? 'N/A',
+                'short' => true,
+            ],
+            [
+                'title' => 'Total',
+                'value' => 'R$ ' . number_format($order->total, 2, ',', '.'),
+                'short' => true,
+            ],
+            [
+                'title' => 'Data',
+                'value' => $order->created_at->format('d/m/Y H:i:s'),
+                'short' => true,
+            ],
+        ];
+
+        if ($reason) {
+            $fields[] = [
+                'title' => 'Motivo',
+                'value' => $reason,
+                'short' => false,
+            ];
+        }
+
+        $items = $order->items->map(fn($item) => "• {$item->product->name} (Qtd: {$item->quantity})")->join("\n");
+        $fields[] = [
+            'title' => 'Itens',
+            'value' => $items ?: "Sem itens",
+            'short' => false,
+        ];
+
+        $payload = [
+            'username' => 'Studio3D Bot',
+            'icon_emoji' => ':package:',
+            'attachments' => [
+                [
+                    'color' => $color,
+                    'title' => '📦 Atualização de Pedido #' . $order->order_number,
+                    'fields' => $fields,
+                    'footer' => 'Studio3D - E-commerce',
+                    'ts' => time(),
+                ]
+            ]
+        ];
+
+        try {
+            Http::timeout(10)->post($webhookUrl, $payload);
+            Log::info('Notificação Slack enviada para pedido: ' . $order->order_number);
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar notificação Slack: ' . $e->getMessage());
+        }
     }
 
     /**
