@@ -235,6 +235,7 @@
                     <div class="address-block">
                         <p>{{ $order->shippingAddress?->street ?? 'Não informado' }}<br>
                         {{ $order->shippingAddress?->number ?? '' }}{{ $order->shippingAddress?->complement ? ', ' . $order->shippingAddress->complement : '' }}<br>
+                        {{ $order->shippingAddress?->neighborhood ? $order->shippingAddress->neighborhood . '<br>' : '' }}
                         {{ $order->shippingAddress?->city ?? '' }} - {{ $order->shippingAddress?->state ?? '' }}<br>
                         CEP: {{ $order->shippingAddress?->postal_code ?? '' }}</p>
                     </div>
