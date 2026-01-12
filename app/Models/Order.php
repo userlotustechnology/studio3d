@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
     protected $fillable = [
         'order_number',
+        'uuid',
         'access_token',
         'customer_id',
         'billing_address_id',
@@ -96,5 +98,26 @@ class Order extends Model
         }
 
         return $this->shippingCompany->getTrackingUrl($this->tracking_code);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        static::retrieved(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+                $model->save();
+            }
+        });
     }
 }

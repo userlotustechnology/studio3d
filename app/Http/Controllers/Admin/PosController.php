@@ -336,7 +336,7 @@ class PosController extends Controller
                 'success' => true,
                 'message' => 'Venda criada com sucesso!',
                 'order' => $order->load('customer', 'items.product'),
-                'redirect_url' => route('admin.orders.show', $order->id)
+                'redirect_url' => route('admin.orders.show', $order->uuid)
             ]);
 
         } catch (\Exception $e) {

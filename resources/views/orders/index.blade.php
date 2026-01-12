@@ -74,7 +74,7 @@
                                 </span>
                             </td>
                             <td style="padding: 16px; text-align: center;">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" style="color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 13px;">
+                                <a href="{{ route('admin.orders.show', $order->uuid) }}" style="color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 13px;">
                                     Visualizar
                                 </a>
                             </td>

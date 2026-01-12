@@ -41,8 +41,9 @@ class OrderController extends Controller
         return view('orders.completed', compact('orders'));
     }
 
-    public function show(Order $order): View
+    public function show(string $uuid): View
     {
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->load('items', 'customer', 'shippingAddress', 'billingAddress');
         
         // Obter transições permitidas para o status atual
@@ -52,9 +53,10 @@ class OrderController extends Controller
         return view('orders.show', compact('order', 'allowedStatuses', 'allowedTransitions'));
     }
 
-    public function updateStatus(Order $order, string $status): \Illuminate\Http\RedirectResponse
+    public function updateStatus(string $uuid, string $status): \Illuminate\Http\RedirectResponse
     {
         try {
+            $order = Order::where('uuid', $uuid)->firstOrFail();
             $previousStatus = $order->status;
             $reason = "Atualização manual de status";
 
@@ -82,8 +84,10 @@ class OrderController extends Controller
         }
     }
 
-    public function updateCarrierCost(Order $order, Request $request): \Illuminate\Http\RedirectResponse
+    public function updateCarrierCost(string $uuid, Request $request): \Illuminate\Http\RedirectResponse
     {
+        $order = Order::where('uuid', $uuid)->firstOrFail();
+        
         // Verificar se o pedido ainda pode ter o custo alterado
         $allowedStatuses = ['pending', 'processing'];
         

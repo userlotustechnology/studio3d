@@ -30,7 +30,7 @@ Route::post('/carrinho/limpar', [CartController::class, 'clear'])->name('cart.cl
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/checkout/processar', [CartController::class, 'processCheckout'])->name('cart.process-checkout');
 Route::post('/checkout/calcular-frete', [CartController::class, 'calculateShipping'])->name('cart.calculate-shipping');
-Route::get('/pedido/{order}/sucesso', [CartController::class, 'orderSuccess'])->name('order.success');
+Route::get('/pedido/{uuid}/sucesso', [CartController::class, 'orderSuccess'])->name('order.success');
 
 // Rotas de Consulta de Pedidos (público)
 Route::get('/consultar-pedido', [CartController::class, 'searchOrdersForm'])->name('orders.search-form');
@@ -88,9 +88,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::get('/admin/orders/pending', [OrderController::class, 'pending'])->name('admin.orders.pending');
         Route::get('/admin/orders/completed', [OrderController::class, 'completed'])->name('admin.orders.completed');
-        Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
-        Route::post('/admin/orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
-        Route::patch('/admin/orders/{order}/carrier-cost', [OrderController::class, 'updateCarrierCost'])->name('admin.orders.updateCarrierCost');
+        Route::get('/admin/orders/{uuid}', [OrderController::class, 'show'])->name('admin.orders.show');
+        Route::post('/admin/orders/{uuid}/status/{status}', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+        Route::patch('/admin/orders/{uuid}/carrier-cost', [OrderController::class, 'updateCarrierCost'])->name('admin.orders.updateCarrierCost');
         
         // Rotas de Gerenciamento de Categorias
         Route::resource('admin/categories', CategoryController::class, [

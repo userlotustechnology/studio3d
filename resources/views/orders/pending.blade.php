@@ -50,7 +50,7 @@
                             R$ {{ number_format($order->total, 2, ',', '.') }}
                         </td>
                         <td style="padding: 16px; text-align: center;">
-                            <a href="{{ route('admin.orders.show', $order->id) }}" style="background-color: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600;">
+                            <a href="{{ route('admin.orders.show', $order->uuid) }}" style="background-color: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600;">
                                 <i class="fas fa-eye"></i> Ver
                             </a>
                         </td>

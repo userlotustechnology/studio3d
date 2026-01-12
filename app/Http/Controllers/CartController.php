@@ -579,11 +579,12 @@ class CartController extends Controller
         session()->forget('draft_order_id');
         session()->forget('product_to_add');
 
-        return redirect()->route('order.success', $order->id)->with('success', 'Pedido realizado com sucesso!');
+        return redirect()->route('order.success', $order->uuid)->with('success', 'Pedido realizado com sucesso!');
     }
 
-    public function orderSuccess(Order $order): View
+    public function orderSuccess(string $uuid): View
     {
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->load('items', 'customer', 'billingAddress', 'shippingAddress');
         return view('shop.order-success', compact('order'));
     }

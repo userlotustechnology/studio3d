@@ -191,7 +191,7 @@
                         $canEditCarrierCost = in_array($order->status, ['pending', 'processing']);
                     @endphp
                     
-                    <form method="POST" action="{{ route('admin.orders.updateCarrierCost', $order->id) }}" style="display: flex; flex-direction: column; gap: 16px;">
+                    <form method="POST" action="{{ route('admin.orders.updateCarrierCost', $order->uuid) }}" style="display: flex; flex-direction: column; gap: 16px;">
                         @csrf
                         @method('PATCH')
                         
@@ -262,13 +262,13 @@
                     <form method="POST" style="display: flex; flex-direction: column; gap: 12px;">
                         @csrf
                         <div style="display: flex; gap: 8px;">
-                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->id, 'processing']) }}" 
+                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->uuid, 'processing']) }}" 
                                 style="flex: 1; padding: 8px; background-color: {{ in_array('processing', $allowedStatuses) ? '#dbeafe' : '#f3f4f6' }}; color: {{ in_array('processing', $allowedStatuses) ? '#1e40af' : '#9ca3af' }}; border: none; border-radius: 4px; font-weight: 600; cursor: {{ in_array('processing', $allowedStatuses) ? 'pointer' : 'not-allowed' }}; font-size: 12px;" 
                                 {{ in_array('processing', $allowedStatuses) ? '' : 'disabled' }}
                                 title="{{ in_array('processing', $allowedStatuses) ? 'Marcar como processando' : 'Transição não permitida a partir de ' . ucfirst($order->status) }}">
                                 Processar
                             </button>
-                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->id, 'shipped']) }}" 
+                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->uuid, 'shipped']) }}" 
                                 style="flex: 1; padding: 8px; background-color: {{ in_array('shipped', $allowedStatuses) ? '#e0e7ff' : '#f3f4f6' }}; color: {{ in_array('shipped', $allowedStatuses) ? '#3730a3' : '#9ca3af' }}; border: none; border-radius: 4px; font-weight: 600; cursor: {{ in_array('shipped', $allowedStatuses) ? 'pointer' : 'not-allowed' }}; font-size: 12px;"
                                 {{ in_array('shipped', $allowedStatuses) ? '' : 'disabled' }}
                                 title="{{ in_array('shipped', $allowedStatuses) ? 'Marcar como enviado' : 'Transição não permitida a partir de ' . ucfirst($order->status) }}">
@@ -276,13 +276,13 @@
                             </button>
                         </div>
                         <div style="display: flex; gap: 8px;">
-                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->id, 'delivered']) }}" 
+                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->uuid, 'delivered']) }}" 
                                 style="flex: 1; padding: 8px; background-color: {{ in_array('delivered', $allowedStatuses) ? '#d1fae5' : '#f3f4f6' }}; color: {{ in_array('delivered', $allowedStatuses) ? '#065f46' : '#9ca3af' }}; border: none; border-radius: 4px; font-weight: 600; cursor: {{ in_array('delivered', $allowedStatuses) ? 'pointer' : 'not-allowed' }}; font-size: 12px;"
                                 {{ in_array('delivered', $allowedStatuses) ? '' : 'disabled' }}
                                 title="{{ in_array('delivered', $allowedStatuses) ? 'Marcar como entregue' : 'Transição não permitida a partir de ' . ucfirst($order->status) }}">
                                 Entregar
                             </button>
-                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->id, 'cancelled']) }}" 
+                            <button type="submit" formaction="{{ route('admin.orders.updateStatus', [$order->uuid, 'cancelled']) }}" 
                                 style="flex: 1; padding: 8px; background-color: {{ in_array('cancelled', $allowedStatuses) ? '#fee2e2' : '#f3f4f6' }}; color: {{ in_array('cancelled', $allowedStatuses) ? '#7f1d1d' : '#9ca3af' }}; border: none; border-radius: 4px; font-weight: 600; cursor: {{ in_array('cancelled', $allowedStatuses) ? 'pointer' : 'not-allowed' }}; font-size: 12px;"
                                 {{ in_array('cancelled', $allowedStatuses) ? '' : 'disabled' }}
                                 title="{{ in_array('cancelled', $allowedStatuses) ? 'Cancelar pedido' : 'Transição não permitida a partir de ' . ucfirst($order->status) }}">
