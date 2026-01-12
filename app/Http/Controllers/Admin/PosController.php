@@ -10,12 +10,15 @@ use App\Models\OrderItem;
 use App\Models\Address;
 use App\Models\ShippingRate;
 use App\Models\Setting;
+use App\Events\OrderConfirmed;
+use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 
 class PosController extends Controller
 {
@@ -259,7 +262,23 @@ class PosController extends Controller
                 $product->decrement('stock', $itemData['quantity']);
             }
 
+            // Registrar transição de status no histórico
+            \App\Models\OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'from_status' => 'draft',
+                'to_status' => 'pending',
+                'reason' => 'Pedido criado via PDV',
+                'changed_by' => 'admin',
+            ]);
+
             DB::commit();
+
+            // Disparar evento de pedido confirmado para notificação no Slack
+            \Illuminate\Support\Facades\Log::info('Dispatching OrderConfirmed event for PDV order: ' . $order->id);
+            OrderConfirmed::dispatch($order);
+
+            // Enviar email de confirmação de pedido (assíncrono)
+            Mail::queue(new OrderConfirmationMail($order));
 
             return response()->json([
                 'success' => true,
