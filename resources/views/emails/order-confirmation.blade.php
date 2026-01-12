@@ -266,7 +266,7 @@
 
                 <!-- CTA Button -->
                 <div style="text-align: center;">
-                    <a href="{{ url('/') }}" class="cta-button">Acompanhar Pedido</a>
+                    <a href="{{ route('order.track', ['orderNumber' => $order->order_number]) }}" class="cta-button">Acompanhar Pedido</a>
                 </div>
 
                 <div class="divider"></div>

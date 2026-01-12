@@ -204,6 +204,15 @@
                         <p><strong>Número do Pedido:</strong> #{{ $order->order_number }}</p>
                         <p><strong>Data do Pedido:</strong> {{ $order->created_at->format('d/m/Y \à\s H:i') }}</p>
                         <p><strong>Valor Total:</strong> R$ {{ number_format($order->total, 2, ',', '.') }}</p>
+                        
+                        @if($order->status === 'shipped' && $order->tracking_code && $order->shippingCompany)
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        <p><strong>Código de Rastreio:</strong> <span style="font-family: monospace; font-weight: 700; color: #0f79f3;">{{ $order->tracking_code }}</span></p>
+                        <p><strong>Transportadora:</strong> {{ $order->shippingCompany->name }}</p>
+                        @if($order->getTrackingUrl())
+                        <p><a href="{{ $order->getTrackingUrl() }}" target="_blank" style="color: #0f79f3; text-decoration: underline;">Acompanhar encomenda →</a></p>
+                        @endif
+                        @endif
                     </div>
                 </div>
 
@@ -243,7 +252,7 @@
 
                 <!-- CTA Button -->
                 <div style="text-align: center;">
-                    <a href="{{ url('/') }}" class="cta-button">Ver Pedido</a>
+                    <a href="{{ route('order.track', ['orderNumber' => $order->order_number]) }}" class="cta-button">Acompanhar Pedido</a>
                 </div>
 
 

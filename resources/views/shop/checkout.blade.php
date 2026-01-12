@@ -104,7 +104,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Complemento</label>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Complemento <span style="color: #999; font-weight: 400;">(opcional)</span></label>
                                 <input type="text" name="billing_complement" value="{{ old('billing_complement') }}" placeholder="Apto, sala, etc." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
                                 @error('billing_complement')
                                     <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>
@@ -181,7 +181,7 @@
 
                         <div id="shipping_address_fields" style="display: none;">
                             <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Rua *</label>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Complemento <span style="color: #999; font-weight: 400;">(opcional)</span></label>
                                 <input type="text" name="shipping_street" value="{{ old('shipping_street') }}" placeholder="Nome da rua" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
                                 @error('shipping_street')
                                     <span style="color: #ef4444; font-size: 14px;">{{ $message }}</span>

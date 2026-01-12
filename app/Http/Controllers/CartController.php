@@ -638,7 +638,7 @@ class CartController extends Controller
             return back()->with('error', 'Pedido não encontrado. Verifique o CPF e o ID do pedido.');
         }
 
-        return view('shop.order-details', compact('order'));
+        return view('shop.order-tracking', compact('order'));
     }
 
     /**
@@ -658,4 +658,19 @@ class CartController extends Controller
 
         return response()->json(['count' => $count]);
     }
+
+    /**
+     * Acompanha um pedido pelo número do pedido (para links nos emails)
+     */
+    public function trackOrder(string $orderNumber): View
+    {
+        // Buscar pedido pelo order_number
+        $order = Order::with('items', 'customer', 'billingAddress', 'shippingAddress')
+            ->where('order_number', $orderNumber)
+            ->where('is_draft', false)
+            ->firstOrFail();
+
+        return view('shop.order-tracking', compact('order'));
+    }
+
 }

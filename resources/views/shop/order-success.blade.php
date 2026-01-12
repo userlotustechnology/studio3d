@@ -48,6 +48,7 @@
                     <p style="color: var(--text-light); line-height: 1.8;">
                         {{ $order->customer->name }}<br>
                         {{ $order->billingAddress->street }}<br>
+                        {{ $order->billingAddress->number }}{{ $order->billingAddress->complement ? ', ' . $order->billingAddress->complement : '' }}<br>
                         {{ $order->billingAddress->city }}, {{ $order->billingAddress->state }} - {{ $order->billingAddress->postal_code }}
                     </p>
                 @else
@@ -62,6 +63,7 @@
                     <p style="color: var(--text-light); line-height: 1.8;">
                         {{ $order->customer->name }}<br>
                         {{ $order->shippingAddress->street }}<br>
+                        {{ $order->shippingAddress->number }}{{ $order->shippingAddress->complement ? ', ' . $order->shippingAddress->complement : '' }}<br>
                         {{ $order->shippingAddress->city }}, {{ $order->shippingAddress->state }} - {{ $order->shippingAddress->postal_code }}
                     </p>
                 @else

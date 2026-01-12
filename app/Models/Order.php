@@ -15,6 +15,8 @@ class Order extends Model
         'shipping_address_id',
         'subtotal',
         'shipping_cost',
+        'tracking_code',
+        'shipping_company_id',
         'discount',
         'total',
         'status',
@@ -58,8 +60,25 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function shippingCompany(): BelongsTo
+    {
+        return $this->belongsTo(ShippingCompany::class);
+    }
+
     public function generateOrderNumber(): string
     {
         return 'PED-' . date('Y') . '-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Retorna a URL de rastreamento se existir
+     */
+    public function getTrackingUrl(): ?string
+    {
+        if (!$this->tracking_code || !$this->shippingCompany) {
+            return null;
+        }
+
+        return $this->shippingCompany->getTrackingUrl($this->tracking_code);
     }
 }
