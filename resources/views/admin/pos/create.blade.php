@@ -977,10 +977,40 @@ function searchCep() {
             }
             
             // Preencher campos automaticamente
-            document.getElementById('addressStreet').value = data.logradouro || '';
-            document.getElementById('addressNeighborhood').value = data.bairro || '';
-            document.getElementById('addressCity').value = data.localidade || '';
-            document.getElementById('addressState').value = data.uf || '';
+            const streetField = document.getElementById('addressStreet');
+            const neighborhoodField = document.getElementById('addressNeighborhood');
+            const cityField = document.getElementById('addressCity');
+            const stateField = document.getElementById('addressState');
+            
+            streetField.value = data.logradouro || '';
+            neighborhoodField.value = data.bairro || '';
+            cityField.value = data.localidade || '';
+            stateField.value = data.uf || '';
+            
+            // Liberar campos que vêm vazios da ViaCEP
+            if (!data.logradouro || data.logradouro.trim() === '') {
+                streetField.removeAttribute('readonly');
+                streetField.style.backgroundColor = '#ffffff';
+                streetField.placeholder = 'Digite a rua manualmente';
+            } else {
+                streetField.setAttribute('readonly', true);
+                streetField.style.backgroundColor = '#f9fafb';
+            }
+            
+            if (!data.bairro || data.bairro.trim() === '') {
+                neighborhoodField.removeAttribute('readonly');
+                neighborhoodField.style.backgroundColor = '#ffffff';
+                neighborhoodField.placeholder = 'Digite o bairro manualmente';
+            } else {
+                neighborhoodField.setAttribute('readonly', true);
+                neighborhoodField.style.backgroundColor = '#f9fafb';
+            }
+            
+            // Cidade e UF sempre vêm preenchidos, mantêm readonly
+            cityField.setAttribute('readonly', true);
+            cityField.style.backgroundColor = '#f9fafb';
+            stateField.setAttribute('readonly', true);
+            stateField.style.backgroundColor = '#f9fafb';
             
             // Mostrar campos
             document.getElementById('addressFieldsContainer').style.display = 'grid';

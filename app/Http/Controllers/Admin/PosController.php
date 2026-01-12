@@ -135,6 +135,7 @@ class PosController extends Controller
                 'street' => 'required|string|max:255',
                 'number' => 'required|string|max:20',
                 'complement' => 'nullable|string|max:100',
+                'neighborhood' => 'required|string|max:100',
                 'city' => 'required|string|max:100',
                 'state' => 'required|string|size:2',
                 'cep' => 'required|string|max:15'
@@ -150,6 +151,7 @@ class PosController extends Controller
                 'street' => $validated['street'],
                 'number' => $validated['number'],
                 'complement' => $validated['complement'],
+                'neighborhood' => $validated['neighborhood'],
                 'city' => $validated['city'],
                 'state' => $validated['state'],
                 'postal_code' => $postalCode
