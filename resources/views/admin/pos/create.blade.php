@@ -346,19 +346,29 @@ productSearch.addEventListener('input', function() {
     }
     
     productSearchTimeout = setTimeout(() => {
-        fetch(`{{ route('admin.pos.searchProducts') }}?query=${encodeURIComponent(query)}`)
+        fetch(`{{ route('admin.pos.searchProducts') }}?query=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(response => {
+                console.log('Response status:', response.status, response.statusText);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(products => {
+                console.log('Products found:', products.length);
                 displayProductResults(products);
             })
             .catch(error => {
                 console.error('Error searching products:', error);
-                showNotification('Erro ao buscar produtos. Tente novamente.', 'error');
+                showNotification('Erro ao buscar produtos. Verifique sua conexão e tente novamente.', 'error');
             });
     }, 300);
 });
@@ -377,7 +387,7 @@ function displayProductResults(products) {
              onmouseout="this.style.backgroundColor='white'">
             <div>
                 <div style="font-weight: 600; color: #1f2937;">${product.name}</div>
-                <div style="font-size: 12px; color: #6b7280;">SKU: ${product.sku || 'N/A'} • Estoque: ${product.stock_quantity}</div>
+                <div style="font-size: 12px; color: #6b7280;">SKU: ${product.sku || 'N/A'} • Estoque: ${product.stock}</div>
             </div>
             <div style="text-align: right;">
                 <div style="font-weight: 600; color: #059669;">R$ ${parseFloat(product.price).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
@@ -393,8 +403,8 @@ function addToCart(product) {
     const existingItem = cart.find(item => item.product.id === product.id);
     
     if (existingItem) {
-        if (existingItem.quantity >= product.stock_quantity) {
-            showNotification(`Quantidade máxima em estoque atingida (${product.stock_quantity} unidades)`, 'warning');
+        if (existingItem.quantity >= product.stock) {
+            showNotification(`Quantidade máxima em estoque atingida (${product.stock} unidades)`, 'warning');
             return;
         }
         existingItem.quantity += 1;
@@ -431,8 +441,8 @@ function updateQuantity(productId, change) {
         return;
     }
     
-    if (newQuantity > item.product.stock_quantity) {
-        showNotification(`Quantidade máxima em estoque: ${item.product.stock_quantity} unidades`, 'warning');
+    if (newQuantity > item.product.stock) {
+        showNotification(`Quantidade máxima em estoque: ${item.product.stock} unidades`, 'warning');
         return;
     }
     
@@ -454,7 +464,7 @@ function updateCartDisplay() {
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <div style="flex: 1;">
                     <h4 style="margin: 0 0 4px 0; color: #1f2937; font-weight: 600; font-size: 16px;">${item.product.name}</h4>
-                    <p style="margin: 0; color: #6b7280; font-size: 12px;">SKU: ${item.product.sku || 'N/A'} • Estoque: ${item.product.stock_quantity}</p>
+                    <p style="margin: 0; color: #6b7280; font-size: 12px;">SKU: ${item.product.sku || 'N/A'} • Estoque: ${item.product.stock}</p>
                 </div>
                 <button onclick="removeFromCart(${item.product.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; padding: 4px;">
                     <i class="fas fa-trash"></i>

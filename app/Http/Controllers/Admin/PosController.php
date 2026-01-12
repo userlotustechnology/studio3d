@@ -40,17 +40,29 @@ class PosController extends Controller
 
     public function searchProducts(Request $request): JsonResponse
     {
-        $query = $request->get('query');
-        
-        $products = Product::where('is_active', true)
-            ->where(function($q) use ($query) {
-                $q->where('name', 'LIKE', "%{$query}%")
-                  ->orWhere('sku', 'LIKE', "%{$query}%");
-            })
-            ->limit(10)
-            ->get(['id', 'name', 'sku', 'price', 'stock_quantity']);
+        try {
+            $query = $request->get('query');
+            
+            if (empty($query) || strlen($query) < 2) {
+                return response()->json([]);
+            }
+            
+            $products = Product::where('is_active', true)
+                ->where(function($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('sku', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get(['id', 'name', 'sku', 'price', 'stock']);
 
-        return response()->json($products);
+            return response()->json($products);
+        } catch (\Exception $e) {
+            \Log::error('Erro na busca de produtos: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Erro interno do servidor',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function searchCustomers(Request $request): JsonResponse
@@ -230,7 +242,7 @@ class PosController extends Controller
                 $product = Product::find($itemData['product_id']);
                 
                 // Verificar estoque
-                if ($product->stock_quantity < $itemData['quantity']) {
+                if ($product->stock < $itemData['quantity']) {
                     throw new \Exception("Estoque insuficiente para o produto {$product->name}");
                 }
                 
@@ -244,7 +256,7 @@ class PosController extends Controller
                 ]);
                 
                 // Reduzir estoque
-                $product->decrement('stock_quantity', $itemData['quantity']);
+                $product->decrement('stock', $itemData['quantity']);
             }
 
             DB::commit();
