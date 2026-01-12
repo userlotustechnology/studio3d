@@ -12,14 +12,8 @@ class RecordOrderCreatedStatusHistory
      */
     public function handle(OrderConfirmed $event): void
     {
-        // Registrar a transição inicial do status quando o pedido é criado
-        // De: null/draft → para: pending
-        OrderStatusHistory::create([
-            'order_id' => $event->order->id,
-            'from_status' => 'pending', // Registrar como initial state
-            'to_status' => 'pending',
-            'reason' => 'Pedido criado',
-            'changed_by' => 'system',
-        ]);
+        // O histórico da transição draft → pending já é registrado no CartController
+        // Este listener pode ser usado para outras ações futuras se necessário
+        \Illuminate\Support\Facades\Log::info('Order confirmed event received for order: ' . $event->order->id);
     }
 }

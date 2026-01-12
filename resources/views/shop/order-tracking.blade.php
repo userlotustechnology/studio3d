@@ -18,6 +18,7 @@
                 <div style="position: relative; padding: 20px 0;">
                     @php
                         $statuses = [
+                            'draft' => ['label' => 'Rascunho', 'icon' => '📋', 'color' => '#9ca3af'],
                             'pending' => ['label' => 'Pendente', 'icon' => '⏳', 'color' => '#f59e0b'],
                             'processing' => ['label' => 'Processando', 'icon' => '⚙️', 'color' => '#3b82f6'],
                             'shipped' => ['label' => 'Enviado', 'icon' => '🚚', 'color' => '#0f79f3'],

@@ -42,6 +42,7 @@ if (!function_exists('translateOrderStatus')) {
     function translateOrderStatus(string $status): string
     {
         $translations = [
+            'draft' => 'Rascunho',
             'pending' => 'Pendente',
             'processing' => 'Processando',
             'shipped' => 'Enviado',

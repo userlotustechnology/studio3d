@@ -98,7 +98,7 @@ class CartController extends Controller
                 'shipping_cost' => 0,
                 'discount' => 0,
                 'total' => 0,
-                'status' => 'pending',
+                'status' => 'draft',
                 'is_draft' => true,
             ]);
 
@@ -570,10 +570,19 @@ class CartController extends Controller
             'billing_address_id' => $billingAddress->id,
             'shipping_address_id' => $shippingAddress?->id,
             'payment_method' => $validated['payment_method'],
-            'status' => 'pending',
+            'status' => 'pending', // Transição de 'draft' para 'pending'
             'is_draft' => false,
             'order_number' => 'PED-' . date('Y') . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
             'access_token' => $order->generateAccessToken(),
+        ]);
+
+        // Registrar transição de status no histórico
+        \App\Models\OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'from_status' => 'draft',
+            'to_status' => 'pending',
+            'reason' => 'Pedido finalizado pelo cliente',
+            'changed_by' => 'customer',
         ]);
 
         // Disparar evento de pedido confirmado para notificação no Slack

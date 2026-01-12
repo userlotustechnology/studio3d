@@ -26,6 +26,7 @@ class OrderStatusHistory extends Model
     public static function translateStatus(string $status): string
     {
         return match($status) {
+            'draft' => 'Rascunho',
             'pending' => 'Pendente',
             'processing' => 'Processando',
             'shipped' => 'Enviado',
@@ -41,6 +42,7 @@ class OrderStatusHistory extends Model
     public static function statusIcon(string $status): string
     {
         return match($status) {
+            'draft' => '📋',
             'pending' => '⏳',
             'processing' => '⚙️',
             'shipped' => '🚚',
@@ -56,6 +58,7 @@ class OrderStatusHistory extends Model
     public static function statusColor(string $status): string
     {
         return match($status) {
+            'draft' => '#9ca3af',
             'pending' => '#f59e0b',
             'processing' => '#3b82f6',
             'shipped' => '#0f79f3',

@@ -16,28 +16,31 @@ class DashboardController extends Controller
         $activeProducts = Product::where('is_active', true)->count();
         $avgProductPrice = Product::avg('price');
 
-        // Estatísticas de Vendas
-        $totalOrders = Order::count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $processingOrders = Order::where('status', 'processing')->count();
-        $shippedOrders = Order::where('status', 'shipped')->count();
-        $deliveredOrders = Order::where('status', 'delivered')->count();
+        // Estatísticas de Vendas (apenas pedidos finalizados, não drafts)
+        $totalOrders = Order::where('is_draft', false)->count();
+        $pendingOrders = Order::where('is_draft', false)->where('status', 'pending')->count();
+        $processingOrders = Order::where('is_draft', false)->where('status', 'processing')->count();
+        $shippedOrders = Order::where('is_draft', false)->where('status', 'shipped')->count();
+        $deliveredOrders = Order::where('is_draft', false)->where('status', 'delivered')->count();
 
-        $totalRevenue = Order::sum('total');
-        $thisMonthRevenue = Order::whereMonth('created_at', now()->month)
+        $totalRevenue = Order::where('is_draft', false)->sum('total');
+        $thisMonthRevenue = Order::where('is_draft', false)
+            ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('total');
 
-        // Produtos mais vendidos
-        $topProducts = Order::join('order_items', 'orders.id', '=', 'order_items.order_id')
+        // Produtos mais vendidos (apenas pedidos finalizados)
+        $topProducts = Order::where('is_draft', false)
+            ->join('order_items', 'orders.id', '=', 'order_items.order_id')
             ->selectRaw('order_items.product_name, COUNT(*) as sales_count, SUM(order_items.quantity) as total_quantity')
             ->groupBy('order_items.product_name')
             ->orderByDesc('total_quantity')
             ->limit(5)
             ->get();
 
-        // Últimos pedidos
-        $recentOrders = Order::orderBy('created_at', 'desc')
+        // Últimos pedidos (apenas pedidos finalizados)
+        $recentOrders = Order::where('is_draft', false)
+            ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 

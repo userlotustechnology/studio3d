@@ -56,9 +56,20 @@
                             <td style="padding: 16px; color: #1f2937; font-weight: 600;">{{ $order->items->count() }}</td>
                             <td style="padding: 16px; color: #1f2937; font-weight: 600;">R$ {{ number_format($order->total, 2, ',', '.') }}</td>
                             <td style="padding: 16px;">
+                                @php
+                                    $statusColors = [
+                                        'draft' => ['bg' => '#f3f4f6', 'text' => '#6b7280'],
+                                        'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                                        'processing' => ['bg' => '#dbeafe', 'text' => '#1e40af'],
+                                        'shipped' => ['bg' => '#e0e7ff', 'text' => '#3730a3'],
+                                        'delivered' => ['bg' => '#d1fae5', 'text' => '#065f46'],
+                                        'cancelled' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
+                                    ];
+                                    $colors = $statusColors[$order->status] ?? ['bg' => '#f3f4f6', 'text' => '#6b7280'];
+                                @endphp
                                 <span style="display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
-                                    background-color: {{ $order->status === 'pending' ? '#fef3c7' : ($order->status === 'delivered' ? '#d1fae5' : '#e0e7ff') }};
-                                    color: {{ $order->status === 'pending' ? '#92400e' : ($order->status === 'delivered' ? '#065f46' : '#3730a3') }};">
+                                    background-color: {{ $colors['bg'] }};
+                                    color: {{ $colors['text'] }};">
                                     {{ translateOrderStatus($order->status) }}
                                 </span>
                             </td>

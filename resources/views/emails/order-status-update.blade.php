@@ -177,6 +177,9 @@
                     <p>Status do Pedido: <br></p>
                     <span class="status-label">
                         @switch($newStatus)
+                            @case('draft')
+                                📋 Rascunho
+                                @break
                             @case('pending')
                                 ⏳ Pendente
                                 @break

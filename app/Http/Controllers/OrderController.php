@@ -15,13 +15,17 @@ class OrderController extends Controller
 
     public function index(): View
     {
-        $orders = Order::orderBy('created_at', 'desc')->paginate(15);
+        // Filtrar apenas pedidos que não são draft (finalizados pelo cliente)
+        $orders = Order::where('is_draft', false)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
         return view('orders.index', compact('orders'));
     }
 
     public function pending(): View
     {
-        $orders = Order::where('status', 'pending')
+        $orders = Order::where('is_draft', false)
+            ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         return view('orders.pending', compact('orders'));
@@ -29,7 +33,8 @@ class OrderController extends Controller
 
     public function completed(): View
     {
-        $orders = Order::where('status', 'delivered')
+        $orders = Order::where('is_draft', false)
+            ->where('status', 'delivered')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         return view('orders.completed', compact('orders'));

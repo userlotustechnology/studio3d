@@ -13,7 +13,8 @@ class OrderStatusTransitionService
      * Define as transições válidas entre estados
      */
     private const VALID_TRANSITIONS = [
-        'pending' => ['processing', 'cancelled'],
+        'draft' => ['pending', 'cancelled'],       // Draft pode ir para pending (finalização) ou cancelado
+        'pending' => ['processing', 'cancelled'],  // Pending é após finalização pelo cliente
         'processing' => ['shipped', 'cancelled'],
         'shipped' => ['delivered', 'cancelled'],
         'delivered' => [], // Terminal state
@@ -74,8 +75,9 @@ class OrderStatusTransitionService
         // Atualizar status do pedido
         $updateData = ['status' => $newStatus];
 
-        // Registrar timestamps para estados específicos
+        // Lógica específica para cada status
         match ($newStatus) {
+            'pending' => $updateData['is_draft'] = false,  // Quando vai para pending, não é mais draft
             'processing' => $updateData['paid_at'] = now(),
             'shipped' => $updateData['shipped_at'] = now(),
             'delivered' => $updateData['delivered_at'] = now(),
@@ -101,6 +103,7 @@ class OrderStatusTransitionService
         }
 
         $statusLabels = [
+            'draft' => 'Rascunho',
             'pending' => 'Pendente',
             'processing' => 'Processando',
             'shipped' => 'Enviado',
@@ -109,6 +112,7 @@ class OrderStatusTransitionService
         ];
 
         $statusColors = [
+            'draft' => '#9ca3af',        // Cinza
             'pending' => '#f59e0b',      // Amarelo
             'processing' => '#3b82f6',   // Azul
             'shipped' => '#8b5cf6',      // Roxo
@@ -198,6 +202,7 @@ class OrderStatusTransitionService
         $possible = $this->getPossibleTransitions($status);
         
         $labels = [
+            'draft' => 'Rascunho',
             'pending' => 'Pendente',
             'processing' => 'Processando',
             'shipped' => 'Enviado',

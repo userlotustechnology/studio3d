@@ -32,6 +32,7 @@ class OrderStatusUpdateMail extends Mailable
     public function envelope(): Envelope
     {
         $statusLabel = match($this->newStatus) {
+            'draft' => 'Rascunho',
             'pending' => 'Pendente',
             'processing' => 'Processando',
             'shipped' => 'Enviado',
