@@ -127,7 +127,7 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
+                    <form action="{{ route('cart.add', $product->uuid) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
                         @csrf
                         <input type="hidden" name="quantity" id="cartQuantity" value="1">
                         <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
@@ -145,7 +145,7 @@
                         if ($whatsappPhone && !str_starts_with($whatsappPhone, '55')) {
                             $whatsappPhone = '55' . $whatsappPhone;
                         }
-                        $productUrl = route('shop.show', $product->id);
+                        $productUrl = route('shop.show', $product->uuid);
                         $whatsappMessage = "Olá! Gostaria de comprar o produto: " . $product->name . " - R$ " . number_format($product->price, 2, ',', '.') . "\n\nLink: " . $productUrl;
                         $whatsappUrl = $whatsappPhone ? "https://wa.me/{$whatsappPhone}?text=" . urlencode($whatsappMessage) : '#';
                     @endphp
@@ -248,21 +248,21 @@
                     @foreach($relatedProducts as $related)
                         <div class="product-card-modern" data-name="{{ strtolower($related->name) }}" data-price="{{ $related->price }}">
                             <div class="product-image-wrapper">
-                                <a href="{{ route('shop.show', $related->id) }}">
+                                <a href="{{ route('shop.show', $related->uuid) }}">
                                     <img src="{{ $related->image_url }}" alt="{{ $related->name }}" class="product-img" loading="lazy">
                                 </a>
                                 @if($related->created_at->diffInDays(now()) < 7)
                                     <span class="product-badge new">Novo</span>
                                 @endif
                                 <div class="product-actions">
-                                    <a href="{{ route('shop.show', $related->id) }}" class="action-btn view-btn" title="Ver detalhes">
+                                    <a href="{{ route('shop.show', $related->uuid) }}" class="action-btn view-btn" title="Ver detalhes">
                                         <i class="far fa-eye"></i>
                                     </a>
                                 </div>
                             </div>
                             <div class="product-content">
                                 <span class="product-category-tag">{{ $related->category?->name ?? 'Geral' }}</span>
-                                <a href="{{ route('shop.show', $related->id) }}">
+                                <a href="{{ route('shop.show', $related->uuid) }}">
                                     <h3 class="product-title">{{ $related->name }}</h3>
                                 </a>
                                 <p class="product-desc">{{ Str::limit($related->description, 60) }}</p>
@@ -270,7 +270,7 @@
                                     <div class="price-wrapper">
                                         <span class="current-price">R$ {{ number_format($related->price, 2, ',', '.') }}</span>
                                     </div>
-                                    <form action="{{ route('cart.add', $related->id) }}" method="POST" class="add-cart-form">
+                                    <form action="{{ route('cart.add', $related->uuid) }}" method="POST" class="add-cart-form">
                                         @csrf
                                         <input type="hidden" name="quantity" value="1">
                                         <button type="submit" class="btn-cart-modern">

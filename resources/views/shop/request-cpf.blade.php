@@ -20,13 +20,13 @@
             @endif
 
             @php
-                $productToAdd = session('product_to_add', []);
-                $productId = $productToAdd['product_id'] ?? null;
+                $productToAdd = $productToAdd ?? [];
+                $productUuid = $productToAdd['product_uuid'] ?? null;
                 $quantity = $productToAdd['quantity'] ?? 1;
             @endphp
 
-            @if($productId)
-                <form method="POST" action="{{ route('cart.add', $productId) }}" id="cpfForm">
+            @if($productUuid)
+                <form method="POST" action="{{ route('cart.add', $productUuid) }}" id="cpfForm">
                     @csrf
                     <input type="hidden" name="quantity" value="{{ $quantity }}">
                     

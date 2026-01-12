@@ -80,7 +80,7 @@
                 @foreach($products as $product)
                     <div class="product-card-modern" data-name="{{ strtolower($product->name) }}" data-price="{{ $product->price }}">
                         <div class="product-image-wrapper">
-                            <a href="{{ route('shop.show', $product->id) }}">
+                            <a href="{{ route('shop.show', $product->uuid) }}">
                                 <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-img" loading="lazy">
                             </a>
                             @if($product->created_at->diffInDays(now()) < 7)
@@ -90,14 +90,14 @@
                                 <button class="action-btn wishlist-btn" title="Adicionar aos favoritos">
                                     <i class="far fa-heart"></i>
                                 </button>
-                                <a href="{{ route('shop.show', $product->id) }}" class="action-btn view-btn" title="Ver detalhes">
+                                <a href="{{ route('shop.show', $product->uuid) }}" class="action-btn view-btn" title="Ver detalhes">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </div>
                         </div>
                         <div class="product-content">
                             <span class="product-category-tag">{{ $product->category?->name ?? 'Geral' }}</span>
-                            <a href="{{ route('shop.show', $product->id) }}">
+                            <a href="{{ route('shop.show', $product->uuid) }}">
                                 <h3 class="product-title">{{ $product->name }}</h3>
                             </a>
                             <p class="product-desc">{{ Str::limit($product->description, 60) }}</p>
@@ -105,7 +105,7 @@
                                 <div class="price-wrapper">
                                     <span class="current-price">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
                                 </div>
-                                <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-cart-form">
+                                <form action="{{ route('cart.add', $product->uuid) }}" method="POST" class="add-cart-form">
                                     @csrf
                                     <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn-cart-modern">

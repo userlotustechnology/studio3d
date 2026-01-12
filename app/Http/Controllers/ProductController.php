@@ -41,13 +41,13 @@ class ProductController extends Controller
         return view('shop.category', compact('products', 'categories', 'category'));
     }
 
-    public function show(int $id): View
+    public function show(string $uuid): View
     {
-        $product = Product::where('is_active', true)->with(['category','images'])->findOrFail($id);
+        $product = Product::where('is_active', true)->where('uuid', $uuid)->with(['category','images'])->firstOrFail();
         
         $relatedProducts = Product::where('is_active', true)
             ->where('category_id', $product->category_id)
-            ->where('id', '!=', $id)
+            ->where('id', '!=', $product->id)
             ->with('category')
             ->limit(4)
             ->get();

@@ -57,7 +57,7 @@
                                 <div class="cart-item-info-modern">
                                     <h3 style="font-weight: 700; margin-bottom: 8px; color: var(--text-dark); font-size: 16px;">
                                         @if($item->product)
-                                            <a href="{{ route('shop.show', $item->product_id) }}" style="color: #1f2937; text-decoration: none; transition: color 0.3s;">
+                                            <a href="{{ route('shop.show', $item->product->uuid) }}" style="color: #1f2937; text-decoration: none; transition: color 0.3s;">
                                                 {{ $item->product_name }}
                                             </a>
                                         @else
@@ -71,7 +71,7 @@
 
                                 <!-- Quantity -->
                                 <div class="cart-item-quantity-modern" style="display: flex; align-items: center; gap: 0; border: 2px solid #e5e7eb; border-radius: 10px;">
-                                    <form method="POST" action="{{ route('cart.update', $item->product_id) }}" style="display: flex; gap: 0; align-items: center;" class="quantity-form">
+                                    <form method="POST" action="{{ route('cart.update', $item->product->uuid) }}" style="display: flex; gap: 0; align-items: center;" class="quantity-form">
                                         @csrf
                                         <button type="button" class="qty-btn-modern" onclick="decrementQuantity(this)" style="background: none; border: none; padding: 8px 12px; cursor: pointer; color: #667eea; font-weight: 600; font-size: 18px; transition: all 0.3s;">−</button>
                                         <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" class="qty-input-modern" style="width: 50px; text-align: center; padding: 8px; border: none; background: transparent; font-weight: 600; border-left: 2px solid #e5e7eb; border-right: 2px solid #e5e7eb;">
@@ -88,7 +88,7 @@
 
                                 <!-- Remove -->
                                 <div class="cart-item-remove" style="display: flex; justify-content: center;">
-                                    <form method="POST" action="{{ route('cart.remove', $item->product_id) }}" style="display: inline;">
+                                    <form method="POST" action="{{ route('cart.remove', $item->product->uuid) }}" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="background: white; border: 2px solid #fee2e2; color: #ef4444; cursor: pointer; border-radius: 10px; padding: 10px 12px; transition: all 0.3s; font-size: 18px;" title="Remover produto">

@@ -15,15 +15,15 @@ use App\Models\Category;
 // Rotas públicas - Loja
 Route::get('/', [ProductController::class, 'shop'])->name('shop.index');
 Route::get('/categoria/{category}', [ProductController::class, 'category'])->name('shop.category');
-Route::get('/produto/{id}', [ProductController::class, 'show'])->name('shop.show');
+Route::get('/produto/{uuid}', [ProductController::class, 'show'])->name('shop.show');
 
 // Rotas do Carrinho
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::get('/carrinho/count', [CartController::class, 'count'])->name('cart.count');
 Route::get('/carrinho/cpf', [CartController::class, 'requestCpf'])->name('cart.request-cpf');
-Route::post('/carrinho/adicionar/{product}', [CartController::class, 'add'])->name('cart.add');
-Route::post('/carrinho/atualizar/{product}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/carrinho/remover/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/carrinho/adicionar/{uuid}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrinho/atualizar/{uuid}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/carrinho/remover/{uuid}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/carrinho/limpar', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/checkout/processar', [CartController::class, 'processCheckout'])->name('cart.process-checkout');

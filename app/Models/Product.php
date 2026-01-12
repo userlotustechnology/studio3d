@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -18,6 +19,7 @@ class Product extends Model
         'is_active',
         'product_url',
         'instagram_url',
+        'uuid',
     ];
 
     protected $casts = [
@@ -26,6 +28,20 @@ class Product extends Model
         'stock' => 'integer',
         'type' => 'string',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+            }
+        });
+    }
 
     // append computed URL attribute
     protected $appends = ['image_url'];

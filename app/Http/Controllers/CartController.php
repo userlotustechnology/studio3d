@@ -36,8 +36,11 @@ class CartController extends Controller
         return view('shop.cart', compact('items', 'subtotal', 'shippingCost', 'total', 'draftOrderId'));
     }
 
-    public function add(Product $product, Request $request): RedirectResponse
+    public function add(string $uuid, Request $request): RedirectResponse
     {
+        // Buscar produto pelo UUID
+        $product = Product::where('uuid', $uuid)->firstOrFail();
+
         // Verificar se há usuário logado
         if (auth()->check()) {
             return redirect()->back()->with('error', 'Usuários autenticados não podem adicionar itens ao carrinho neste momento.');
@@ -59,7 +62,7 @@ class CartController extends Controller
             if (!$cpf) {
                 // Redirecionar para solicitar CPF
                 session()->put('product_to_add', [
-                    'product_id' => $product->id,
+                    'product_uuid' => $product->uuid,
                     'quantity' => $quantity
                 ]);
                 return redirect()->route('cart.request-cpf');
@@ -295,8 +298,11 @@ class CartController extends Controller
     }
 
 
-    public function update(Product $product, Request $request): RedirectResponse
+    public function update(string $uuid, Request $request): RedirectResponse
     {
+        // Buscar produto pelo UUID
+        $product = Product::where('uuid', $uuid)->firstOrFail();
+
         $quantity = $request->input('quantity', 1);
         $draftOrderId = session()->get('draft_order_id');
 
@@ -324,8 +330,11 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', 'Carrinho atualizado!');
     }
 
-    public function remove(Product $product): RedirectResponse
+    public function remove(string $uuid): RedirectResponse
     {
+        // Buscar produto pelo UUID
+        $product = Product::where('uuid', $uuid)->firstOrFail();
+
         $draftOrderId = session()->get('draft_order_id');
 
         if (!$draftOrderId) {
