@@ -135,39 +135,24 @@ class PosController extends Controller
                 'street' => 'required|string|max:255',
                 'number' => 'required|string|max:20',
                 'complement' => 'nullable|string|max:100',
-                'neighborhood' => 'required|string|max:100',
                 'city' => 'required|string|max:100',
                 'state' => 'required|string|size:2',
-                'cep' => 'nullable|string|max:15'
+                'cep' => 'required|string|max:15'
             ]);
 
             // Padronizar CEP
-            $validated['cep'] = preg_replace('/[^0-9]/', '', $validated['cep'] ?? '');
+            $postalCode = preg_replace('/[^0-9]/', '', $validated['cep']);
 
-            // Criar endereço para entrega e cobrança
+            // Criar endereço de entrega e cobrança (ambos como shipping)
             $address = Address::create([
                 'customer_id' => $validated['customer_id'],
                 'type' => 'shipping',
                 'street' => $validated['street'],
                 'number' => $validated['number'],
                 'complement' => $validated['complement'],
-                'neighborhood' => $validated['neighborhood'],
                 'city' => $validated['city'],
                 'state' => $validated['state'],
-                'cep' => $validated['cep']
-            ]);
-
-            // Criar também como endereço de cobrança
-            Address::create([
-                'customer_id' => $validated['customer_id'],
-                'type' => 'billing',
-                'street' => $validated['street'],
-                'number' => $validated['number'],
-                'complement' => $validated['complement'],
-                'neighborhood' => $validated['neighborhood'],
-                'city' => $validated['city'],
-                'state' => $validated['state'],
-                'cep' => $validated['cep']
+                'postal_code' => $postalCode
             ]);
 
             // Recarregar cliente com endereços

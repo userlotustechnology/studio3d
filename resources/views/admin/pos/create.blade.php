@@ -58,9 +58,14 @@
                         <!-- Endereços do Cliente (aparecem após selecionar) -->
                         <div id="customerAddresses" style="display: none; margin-top: 16px;">
                             <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Endereço de Entrega:</label>
-                            <select name="address_id" id="addressSelect" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
-                                <option value="">Selecione um endereço...</option>
-                            </select>
+                            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                                <select name="address_id" id="addressSelect" style="flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                                    <option value="">Selecione um endereço...</option>
+                                </select>
+                                <button type="button" id="newAddressBtn" onclick="openAddressModal()" style="background-color: #3b82f6; color: white; padding: 10px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                    <i class="fas fa-plus"></i> Novo Endereço
+                                </button>
+                            </div>
                             
                             <!-- Campos de endereço manual (aparecem quando selecionado) -->
                             <div id="manualAddressFields" style="display: none; margin-top: 16px; padding: 16px; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
@@ -231,6 +236,77 @@
                 </div>
             </form>
         </div>
+    </div>
+</div>
+
+<!-- Modal Cadastro de Endereço -->
+<div id="addressModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 24px; width: 600px; max-width: 90vw; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1f2937;">Novo Endereço de Entrega</h3>
+            <button type="button" id="closeAddressModal" style="background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer;">
+                ✕
+            </button>
+        </div>
+        
+        <form id="addressForm">
+            <!-- CEP - Primeiro Campo -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">CEP *</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="cep" id="addressCep" required placeholder="00000-000" style="flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                    <button type="button" id="searchCepBtn" onclick="searchCep()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">Digite o CEP e clique em "Buscar" para preencher os dados automaticamente</p>
+                <div id="cepError" style="display: none; margin-top: 8px; padding: 8px 12px; background-color: #fee2e2; color: #991b1b; border-radius: 6px; font-size: 12px;"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; display: none;" id="addressFieldsContainer">
+                <div>
+                    <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Rua *</label>
+                    <input type="text" name="street" id="addressStreet" required readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background-color: #f9fafb;">
+                </div>
+                <div>
+                    <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Número *</label>
+                    <input type="text" name="number" id="addressNumber" required placeholder="Digite o número" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px; display: none;" id="addressComplementContainer">
+                <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Complemento (opcional)</label>
+                <input type="text" name="complement" id="addressComplement" placeholder="Apto, bloco, etc..." style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; display: none;" id="addressCityFieldsContainer">
+                <div>
+                    <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Bairro *</label>
+                    <input type="text" name="neighborhood" id="addressNeighborhood" required readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background-color: #f9fafb;">
+                </div>
+                <div>
+                    <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Cidade *</label>
+                    <input type="text" name="city" id="addressCity" required readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background-color: #f9fafb;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 16px; margin-bottom: 20px; display: none;" id="addressStateContainer">
+                <div>
+                    <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">UF *</label>
+                    <input type="text" name="state" id="addressState" maxlength="2" required readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; text-transform: uppercase; background-color: #f9fafb;">
+                </div>
+                <div></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; display: none;" id="addressSubmitContainer">
+                <button type="button" id="cancelAddressForm" style="background-color: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    Cancelar
+                </button>
+                <button type="submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-check"></i> Cadastrar Endereço
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -857,6 +933,162 @@ function showNotification(message, type = 'info') {
         }, 300);
     });
 }
+
+// Funções do modal de endereço
+function searchCep() {
+    const cepInput = document.getElementById('addressCep');
+    const cepError = document.getElementById('cepError');
+    
+    // Remover máscara e validar
+    let cep = cepInput.value.replace(/[^0-9]/g, '');
+    
+    if (!cep || cep.length !== 8) {
+        cepError.textContent = 'CEP deve conter 8 dígitos';
+        cepError.style.display = 'block';
+        return;
+    }
+    
+    // Limpar erro
+    cepError.style.display = 'none';
+    
+    // Mostrar loading
+    const searchBtn = document.getElementById('searchCepBtn');
+    const originalText = searchBtn.innerHTML;
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    
+    // Consultar ViaCEP
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                cepError.textContent = 'CEP não encontrado';
+                cepError.style.display = 'block';
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = originalText;
+                
+                // Esconder campos
+                document.getElementById('addressFieldsContainer').style.display = 'none';
+                document.getElementById('addressComplementContainer').style.display = 'none';
+                document.getElementById('addressCityFieldsContainer').style.display = 'none';
+                document.getElementById('addressStateContainer').style.display = 'none';
+                document.getElementById('addressSubmitContainer').style.display = 'none';
+                return;
+            }
+            
+            // Preencher campos automaticamente
+            document.getElementById('addressStreet').value = data.logradouro || '';
+            document.getElementById('addressNeighborhood').value = data.bairro || '';
+            document.getElementById('addressCity').value = data.localidade || '';
+            document.getElementById('addressState').value = data.uf || '';
+            
+            // Mostrar campos
+            document.getElementById('addressFieldsContainer').style.display = 'grid';
+            document.getElementById('addressComplementContainer').style.display = 'block';
+            document.getElementById('addressCityFieldsContainer').style.display = 'grid';
+            document.getElementById('addressStateContainer').style.display = 'grid';
+            document.getElementById('addressSubmitContainer').style.display = 'flex';
+            
+            // Focar no campo de número
+            document.getElementById('addressNumber').focus();
+            
+            showNotification('Dados do CEP preenchidos com sucesso!', 'success');
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = originalText;
+        })
+        .catch(error => {
+            console.error('Erro ao buscar CEP:', error);
+            cepError.textContent = 'Erro ao buscar CEP. Tente novamente.';
+            cepError.style.display = 'block';
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = originalText;
+            
+            // Esconder campos
+            document.getElementById('addressFieldsContainer').style.display = 'none';
+            document.getElementById('addressComplementContainer').style.display = 'none';
+            document.getElementById('addressCityFieldsContainer').style.display = 'none';
+            document.getElementById('addressStateContainer').style.display = 'none';
+            document.getElementById('addressSubmitContainer').style.display = 'none';
+        });
+}
+
+// Máscara para CEP
+document.addEventListener('DOMContentLoaded', function() {
+    const cepInput = document.getElementById('addressCep');
+    if (cepInput) {
+        cepInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            e.target.value = value;
+        });
+    }
+});
+
+function openAddressModal() {
+    if (!selectedCustomer) {
+        showNotification('Selecione um cliente primeiro', 'warning');
+        return;
+    }
+    
+    document.getElementById('addressModal').style.display = 'flex';
+    document.getElementById('addressForm').reset();
+    document.querySelector('[name="street"]').focus();
+}
+
+document.getElementById('closeAddressModal').addEventListener('click', function() {
+    document.getElementById('addressModal').style.display = 'none';
+});
+
+document.getElementById('cancelAddressForm').addEventListener('click', function() {
+    document.getElementById('addressModal').style.display = 'none';
+});
+
+document.getElementById('addressForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    formData.append('customer_id', selectedCustomer.id);
+    
+    // Disabilitar botão
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
+    
+    fetch(`{{ route('admin.pos.createAddress') }}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('[name="_token"]').value
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Atualizar cliente com novo endereço
+            selectCustomer(data.customer);
+            
+            // Fechar modal
+            document.getElementById('addressModal').style.display = 'none';
+            this.reset();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Cadastrar Endereço';
+            
+            showNotification('Endereço cadastrado com sucesso!', 'success');
+        } else {
+            showNotification('Erro ao cadastrar endereço: ' + (data.message || 'Erro desconhecido'), 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Cadastrar Endereço';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Erro ao cadastrar endereço. Tente novamente.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Cadastrar Endereço';
+    });
+});
 
 // Função para validar CPF
 function isValidCPF(cpf) {
