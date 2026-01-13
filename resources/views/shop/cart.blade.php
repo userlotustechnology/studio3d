@@ -18,12 +18,11 @@
         </div>
     </div>
 
-    <div class="container" style="padding: 60px 20px;">
-        <div class="cart-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+    <div class="container hero-content" style="padding: 60px 20px;">
+        <div class="cart-layout" style="display: grid; grid-template-columns: @if(count($items) > 0) 2fr 1fr @else 1fr @endif; gap: 40px;">
             <!-- Cart Items -->
-            <div class="cart-items-section">
-                <h1 style="font-size: 32px; margin-bottom: 30px; color: var(--text-dark);"><i class="fas fa-shopping-cart"></i> Seu Carrinho</h1>
-
+            <div class="cart-items-section" @if(count($items) == 0) style="max-width: 800px; margin: 0 auto;" @endif>
+                
                 @if (session('success'))
                     <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #10b981; padding: 16px 20px; margin-bottom: 20px; border-radius: 12px; color: #065f46; display: flex; align-items: center; gap: 12px;">
                         <i class="fas fa-check-circle"></i>
@@ -119,11 +118,13 @@
                         </form>
                     </div>
                 @else
-                    <div style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 80px 40px; text-align: center; border-radius: 16px; border: 2px dashed #e5e7eb;">
-                        <i class="fas fa-shopping-cart" style="font-size: 64px; color: #d1d5db; margin-bottom: 20px; display: block;"></i>
-                        <h2 style="color: var(--text-dark); margin-bottom: 10px; font-size: 22px;">Carrinho vazio</h2>
-                        <p style="color: var(--text-light); margin-bottom: 30px;">Você ainda não adicionou nenhum produto ao carrinho.</p>
-                        <a href="{{ route('shop.index') }}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);">
+                    <div class="empty-state-modern">
+                        <div class="empty-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2>Carrinho vazio</h2>
+                        <p>Você ainda não adicionou nenhum produto ao carrinho.</p>
+                        <a href="{{ route('shop.index') }}" class="btn-primary-modern">
                             <i class="fas fa-shopping-bag"></i> Continuar comprando
                         </a>
                     </div>
@@ -459,10 +460,6 @@
             .hero-modern h1 {
                 font-size: 24px;
             }
-
-            .container {
-                padding: 30px 15px !important;
-            }
             
             .cart-items-section h1 {
                 font-size: 20px !important;
@@ -522,6 +519,68 @@
             .cart-summary-modern {
                 padding: 24px !important;
             }
+        }
+
+        /* Empty State */
+        .empty-state-modern {
+            padding: 80px 20px;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-icon i {
+            font-size: 48px;
+            color: white;
+        }
+
+        .empty-state-modern h2 {
+            color: #1f2937;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .empty-state-modern p {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary-modern {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-primary-modern i {
+            margin-right: 8px;
         }
     </style>
 

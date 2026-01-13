@@ -1,6 +1,6 @@
 @extends('shop.layout')
 
-@section('title', 'Loja Online - Produtos')
+@section('title', 'Loja Online - ' . config('app.name'))
 
 @section('content')
     <!-- Hero Section Moderna -->
