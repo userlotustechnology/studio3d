@@ -1,188 +1,737 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard - Loja Online')
+@section('title', 'Dashboard - Studio3D')
 
 @section('content')
-<div style="background-color: #f3f4f6; padding: 30px 20px;">
-    <div style="max-width: 1400px; margin: 0 auto;">
-        <!-- Header -->
-        <div style="margin-bottom: 40px;">
-            <h1 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">Dashboard</h1>
-            <p style="color: #6b7280; font-size: 16px;">Bem-vindo ao painel de controle da sua loja</p>
-        </div>
-
-        <!-- KPI Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
-            <!-- Total Produtos -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+<div class="card bg-white border-0 rounded-10 mb-4">
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Total de Produtos</p>
-                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin: 0;">{{ $totalProducts }}</h2>
+                        <h1 class="fs-28 fw-bold text-secondary mb-1">Dashboard</h1>
+                        <p class="text-body mb-0">Visão geral do desempenho da sua loja</p>
                     </div>
-                    <div style="width: 50px; height: 50px; background-color: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-box" style="font-size: 24px; color: #3b82f6;"></i>
-                    </div>
-                </div>
-                <p style="color: #10b981; font-size: 13px; margin: 0;">
-                    <i class="fas fa-check-circle"></i> {{ $activeProducts }} ativos
-                </p>
-            </div>
-
-            <!-- Preço Médio -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                     <div>
-                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Preço Médio</p>
-                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin: 0;">R$ {{ number_format($avgProductPrice, 2, ',', '.') }}</h2>
-                    </div>
-                    <div style="width: 50px; height: 50px; background-color: #fecaca; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-tag" style="font-size: 24px; color: #f87171;"></i>
-                    </div>
-                </div>
-                <p style="color: #6b7280; font-size: 13px; margin: 0;">
-                    Entre todos os produtos
-                </p>
-            </div>
-
-            <!-- Total Pedidos -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                    <div>
-                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Total de Pedidos</p>
-                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin: 0;">{{ $totalOrders }}</h2>
-                    </div>
-                    <div style="width: 50px; height: 50px; background-color: #d1fae5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-shopping-cart" style="font-size: 24px; color: #10b981;"></i>
-                    </div>
-                </div>
-                <p style="color: #f59e0b; font-size: 13px; margin: 0;">
-                    <i class="fas fa-exclamation-circle"></i> {{ $pendingOrders }} pendentes
-                </p>
-            </div>
-
-            <!-- Receita Total -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                    <div>
-                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">Receita Total</p>
-                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin: 0;">R$ {{ number_format($totalRevenue, 2, ',', '.') }}</h2>
-                    </div>
-                    <div style="width: 50px; height: 50px; background-color: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-dollar-sign" style="font-size: 24px; color: #f59e0b;"></i>
-                    </div>
-                </div>
-                <p style="color: #10b981; font-size: 13px; margin: 0;">
-                    <i class="fas fa-arrow-up"></i> R$ {{ number_format($thisMonthRevenue, 2, ',', '.') }} este mês
-                </p>
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 40px;">
-            <!-- Status dos Pedidos -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Status dos Pedidos</h3>
-                
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                    <div style="padding: 15px; background-color: #fef3c7; border-radius: 6px; border-left: 4px solid #f59e0b;">
-                        <p style="color: #92400e; font-size: 13px; margin: 0 0 8px 0; font-weight: 600;">PENDENTES</p>
-                        <p style="color: #b45309; font-size: 24px; font-weight: 700; margin: 0;">{{ $pendingOrders }}</p>
-                    </div>
-                    <div style="padding: 15px; background-color: #dbeafe; border-radius: 6px; border-left: 4px solid #3b82f6;">
-                        <p style="color: #1e40af; font-size: 13px; margin: 0 0 8px 0; font-weight: 600;">PROCESSANDO</p>
-                        <p style="color: #1e3a8a; font-size: 24px; font-weight: 700; margin: 0;">{{ $processingOrders }}</p>
-                    </div>
-                    <div style="padding: 15px; background-color: #d1fae5; border-radius: 6px; border-left: 4px solid #10b981;">
-                        <p style="color: #065f46; font-size: 13px; margin: 0 0 8px 0; font-weight: 600;">ENVIADOS</p>
-                        <p style="color: #047857; font-size: 24px; font-weight: 700; margin: 0;">{{ $shippedOrders }}</p>
-                    </div>
-                    <div style="padding: 15px; background-color: #d1fae5; border-radius: 6px; border-left: 4px solid #059669;">
-                        <p style="color: #065f46; font-size: 13px; margin: 0 0 8px 0; font-weight: 600;">ENTREGUES</p>
-                        <p style="color: #047857; font-size: 24px; font-weight: 700; margin: 0;">{{ $deliveredOrders }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Categorias -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Categorias</h3>
-                
-                @foreach($categories as $category)
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                        <span style="color: #6b7280; font-size: 14px;">{{ $category->category }}</span>
-                        <span style="background-color: #3b82f6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">{{ $category->count }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <!-- Produtos Mais Vendidos -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Top 5 Produtos Vendidos</h3>
-                
-                @forelse($topProducts as $index => $product)
-                    <div style="display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid #e5e7eb;">
-                        <div style="width: 40px; height: 40px; background-color: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; font-weight: 700; color: #3b82f6;">
-                            {{ $index + 1 }}
-                        </div>
-                        <div style="flex: 1;">
-                            <p style="color: #1f2937; font-weight: 600; margin: 0; font-size: 14px;">{{ $product->product_name }}</p>
-                            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 13px;">{{ $product->total_quantity }} unidades vendidas</p>
-                        </div>
-                        <span style="background-color: #f0fdf4; color: #15803d; padding: 6px 12px; border-radius: 4px; font-weight: 600; font-size: 13px;">
-                            {{ $product->sales_count }} vendas
+                        <span class="badge bg-primary fs-14 px-3 py-2">
+                            <i class="material-symbols-outlined fs-18 align-middle me-1">calendar_today</i>
+                            {{ now()->translatedFormat('d \d\e F, Y') }}
                         </span>
                     </div>
-                @empty
-                    <p style="color: #6b7280; text-align: center; padding: 40px 0;">Nenhuma venda registrada</p>
-                @endforelse
+                </div>
             </div>
+        </div>
 
-            <!-- Últimos Pedidos -->
-            <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 24px;">Últimos Pedidos</h3>
-                
-                @forelse($recentOrders as $order)
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #e5e7eb;">
-                        <div>
-                            <p style="color: #1f2937; font-weight: 600; margin: 0; font-size: 14px;">{{ $order->order_number }}</p>
-                            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 13px;">{{ $order->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <p style="color: #1f2937; font-weight: 600; margin: 0; font-size: 14px;">R$ {{ number_format($order->total, 2, ',', '.') }}</p>
-                            <p style="color: #6b7280; margin: 4px 0 0 0; font-size: 13px;">
-                                @switch($order->status)
-                                    @case('pending')
-                                        <span style="background-color: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Pendente</span>
-                                    @break
-                                    @case('processing')
-                                        <span style="background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Processando</span>
-                                    @break
-                                    @case('shipped')
-                                        <span style="background-color: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Enviado</span>
-                                    @break
-                                    @case('delivered')
-                                        <span style="background-color: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Entregue</span>
-                                    @break
-                                    @case('cancelled')
-                                        <span style="background-color: #fee2e2; color: #7f1d1d; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Cancelado</span>
-                                    @break
-                                @endswitch
-                            </p>
+<!-- KPI Cards Row 1 -->
+<div class="row mb-4">
+    <div class="col-xxl-3 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 h-100 hover-shadow">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 55px; height: 55px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="material-symbols-outlined text-white fs-28">attach_money</i>
                         </div>
                     </div>
-                @empty
-                    <p style="color: #6b7280; text-align: center; padding: 40px 0;">Nenhum pedido registrado</p>
-                @endforelse
+                    <div class="flex-grow-1 ms-3">
+                        <span class="d-block text-body fs-14 mb-1">Receita Total</span>
+                        <h3 class="fw-bold text-secondary fs-24 mb-0">R$ {{ number_format($totalRevenue, 2, ',', '.') }}</h3>
+                    </div>
+                </div>
+                @php
+                    $isGrowthPositive = $revenueGrowth >= 0;
+                @endphp
+                <div class="d-flex align-items-center">
+                    <span class="badge {{ $isGrowthPositive ? 'bg-success' : 'bg-danger' }} bg-opacity-10 text-{{ $isGrowthPositive ? 'success' : 'danger' }} fs-13 px-2 py-1">
+                        <i class="material-symbols-outlined fs-16 align-middle">{{ $isGrowthPositive ? 'trending_up' : 'trending_down' }}</i>
+                        {{ number_format(abs($revenueGrowth), 1) }}%
+                    </span>
+                    <span class="text-body fs-13 ms-2">vs. mês anterior</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 h-100 hover-shadow">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 55px; height: 55px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="material-symbols-outlined text-white fs-28">shopping_cart</i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <span class="d-block text-body fs-14 mb-1">Total de Pedidos</span>
+                        <h3 class="fw-bold text-secondary fs-24 mb-0">{{ $totalOrders }}</h3>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-warning bg-opacity-10 text-warning fs-13 px-2 py-1">
+                        <i class="material-symbols-outlined fs-16 align-middle">schedule</i>
+                        {{ $pendingOrders }} pendentes
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 h-100 hover-shadow">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 55px; height: 55px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="material-symbols-outlined text-white fs-28">people</i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <span class="d-block text-body fs-14 mb-1">Clientes</span>
+                        <h3 class="fw-bold text-secondary fs-24 mb-0">{{ $totalCustomers }}</h3>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-success bg-opacity-10 text-success fs-13 px-2 py-1">
+                        <i class="material-symbols-outlined fs-16 align-middle">add</i>
+                        {{ $newCustomersThisMonth }} novos este mês
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 h-100 hover-shadow">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 55px; height: 55px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                            <i class="material-symbols-outlined text-white fs-28">inventory_2</i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <span class="d-block text-body fs-14 mb-1">Produtos Ativos</span>
+                        <h3 class="fw-bold text-secondary fs-24 mb-0">{{ $activeProducts }}</h3>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    @if($lowStockProducts > 0)
+                        <span class="badge bg-danger bg-opacity-10 text-danger fs-13 px-2 py-1">
+                            <i class="material-symbols-outlined fs-16 align-middle">warning</i>
+                            {{ $lowStockProducts }} com estoque baixo
+                        </span>
+                    @else
+                        <span class="badge bg-success bg-opacity-10 text-success fs-13 px-2 py-1">
+                            <i class="material-symbols-outlined fs-16 align-middle">check_circle</i>
+                            Estoques saudáveis
+                        </span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Additional Metrics -->
+<div class="row mb-4">
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-primary" style="font-size: 40px;">today</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">R$ {{ number_format($todayRevenue, 2, ',', '.') }}</h4>
+                <p class="text-body fs-13 mb-0">Receita Hoje</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-success" style="font-size: 40px;">date_range</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">R$ {{ number_format($thisWeekRevenue, 2, ',', '.') }}</h4>
+                <p class="text-body fs-13 mb-0">Receita Semanal</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-info" style="font-size: 40px;">calendar_month</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">R$ {{ number_format($thisMonthRevenue, 2, ',', '.') }}</h4>
+                <p class="text-body fs-13 mb-0">Receita Mensal</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-warning" style="font-size: 40px;">sell</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">R$ {{ number_format($avgOrderValue, 2, ',', '.') }}</h4>
+                <p class="text-body fs-13 mb-0">Ticket Médio</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-purple" style="font-size: 40px;">percent</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">{{ number_format($conversionRate, 1) }}%</h4>
+                <p class="text-body fs-13 mb-0">Taxa Entrega</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-2 col-lg-4 col-sm-6 mb-4">
+        <div class="card border-0 rounded-10 text-center h-100">
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="material-symbols-outlined text-danger" style="font-size: 40px;">local_offer</i>
+                </div>
+                <h4 class="fw-bold text-secondary mb-1">R$ {{ number_format($avgProductPrice, 2, ',', '.') }}</h4>
+                <p class="text-body fs-13 mb-0">Preço Médio</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-xxl-8 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-secondary mb-0">Receita nos Últimos 6 Meses</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Receita
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Receita</a></li>
+                            <li><a class="dropdown-item" href="#">Pedidos</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="revenueChart" style="height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders by Day Chart -->
+    <div class="col-xxl-4 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Pedidos por Dia (7 dias)</h5>
+                <div id="ordersByDayChart" style="height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Cards and Categories -->
+<div class="row mb-4">
+    <div class="col-xxl-8 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Status dos Pedidos</h5>
+                <div class="row g-3">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-warning border-opacity-25" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-warning fs-24">schedule</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Pendentes</span>
+                                    <h4 class="fw-bold text-warning mb-0">{{ $pendingOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-info border-opacity-25" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-info fs-24">autorenew</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Processando</span>
+                                    <h4 class="fw-bold text-info mb-0">{{ $processingOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-primary border-opacity-25" style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-primary fs-24">local_shipping</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Enviados</span>
+                                    <h4 class="fw-bold text-primary mb-0">{{ $shippedOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-success border-opacity-25" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-success fs-24">check_circle</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Entregues</span>
+                                    <h4 class="fw-bold text-success mb-0">{{ $deliveredOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-danger border-opacity-25" style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-danger bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-danger fs-24">cancel</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Cancelados</span>
+                                    <h4 class="fw-bold text-danger mb-0">{{ $cancelledOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-3 rounded-10 border border-secondary border-opacity-25" style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary bg-opacity-25" style="width: 45px; height: 45px;">
+                                        <i class="material-symbols-outlined text-secondary fs-24">summarize</i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <span class="d-block text-body fs-13 mb-1">Total</span>
+                                    <h4 class="fw-bold text-secondary mb-0">{{ $totalOrders }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="col-xxl-4 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-secondary mb-0">Categorias</h5>
+                    <span class="badge bg-primary">{{ $categories->count() }}</span>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    @foreach($categories as $category)
+                        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; min-width: 35px;">
+                                    <i class="material-symbols-outlined text-primary fs-18">category</i>
+                                </div>
+                                <span class="ms-3 text-secondary fw-medium">{{ $category->category }}</span>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ $category->count }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales by Category and Top Customers -->
+<div class="row mb-4">
+    <div class="col-xxl-6 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Vendas por Categoria (Top 5)</h5>
+                <div id="salesByCategoryChart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-6 mb-4">
+        <div class="card border-0 rounded-10 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Melhores Clientes</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-body fs-13">#</th>
+                                <th class="text-body fs-13">Cliente</th>
+                                <th class="text-body fs-13 text-center">Pedidos</th>
+                                <th class="text-body fs-13 text-end">Total Gasto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($topCustomers as $index => $customer)
+                                <tr>
+                                    <td>
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 30px; height: 30px;">
+                                            {{ $index + 1 }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="d-block text-secondary fw-medium">{{ $customer->customer->name ?? 'Cliente' }}</span>
+                                            <span class="text-body fs-12">{{ $customer->customer->email ?? '' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info bg-opacity-10 text-info">{{ $customer->orders_count }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="text-success fw-bold">R$ {{ number_format($customer->total_spent, 2, ',', '.') }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-body py-4">Nenhum cliente registrado</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Products and Recent Orders -->
+<div class="row">
+    <div class="col-xxl-6 mb-4">
+        <div class="card border-0 rounded-10">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Produtos Mais Vendidos</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-body fs-13">#</th>
+                                <th class="text-body fs-13">Produto</th>
+                                <th class="text-body fs-13 text-center">Qtd</th>
+                                <th class="text-body fs-13 text-end">Receita</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($topProducts as $index => $product)
+                                <tr>
+                                    <td>
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
+                                             style="width: 30px; height: 30px; background: linear-gradient(135deg, {{ ['#667eea', '#f093fb', '#4facfe', '#fa709a', '#fbc2eb'][$index % 5] }} 0%, {{ ['#764ba2', '#f5576c', '#00f2fe', '#fee140', '#a6c1ee'][$index % 5] }} 100%);">
+                                            {{ $index + 1 }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="d-block text-secondary fw-medium">{{ $product->product_name }}</span>
+                                            <span class="text-body fs-12">{{ $product->sales_count }} vendas</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary">{{ $product->total_quantity }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="text-success fw-bold">R$ {{ number_format($product->total_revenue, 2, ',', '.') }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-body py-4">Nenhuma venda registrada</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-6 mb-4">
+        <div class="card border-0 rounded-10">
+            <div class="card-body">
+                <h5 class="fw-bold text-secondary mb-4">Últimos Pedidos</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-body fs-13">Pedido</th>
+                                <th class="text-body fs-13">Cliente</th>
+                                <th class="text-body fs-13 text-center">Status</th>
+                                <th class="text-body fs-13 text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentOrders as $order)
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <span class="d-block text-secondary fw-medium fs-14">{{ $order->order_number }}</span>
+                                            <span class="text-body fs-12">{{ $order->created_at->format('d/m/Y H:i') }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-secondary">{{ $order->customer->name ?? 'Cliente' }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @php
+                                            $statusConfig = [
+                                                'pending' => ['label' => 'Pendente', 'color' => 'warning'],
+                                                'processing' => ['label' => 'Processando', 'color' => 'info'],
+                                                'shipped' => ['label' => 'Enviado', 'color' => 'primary'],
+                                                'delivered' => ['label' => 'Entregue', 'color' => 'success'],
+                                                'cancelled' => ['label' => 'Cancelado', 'color' => 'danger'],
+                                            ];
+                                            $status = $statusConfig[$order->status] ?? ['label' => $order->status, 'color' => 'secondary'];
+                                        @endphp
+                                        <span class="badge bg-{{ $status['color'] }} bg-opacity-10 text-{{ $status['color'] }}">
+                                            {{ $status['label'] }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="text-secondary fw-bold">R$ {{ number_format($order->total, 2, ',', '.') }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-body py-4">Nenhum pedido registrado</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+    transform: translateY(-2px);
+}
+</style>
 @endsection
 
 @section('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Revenue Chart
+    const revenueData = @json($revenueByMonth);
+    const revenueOptions = {
+        series: [{
+            name: 'Receita',
+            data: revenueData.map(item => parseFloat(item.revenue))
+        }],
+        chart: {
+            type: 'area',
+            height: 350,
+            toolbar: {
+                show: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.2,
+                stops: [0, 90, 100]
+            }
+        },
+        xaxis: {
+            categories: revenueData.map(item => {
+                const [year, month] = item.month.split('-');
+                const date = new Date(year, month - 1);
+                return date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+            }),
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value) {
+                    return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+            }
+        },
+        colors: ['#667eea'],
+        grid: {
+            borderColor: '#f1f1f1'
+        }
+    };
+    const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), revenueOptions);
+    revenueChart.render();
 
+    // Orders by Day Chart
+    const ordersByDayData = @json($ordersByDay);
+    const ordersByDayOptions = {
+        series: [{
+            name: 'Pedidos',
+            data: ordersByDayData.map(item => item.count)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 8,
+                distributed: true,
+                dataLabels: {
+                    position: 'top'
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: ["#304758"]
+            }
+        },
+        xaxis: {
+            categories: ordersByDayData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+            }),
+            labels: {
+                style: {
+                    fontSize: '11px'
+                }
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Quantidade'
+            }
+        },
+        colors: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#fa709a'],
+        legend: {
+            show: false
+        }
+    };
+    const ordersByDayChart = new ApexCharts(document.querySelector("#ordersByDayChart"), ordersByDayOptions);
+    ordersByDayChart.render();
+
+    // Sales by Category Chart
+    const salesByCategoryData = @json($salesByCategory);
+    const categoryOptions = {
+        series: [{
+            name: 'Receita',
+            data: salesByCategoryData.map(item => parseFloat(item.revenue))
+        }],
+        chart: {
+            type: 'bar',
+            height: 300,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                borderRadius: 8,
+                dataLabels: {
+                    position: 'top'
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function(value) {
+                return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            },
+            offsetX: 50,
+            style: {
+                fontSize: '11px',
+                colors: ['#304758']
+            }
+        },
+        xaxis: {
+            categories: salesByCategoryData.map(item => item.category),
+            labels: {
+                formatter: function(value) {
+                    return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                }
+            }
+        },
+        colors: ['#4facfe'],
+        grid: {
+            borderColor: '#f1f1f1'
+        }
+    };
+    const categoryChart = new ApexCharts(document.querySelector("#salesByCategoryChart"), categoryOptions);
+    categoryChart.render();
+});
 </script>
+    </div>
+</div>
 @endsection
