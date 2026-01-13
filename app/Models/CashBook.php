@@ -30,7 +30,7 @@ class CashBook extends Model
         'fee_amount' => 'decimal:2',
         'net_amount' => 'decimal:2',
         'metadata' => 'array',
-        'transaction_date' => 'date',
+        'transaction_date' => 'datetime',
         'settlement_date' => 'date',
     ];
 

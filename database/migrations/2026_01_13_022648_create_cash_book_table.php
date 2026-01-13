@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('net_amount', 10, 2)->comment('Valor líquido (amount - fee_amount)');
             $table->string('description')->comment('Descrição da movimentação');
             $table->json('metadata')->nullable()->comment('Dados adicionais em JSON');
-            $table->date('transaction_date')->comment('Data da transação');
+            $table->dateTime('transaction_date')->comment('Data e hora da transação');
             $table->date('settlement_date')->nullable()->comment('Data de compensação/liquidação');
             $table->string('reference')->nullable()->comment('Referência externa (ID do gateway, etc)');
             $table->timestamps();

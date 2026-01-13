@@ -128,9 +128,12 @@ class Order extends Model
         // Processar mudanças de status
         static::updated(function ($order) {
             // Se o pedido saiu de draft para outro status (finalizou)
+            // MAS não registra se foi cancelado (apenas devolve estoque)
             if ($order->isDirty('status') && $order->getOriginal('status') === 'draft') {
-                $order->convertCartReservationsToSales();
-                $order->registerFinancialEntries();
+                if ($order->status !== 'cancelled') {
+                    $order->convertCartReservationsToSales();
+                    $order->registerFinancialEntries();
+                }
             }
         });
     }

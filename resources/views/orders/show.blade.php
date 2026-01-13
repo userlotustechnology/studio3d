@@ -271,6 +271,7 @@
                     </small>
                     @else
                     
+                    @if(!empty($allowedStatuses))
                     <form method="POST" style="display: flex; flex-direction: column; gap: 12px;">
                         @csrf
                         <div style="display: flex; gap: 8px;">
@@ -302,6 +303,7 @@
                             </button>
                         </div>
                     </form>
+                    @endif
                     
                     <!-- Botão de Estorno (separado) -->
                     @if(in_array($order->status, ['shipped', 'delivered']))
@@ -315,7 +317,7 @@
                         </small>
                     </div>
                     @endif
-                    @endif
+                @endif
                 </div>
 
                 <!-- WhatsApp Button -->
@@ -333,7 +335,7 @@
                     $message = "Olá! Informação sobre o pedido " . $order->order_number . ". Status: " . translateOrderStatus($order->status) . ". Total: R$ " . number_format($order->total, 2, ',', '.');
                     $whatsappUrl = "https://wa.me/" . $phone . "?text=" . urlencode($message);
                 ?>
-                <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 24px;">
                     <h3 style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px;">Contato</h3>
                     <a href="{{ $whatsappUrl }}" target="_blank" style="display: block; width: 100%; padding: 12px; background-color: #25d366; color: white; border-radius: 4px; text-decoration: none; font-weight: 600; cursor: pointer; font-size: 14px; text-align: center; transition: background-color 0.3s;">
                         <i class="fab fa-whatsapp"></i> Enviar mensagem via WhatsApp
@@ -572,13 +574,13 @@ document.getElementById('refundModal')?.addEventListener('click', function(e) {
         </div>
 
         <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-            Tem certeza que deseja cancelar este rascunho? Esta ação é irreversível e os produtos serão devolvidos ao estoque.
+            Tem certeza que deseja cancelar este rascunho? Os produtos serão devolvidos ao estoque.
         </p>
 
-        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 6px; margin-bottom: 24px;">
-            <p style="color: #92400e; font-size: 13px; margin: 0;">
+        <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 6px; margin-bottom: 24px;">
+            <p style="color: #1e40af; font-size: 13px; margin: 0;">
                 <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
-                <strong>Aviso:</strong> Todos os itens do carrinho serão devolvidos ao estoque.
+                <strong>Nota:</strong> Nenhuma movimentação será registrada no livro caixa.
             </p>
         </div>
 

@@ -71,7 +71,7 @@ class OrderController extends Controller
             // Recarregar para pegar o status atualizado
             $order->refresh();
 
-            // Se foi cancelado, devolver produtos ao estoque
+            // Se foi cancelado, devolver produtos ao estoque (sem afetar o livro caixa)
             if ($status === 'cancelled') {
                 foreach ($order->items as $item) {
                     StockMovement::recordMovement(
