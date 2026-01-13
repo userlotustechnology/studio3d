@@ -32,6 +32,7 @@ class OrderStatusHistory extends Model
             'shipped' => 'Enviado',
             'delivered' => 'Entregue',
             'cancelled' => 'Cancelado',
+            'refunded' => 'Estornado',
             default => $status,
         };
     }
@@ -48,6 +49,7 @@ class OrderStatusHistory extends Model
             'shipped' => '🚚',
             'delivered' => '✓',
             'cancelled' => '✕',
+            'refunded' => '🔄',
             default => '•',
         };
     }
@@ -64,6 +66,7 @@ class OrderStatusHistory extends Model
             'shipped' => '#0f79f3',
             'delivered' => '#10b981',
             'cancelled' => '#ef4444',
+            'refunded' => '#f97316',
             default => '#6b7280',
         };
     }

@@ -16,9 +16,10 @@ class OrderStatusTransitionService
         'draft' => ['pending', 'cancelled'],       // Draft pode ir para pending (finalização) ou cancelado
         'pending' => ['processing', 'cancelled'],  // Pending é após finalização pelo cliente
         'processing' => ['shipped', 'cancelled'],
-        'shipped' => ['delivered', 'cancelled'],
-        'delivered' => [], // Terminal state
-        'cancelled' => [], // Terminal state
+        'shipped' => ['delivered', 'refunded'],    // Pode ser estornado após enviado
+        'delivered' => ['refunded'],               // Pode ser estornado após entregue
+        'cancelled' => [],                         // Terminal state
+        'refunded' => [],                          // Terminal state
     ];
 
     /**
@@ -109,6 +110,7 @@ class OrderStatusTransitionService
             'shipped' => 'Enviado',
             'delivered' => 'Entregue',
             'cancelled' => 'Cancelado',
+            'refunded' => 'Estornado',
         ];
 
         $statusColors = [
@@ -118,6 +120,7 @@ class OrderStatusTransitionService
             'shipped' => '#8b5cf6',      // Roxo
             'delivered' => '#10b981',    // Verde
             'cancelled' => '#ef4444',    // Vermelho
+            'refunded' => '#f97316',     // Laranja
         ];
 
         $previousLabel = $statusLabels[$previousStatus] ?? ucfirst($previousStatus);
@@ -208,6 +211,7 @@ class OrderStatusTransitionService
             'shipped' => 'Enviado',
             'delivered' => 'Entregue',
             'cancelled' => 'Cancelado',
+            'refunded' => 'Estornado',
         ];
 
         return array_map(fn($s) => [

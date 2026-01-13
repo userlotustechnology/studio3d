@@ -290,6 +290,19 @@
                             </button>
                         </div>
                     </form>
+                    
+                    <!-- Botão de Estorno (separado) -->
+                    @if(in_array($order->status, ['shipped', 'delivered']))
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" onclick="openRefundModal()" 
+                            style="width: 100%; padding: 12px; background-color: #fff7ed; color: #c2410c; border: 2px solid #fb923c; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s;">
+                            <i class="fas fa-undo"></i> Estornar Pedido
+                        </button>
+                        <small style="display: block; color: #6b7280; font-size: 12px; margin-top: 8px; text-align: center;">
+                            ⚠️ O estorno devolverá os produtos ao estoque e registrará no livro caixa
+                        </small>
+                    </div>
+                    @endif
                     @endif
                 </div>
 
@@ -467,5 +480,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Modal de Estorno
+function openRefundModal() {
+    document.getElementById('refundModal').style.display = 'flex';
+}
+
+function closeRefundModal() {
+    document.getElementById('refundModal').style.display = 'none';
+}
+
+// Fechar modal ao clicar fora
+document.getElementById('refundModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRefundModal();
+    }
+});
 </script>
+
+<!-- Modal de Estorno -->
+<div id="refundModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 style="font-size: 22px; font-weight: 700; color: #1f2937; margin: 0;">
+                <i class="fas fa-undo" style="color: #f97316;"></i> Confirmar Estorno
+            </h3>
+            <button onclick="closeRefundModal()" style="background: none; border: none; font-size: 24px; color: #9ca3af; cursor: pointer; padding: 0; line-height: 1;">
+                &times;
+            </button>
+        </div>
+        
+        <div style="background: #fff7ed; border-left: 4px solid #f97316; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+            <div style="display: flex; gap: 12px; align-items: start;">
+                <i class="fas fa-exclamation-triangle" style="color: #f97316; font-size: 20px; margin-top: 2px;"></i>
+                <div style="color: #92400e; font-size: 14px;">
+                    <strong>Atenção!</strong> Esta ação irá:
+                    <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                        <li>Devolver os produtos ao estoque</li>
+                        <li>Registrar débito no livro caixa</li>
+                        <li>Alterar o status para "Estornado"</li>
+                        <li>Notificar o cliente por email</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('admin.orders.refund', $order->uuid) }}">
+            @csrf
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; color: #1f2937; margin-bottom: 8px;">
+                    Motivo do Estorno: <span style="color: #ef4444;">*</span>
+                </label>
+                <textarea name="refund_reason" required rows="4" placeholder="Descreva o motivo do estorno..."
+                    style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <button type="button" onclick="closeRefundModal()" 
+                    style="padding: 12px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                    style="padding: 12px; background: #f97316; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                    <i class="fas fa-check"></i> Confirmar Estorno
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

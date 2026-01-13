@@ -120,4 +120,67 @@ class OrderController extends Controller
             return back()->with('error', 'Erro ao atualizar custo: ' . $e->getMessage());
         }
     }
+
+    public function refund(string $uuid, Request $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            $order = Order::where('uuid', $uuid)->firstOrFail();
+            
+            // Verificar se o pedido pode ser estornado (apenas após enviado ou entregue)
+            if (!in_array($order->status, ['shipped', 'delivered'])) {
+                return back()->with('error', 'Pedidos só podem ser estornados após o status "Enviado".');
+            }
+
+            $validated = $request->validate([
+                'refund_reason' => 'required|string|max:500'
+            ]);
+
+            $previousStatus = $order->status;
+            $reason = $validated['refund_reason'];
+
+            // Realizar transição para refunded
+            $this->transitionService->transitionStatus(
+                $order,
+                'refunded',
+                "Estorno solicitado: {$reason}",
+                auth()->user()->name ?? 'admin'
+            );
+
+            // Devolver produtos ao estoque
+            foreach ($order->items as $item) {
+                if ($item->product && $item->product->type === 'physical') {
+                    StockMovement::recordMovement(
+                        $item->product_id,
+                        'in',
+                        $item->quantity,
+                        "Devolução por estorno - Pedido #{$order->order_number}",
+                        $order->id,
+                        auth()->user()->name ?? 'Sistema'
+                    );
+                }
+            }
+
+            // Registrar no livro caixa (débito - saída de dinheiro para devolver ao cliente)
+            \App\Models\CashBook::create([
+                'transaction_date' => now(),
+                'type' => 'debit',
+                'category' => 'refund',
+                'description' => "Estorno do pedido #{$order->order_number} - {$reason}",
+                'amount' => $order->total,
+                'payment_method_id' => \App\Models\PaymentMethod::where('code', $order->payment_method)->first()?->id,
+                'order_id' => $order->id,
+                'fee_amount' => 0,
+                'net_amount' => -$order->total,
+            ]);
+
+            // Enviar email de notificação
+            Mail::queue(new OrderCancelledMail($order, "Pedido estornado: {$reason}"));
+
+            return back()->with('success', 'Pedido estornado com sucesso! O estoque foi atualizado e o valor foi registrado no livro caixa.');
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao processar estorno: ' . $e->getMessage());
+        }
+    }
 }
