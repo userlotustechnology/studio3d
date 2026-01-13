@@ -17,14 +17,16 @@
         </div>
 
         @if(session('success'))
-        <div style="background-color: #d1fae5; border-left: 4px solid #10b981; padding: 16px; border-radius: 6px; margin-bottom: 20px;">
-            <p style="color: #065f46; margin: 0;">✓ {{ session('success') }}</p>
+        <div style="background: #ecfdf5; border: 1px solid #059669; color: #059669; padding: 16px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
         </div>
         @endif
 
         @if(session('error'))
-        <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 16px; border-radius: 6px; margin-bottom: 20px;">
-            <p style="color: #7f1d1d; margin: 0;">✕ {{ session('error') }}</p>
+        <div style="background: #fef2f2; border: 1px solid #dc2626; color: #dc2626; padding: 16px; border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ session('error') }}</span>
         </div>
         @endif
 

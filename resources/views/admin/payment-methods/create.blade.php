@@ -37,6 +37,8 @@
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Código *</label>
                     <input type="text" name="code" value="{{ old('code') }}" required
                         style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
+                        placeholder="Ex: credit-card">
+                    @error('code')
                     <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
                     @enderror
                     <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Código único sem espaços ou caracteres especiais</p>
@@ -59,7 +61,7 @@
                 <div>
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Taxa Percentual (%) *</label>
                     <input type="number" name="fee_percentage" value="{{ old('fee_percentage', '0.00') }}" 
-                        min="0" max="100" step="0.01"
+                        min="0" max="100" step="0.01" required
                         style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
                         placeholder="0.00">
                     @error('fee_percentage')
@@ -71,7 +73,7 @@
                 <div>
                     <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Taxa Fixa (R$) *</label>
                     <input type="number" name="fee_fixed" value="{{ old('fee_fixed', '0.00') }}"
-                        min="0" step="0.01"
+                        min="0" step="0.01" required
                         style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
                         placeholder="0.00">
                     @error('fee_fixed')
@@ -79,6 +81,19 @@
                     @enderror
                     <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Ex: 1.50 para R$ 1,50</p>
                 </div>
+            </div>
+
+            <!-- Dias para Liquidação -->
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Dias para Liquidação *</label>
+                <input type="number" name="settlement_days" value="{{ old('settlement_days', '1') }}"
+                    min="0" max="365" required
+                    style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
+                    placeholder="1">
+                @error('settlement_days')
+                <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
+                @enderror
+                <p style="color: #6b7280; font-size: 12px; margin-top: 4px;">Quantos dias para o dinheiro cair na conta (ex: 1 para PIX, 30 para cartão)</p>
             </div>
 
             <!-- Status -->
@@ -102,89 +117,4 @@
         </form>
     </div>
 </div>
-@endsection
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="fee_fixed" class="form-label">Taxa Fixa (R$) *</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input type="number" 
-                                           class="form-control @error('fee_fixed') is-invalid @enderror" 
-                                           id="fee_fixed" 
-                                           name="fee_fixed" 
-                                           value="{{ old('fee_fixed', '0.00') }}" 
-                                           min="0" 
-                                           step="0.01"
-                                           placeholder="0.00">
-                                </div>
-                                @error('fee_fixed')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                <div class="form-text">Taxa fixa por transação</div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="settlement_days" class="form-label">Dias para Compensação *</label>
-                                <input type="number" 
-                                       class="form-control @error('settlement_days') is-invalid @enderror" 
-                                       id="settlement_days" 
-                                       name="settlement_days" 
-                                       value="{{ old('settlement_days', '0') }}" 
-                                       min="0" 
-                                       max="365"
-                                       placeholder="0">
-                                @error('settlement_days')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                <div class="form-text">0 = à vista, 1 = D+1, etc.</div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check form-switch mt-4">
-                                    <input class="form-check-input" 
-                                           type="checkbox" 
-                                           id="is_active" 
-                                           name="is_active" 
-                                           value="1" 
-                                           {{ old('is_active', true) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="is_active">
-                                        <strong>Forma de pagamento ativa</strong>
-                                    </label>
-                                    <div class="form-text">Apenas formas ativas aparecem no checkout</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('admin.payment-methods.index') }}" class="btn btn-outline-secondary">
-                                Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Salvar Forma de Pagamento
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// Auto-gerar código baseado no nome
-document.getElementById('name').addEventListener('input', function() {
-    const codeField = document.getElementById('code');
-    if (!codeField.value) {
-        const code = this.value
-            .toLowerCase()
-            .replace(/[^\w\s]/g, '')
-            .replace(/\s+/g, '_');
-        codeField.value = code;
-    }
-});
-</script>
 @endsection
