@@ -53,6 +53,41 @@
             </div>
         </div>
 
+        <!-- Detalhes do Cashback -->
+        <div style="background: linear-gradient(135deg, #f5e6ff 0%, #ede9fe 100%); border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px; border-left: 4px solid #8b5cf6;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div>
+                    <p style="color: #6d28d9; font-size: 12px; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase;">💰 Cashback Total Acumulado</p>
+                    <p style="color: #8b5cf6; font-size: 28px; font-weight: 700; margin: 0;">R$ {{ number_format($customer->cashback_balance ?? 0, 2, ',', '.') }}</p>
+                    <p style="color: #6b7280; font-size: 11px; margin: 4px 0 0 0;">Disponível para próximas compras</p>
+                </div>
+                <div>
+                    <p style="color: #6d28d9; font-size: 12px; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase;">📊 Cashback por Compra (Média)</p>
+                    @php
+                        $averageCashbackPerOrder = $statistics['total_orders'] > 0 
+                            ? ($customer->cashback_balance ?? 0) / $statistics['total_orders']
+                            : 0;
+                    @endphp
+                    <p style="color: #8b5cf6; font-size: 28px; font-weight: 700; margin: 0;">R$ {{ number_format($averageCashbackPerOrder, 2, ',', '.') }}</p>
+                    <p style="color: #6b7280; font-size: 11px; margin: 4px 0 0 0;">Média de cashback por pedido</p>
+                </div>
+                <div>
+                    <p style="color: #6d28d9; font-size: 12px; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase;">🎯 Taxa Média de Cashback</p>
+                    @php
+                        $averageCashbackRate = $statistics['total_spent'] > 0 
+                            ? (($customer->cashback_balance ?? 0) / $statistics['total_spent']) * 100
+                            : 0;
+                    @endphp
+                    <p style="color: #8b5cf6; font-size: 28px; font-weight: 700; margin: 0;">{{ number_format($averageCashbackRate, 2) }}%</p>
+                    <p style="color: #6b7280; font-size: 11px; margin: 4px 0 0 0;">Da compra retorna em cashback</p>
+                </div>
+            </div>
+            <p style="color: #6d28d9; font-size: 12px; margin: 16px 0 0 0; padding-top: 16px; border-top: 1px solid #d8b4fe; line-height: 1.6;">
+                <i class="fas fa-info-circle"></i>
+                O cashback pode ser utilizado como crédito em compras futuras. Quanto mais o cliente compra, mais cashback acumula! Esse é um excelente incentivo para fidelização.
+            </p>
+        </div>
+
         <!-- Análises em Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <!-- Padrão de Compras -->

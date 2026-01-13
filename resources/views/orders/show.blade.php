@@ -162,6 +162,22 @@
                         <span style="color: #10b981; font-weight: 600;">-R$ {{ number_format($order->discount, 2, ',', '.') }}</span>
                     </div>
                     @endif
+                    @if($order->cashback_amount && $order->cashback_amount > 0)
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <span style="color: #8b5cf6;">
+                            <i class="fas fa-gift" style="margin-right: 4px;"></i>
+                            Cashback:
+                        </span>
+                        <span style="color: #8b5cf6; font-weight: 600;">
+                            R$ {{ number_format($order->cashback_amount, 2, ',', '.') }}
+                            @if($order->cashback_percentage)
+                                <small style="display: block; font-size: 11px; margin-top: 2px;">
+                                    ({{ number_format($order->cashback_percentage, 1) }}% da compra)
+                                </small>
+                            @endif
+                        </span>
+                    </div>
+                    @endif
                     @if($order->carrier_shipping_cost)
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
                         <span style="color: #6b7280; font-size: 13px;">
@@ -188,6 +204,26 @@
                         <span style="color: #3b82f6;">R$ {{ number_format($order->total, 2, ',', '.') }}</span>
                     </div>
                 </div>
+
+                <!-- Informações de Cashback -->
+                @if($order->cashback_amount && $order->cashback_amount > 0)
+                <div style="background: linear-gradient(135deg, #f5e6ff 0%, #e9d5ff 100%); border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; border-left: 4px solid #8b5cf6;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="font-size: 28px;">🎁</div>
+                        <div style="flex: 1;">
+                            <h4 style="color: #6d28d9; font-weight: 700; margin: 0 0 8px 0; font-size: 14px;">CASHBACK CONQUISTADO</h4>
+                            <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                                <p style="color: #8b5cf6; font-size: 24px; font-weight: 700; margin: 0;">R$ {{ number_format($order->cashback_amount, 2, ',', '.') }}</p>
+                                <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">{{ number_format($order->cashback_percentage, 1) }}% de cashback nesta compra</p>
+                            </div>
+                            <p style="color: #6d28d9; font-size: 12px; margin: 0; line-height: 1.5;">
+                                <i class="fas fa-info-circle"></i>
+                                Este valor ficará disponível para a próxima compra do cliente como crédito na conta.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Custos Internos (Admin Only) -->
                 <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">

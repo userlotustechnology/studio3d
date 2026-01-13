@@ -41,11 +41,14 @@
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 16px; color: #6b7280; font-size: 14px;">#{{ $product->id }}</td>
                         <td style="padding: 16px;">
-                            @if($product->image)
-                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                            @php
+                                $imageUrl = $product->image_url ?? null;
+                            @endphp
+                            @if($imageUrl)
+                            <img src="{{ $imageUrl }}" alt="{{ $product->name }}" style="width: 60px; height: 60px; border-radius: 6px; object-fit: cover; border: 1px solid #e5e7eb;">
                             @else
-                            <div style="width: 40px; height: 40px; background-color: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-image" style="color: #9ca3af; font-size: 18px;"></i>
+                            <div style="width: 60px; height: 60px; background-color: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb;">
+                                <i class="fas fa-image" style="color: #9ca3af; font-size: 24px;"></i>
                             </div>
                             @endif
                         </td>
@@ -64,7 +67,7 @@
                         </td>
                         <td style="padding: 16px; text-align: center;">
                             <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{{ route('admin.products.show', $product->id) }}" style="background-color: #3b82f6; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: background-color 0.3s;" title="Visualizar produto">
+                                <a href="{{ route('admin.products.show', $product->uuid) }}" style="background-color: #3b82f6; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: background-color 0.3s;" title="Visualizar produto">
                                     <i class="fas fa-eye"></i> Ver
                                 </a>
                                 <a href="{{ route('admin.products.edit', $product->id) }}" style="background-color: #f59e0b; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: background-color 0.3s;" title="Editar produto">
