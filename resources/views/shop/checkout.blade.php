@@ -238,29 +238,24 @@
                     </h2>
 
                     <div style="display: grid; gap: 15px; margin-bottom: 30px;">
+                        @forelse($paymentMethods as $method)
                         <label style="display: flex; align-items: center; padding: 18px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: white;">
-                            <input type="radio" name="payment_method" value="credit_card" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;">
+                            <input type="radio" name="payment_method" value="{{ $method->code }}" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;">
                             <div style="flex: 1;">
-                                <div style="font-weight: 700; color: var(--text-dark); font-size: 16px;"><i class="fas fa-credit-card" style="color: #667eea; margin-right: 8px;"></i> Cartão de Crédito</div>
-                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Parcelado em até 12x com juros</div>
+                                <div style="font-weight: 700; color: var(--text-dark); font-size: 16px;">
+                                    <i class="fas fa-credit-card" style="color: #667eea; margin-right: 8px;"></i> {{ $method->name }}
+                                </div>
+                                @if($method->description)
+                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">{{ $method->description }}</div>
+                                @endif
                             </div>
                         </label>
-
-                        <label style="display: flex; align-items: center; padding: 18px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: white;">
-                            <input type="radio" name="payment_method" value="pix" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: var(--text-dark); font-size: 16px;"><i class="fas fa-qrcode" style="color: #667eea; margin-right: 8px;"></i> PIX</div>
-                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Transferência instantânea</div>
-                            </div>
-                        </label>
-
-                        <label style="display: flex; align-items: center; padding: 18px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: white;">
-                            <input type="radio" name="payment_method" value="boleto" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: var(--text-dark); font-size: 16px;"><i class="fas fa-barcode" style="color: #667eea; margin-right: 8px;"></i> Boleto</div>
-                                <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Vencimento em 3 dias úteis</div>
-                            </div>
-                        </label>
+                        @empty
+                        <div style="padding: 20px; text-align: center; color: #6b7280; background: #f9fafb; border-radius: 8px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 8px;"></i>
+                            <p>Nenhuma forma de pagamento disponível no momento.</p>
+                        </div>
+                        @endforelse
                     </div>
 
                     @error('payment_method')

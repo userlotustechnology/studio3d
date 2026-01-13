@@ -143,11 +143,18 @@
                             <label style="display: block; color: #374151; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Método de Pagamento:</label>
                             <select name="payment_method" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;" required>
                                 <option value="">Selecione...</option>
-                                <option value="cash">Dinheiro</option>
-                                <option value="credit_card">Cartão de Crédito</option>
-                                <option value="debit_card">Cartão de Débito</option>
-                                <option value="pix">PIX</option>
-                                <option value="bank_transfer">Transferência</option>
+                                @foreach($paymentMethods as $method)
+                                    <option value="{{ $method->code }}" 
+                                            data-fee-percentage="{{ $method->fee_percentage }}" 
+                                            data-fee-fixed="{{ $method->fee_fixed }}">
+                                        {{ $method->name }}
+                                        @if($method->fee_percentage > 0 || $method->fee_fixed > 0)
+                                            - Taxa: 
+                                            @if($method->fee_percentage > 0){{ number_format($method->fee_percentage, 2, ',', '.') }}%@endif
+                                            @if($method->fee_fixed > 0){{ $method->fee_percentage > 0 ? ' + ' : '' }}R$ {{ number_format($method->fee_fixed, 2, ',', '.') }}@endif
+                                        @endif
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 

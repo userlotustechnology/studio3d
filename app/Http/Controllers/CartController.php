@@ -10,8 +10,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Address;
 use App\Models\ShippingRate;
-use App\Models\StockMovement;
-use Illuminate\Http\Request;
+use App\Models\StockMovement;use App\Models\PaymentMethod;use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
@@ -534,7 +533,12 @@ class CartController extends Controller
             $q->where('type', 'physical');
         })->exists();
 
-        return view('shop.checkout', compact('order', 'items', 'subtotal', 'shippingCost', 'discount', 'total', 'customer', 'hasDigitalProducts', 'hasPhysicalProducts'));
+        // Buscar formas de pagamento ativas
+        $paymentMethods = PaymentMethod::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('shop.checkout', compact('order', 'items', 'subtotal', 'shippingCost', 'discount', 'total', 'customer', 'hasDigitalProducts', 'hasPhysicalProducts', 'paymentMethods'));
     }
 
     public function processCheckout(Request $request): RedirectResponse
@@ -544,6 +548,11 @@ class CartController extends Controller
         if (!$draftOrderId) {
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
         }
+
+        // Buscar códigos de formas de pagamento ativas para validação
+        $paymentMethodCodes = PaymentMethod::where('is_active', true)
+            ->pluck('code')
+            ->toArray();
 
         $order = Order::with('items.product', 'customer')->find($draftOrderId);
         
@@ -597,7 +606,7 @@ class CartController extends Controller
             'billing_city' => 'required|string',
             'billing_state' => 'required|string|size:2',
             'billing_postal_code' => 'required|string',
-            'payment_method' => 'required|in:credit_card,debit_card,pix,boleto,paypal',
+            'payment_method' => 'required|in:' . implode(',', $paymentMethodCodes),
         ];
 
         // Validar endereço de entrega apenas se houver produtos físicos

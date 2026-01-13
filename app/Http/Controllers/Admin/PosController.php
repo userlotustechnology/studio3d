@@ -11,6 +11,7 @@ use App\Models\Address;
 use App\Models\ShippingRate;
 use App\Models\Setting;
 use App\Models\StockMovement;
+use App\Models\PaymentMethod;
 use App\Events\OrderConfirmed;
 use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
@@ -38,8 +39,11 @@ class PosController extends Controller
     {
         $products = Product::where('is_active', true)->get();
         $customers = Customer::orderBy('name')->get();
+        $paymentMethods = PaymentMethod::where('is_active', true)
+            ->orderBy('name')
+            ->get();
         
-        return view('admin.pos.create', compact('products', 'customers'));
+        return view('admin.pos.create', compact('products', 'customers', 'paymentMethods'));
     }
 
     public function searchProducts(Request $request): JsonResponse
@@ -236,7 +240,7 @@ class PosController extends Controller
             'manual_neighborhood' => 'nullable|string|max:100',
             'manual_city' => 'nullable|string|max:100',
             'manual_state' => 'nullable|string|size:2',
-            'payment_method' => 'required|string|in:cash,credit_card,debit_card,pix,bank_transfer',
+            'payment_method' => 'required|string|exists:payment_methods,code',
             'notes' => 'nullable|string|max:1000',
             'subtotal' => 'required|numeric|min:0',
             'shipping' => 'required|numeric|min:0',
