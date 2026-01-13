@@ -258,7 +258,19 @@
                         <i class="fas fa-info-circle"></i>
                         <span>Este pedido está em um estado terminal ({{ ucfirst($order->status) }}) e não pode ser alterado.</span>
                     </div>
+                    @endif
+                    
+                    <!-- Botão de Cancelamento para Rascunhos -->
+                    @if($order->is_draft)
+                    <button type="button" onclick="openCancelDraftModal()" 
+                        style="width: 100%; padding: 12px; background-color: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.3s;">
+                        <i class="fas fa-times-circle"></i> Cancelar Rascunho
+                    </button>
+                    <small style="display: block; color: #6b7280; font-size: 12px; margin-top: 8px; text-align: center;">
+                        ⚠️ Os produtos serão devolvidos ao estoque automaticamente
+                    </small>
                     @else
+                    
                     <form method="POST" style="display: flex; flex-direction: column; gap: 12px;">
                         @csrf
                         <div style="display: flex; gap: 8px;">
@@ -548,4 +560,59 @@ document.getElementById('refundModal')?.addEventListener('click', function(e) {
         </form>
     </div>
 </div>
+
+<!-- Modal de Cancelamento de Rascunho -->
+<div id="cancelDraftModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <div style="width: 64px; height: 64px; background: #fee2e2; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #991b1b;"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">Cancelar Rascunho</h3>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+            Tem certeza que deseja cancelar este rascunho? Esta ação é irreversível e os produtos serão devolvidos ao estoque.
+        </p>
+
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 6px; margin-bottom: 24px;">
+            <p style="color: #92400e; font-size: 13px; margin: 0;">
+                <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                <strong>Aviso:</strong> Todos os itens do carrinho serão devolvidos ao estoque.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ route('admin.orders.cancelDraft', $order->uuid) }}">
+            @csrf
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <button type="button" onclick="closeCancelDraftModal()" 
+                    style="padding: 12px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s;">
+                    Não, Manter
+                </button>
+                <button type="submit" 
+                    style="padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s;">
+                    <i class="fas fa-trash"></i> Sim, Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCancelDraftModal() {
+        document.getElementById('cancelDraftModal').style.display = 'flex';
+    }
+
+    function closeCancelDraftModal() {
+        document.getElementById('cancelDraftModal').style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora dele
+    document.getElementById('cancelDraftModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCancelDraftModal();
+        }
+    });
+</script>
+
 @endsection

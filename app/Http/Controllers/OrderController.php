@@ -17,9 +17,8 @@ class OrderController extends Controller
 
     public function index(): View
     {
-        // Filtrar apenas pedidos que não são draft (finalizados pelo cliente)
-        $orders = Order::where('is_draft', false)
-            ->orderBy('created_at', 'desc')
+        // Incluir pedidos draft e finalizados
+        $orders = Order::orderBy('created_at', 'desc')
             ->paginate(15);
         return view('orders.index', compact('orders'));
     }
@@ -79,8 +78,8 @@ class OrderController extends Controller
                         $item->product_id,
                         'in',
                         $item->quantity,
-                        "Devolução por cancelamento - Pedido #{$order->order_number}",
                         $order->id,
+                        "Devolução por cancelamento - Pedido #{$order->order_number}",
                         auth()->user()->name ?? 'Sistema'
                     );
                 }
@@ -181,6 +180,40 @@ class OrderController extends Controller
             return back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             return back()->with('error', 'Erro ao processar estorno: ' . $e->getMessage());
+        }
+    }
+
+    public function cancelDraft(string $uuid): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            $order = Order::where('uuid', $uuid)->firstOrFail();
+
+            // Validar se é realmente um draft
+            if (!$order->is_draft) {
+                return back()->with('error', 'Apenas pedidos em rascunho podem ser cancelados desta forma.');
+            }
+
+            // Devolver todos os itens ao estoque
+            foreach ($order->items as $item) {
+                StockMovement::recordMovement(
+                    $item->product_id,
+                    'in',
+                    $item->quantity,
+                    $order->id,
+                    "Devolução por cancelamento de rascunho - Pedido #{$order->order_number}",
+                    auth()->user()->name ?? 'Sistema'
+                );
+            }
+
+            // Atualizar status para cancelado
+            $order->update([
+                'status' => 'cancelled',
+                'is_draft' => false,
+            ]);
+
+            return back()->with('success', 'Pedido em rascunho cancelado com sucesso! Os produtos foram devolvidos ao estoque.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao cancelar pedido: ' . $e->getMessage());
         }
     }
 }

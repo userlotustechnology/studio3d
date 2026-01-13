@@ -18,6 +18,10 @@
                 <p style="color: #1f2937; font-weight: 700; font-size: 28px; margin: 0;">{{ $orders->total() }}</p>
             </div>
             <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <p style="color: #6b7280; font-size: 12px; text-transform: uppercase; margin: 0 0 8px 0;">Rascunhos</p>
+                <p style="color: #6b7280; font-weight: 700; font-size: 28px; margin: 0;">{{ $orders->where('is_draft', true)->count() }}</p>
+            </div>
+            <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <p style="color: #6b7280; font-size: 12px; text-transform: uppercase; margin: 0 0 8px 0;">Pendentes</p>
                 <p style="color: #f59e0b; font-weight: 700; font-size: 28px; margin: 0;">{{ $orders->where('status', 'pending')->count() }}</p>
             </div>
