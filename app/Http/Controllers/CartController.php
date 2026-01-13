@@ -760,17 +760,47 @@ class CartController extends Controller
         // Recalcular total com desconto do método de pagamento
         $finalTotal = $order->subtotal + $order->shipping_cost - $paymentDiscount;
         
+        // Calcular cashback
+        $cashbackPercentage = (float) setting('cashback_percentage', 0);
+        $cashbackAmount = 0;
+        
+        if ($cashbackPercentage > 0) {
+            // Calcular cashback sobre o subtotal (antes de desconto e frete)
+            $cashbackAmount = ($order->subtotal * $cashbackPercentage) / 100;
+        }
+        
         $order->update([
             'billing_address_id' => $billingAddress->id,
             'shipping_address_id' => $shippingAddress?->id,
             'payment_method' => $validated['payment_method'],
             'discount' => $paymentDiscount, // Atualizar desconto
+            'cashback_percentage' => $cashbackPercentage,
+            'cashback_amount' => $cashbackAmount,
             'total' => $finalTotal, // Atualizar total
             'status' => 'pending', // Transição de 'draft' para 'pending'
             'is_draft' => false,
             'order_number' => 'PED-' . date('Y') . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
             'access_token' => $order->generateAccessToken(),
         ]);
+        
+        // Adicionar cashback ao saldo do cliente
+        if ($cashbackAmount > 0) {
+            $order->customer->increment('cashback_balance', $cashbackAmount);
+            
+            // Registrar cashback no livro caixa como despesa
+            \App\Models\CashBook::create([
+                'transaction_date' => now(),
+                'type' => 'debit',
+                'category' => 'cashback',
+                'description' => "Cashback concedido ({$cashbackPercentage}%) - Pedido #{$order->order_number}",
+                'amount' => $cashbackAmount,
+                'payment_method_id' => null,
+                'order_id' => $order->id,
+                'user_id' => null,
+                'fee_amount' => 0,
+                'net_amount' => -$cashbackAmount,
+            ]);
+        }
 
         // Registrar transição de status no histórico
         \App\Models\OrderStatusHistory::create([

@@ -177,5 +177,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/cash-book/{cashBook}', [\App\Http\Controllers\Admin\CashBookController::class, 'destroy'])->name('admin.cash-book.destroy');
         Route::get('/admin/cash-book-reports', [\App\Http\Controllers\Admin\CashBookController::class, 'reports'])->name('admin.cash-book.reports');
 
+        // Rotas de Relatórios
+        Route::get('/admin/reports/cashback', [\App\Http\Controllers\Admin\ReportController::class, 'cashback'])->name('admin.reports.cashback');
+
     });
 });

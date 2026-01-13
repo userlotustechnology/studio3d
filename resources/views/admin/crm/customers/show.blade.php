@@ -45,6 +45,12 @@
                 <h3 style="margin: 0; font-size: 28px; font-weight: 700;">{{ $statistics['total_items'] }}</h3>
                 <i class="fas fa-box" style="font-size: 40px; opacity: 0.3; position: absolute; right: 24px; top: 24px;"></i>
             </div>
+
+            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; font-size: 12px; opacity: 0.9;">Saldo Cashback</p>
+                <h3 style="margin: 0; font-size: 28px; font-weight: 700;">R$ {{ number_format($customer->cashback_balance ?? 0, 2, ',', '.') }}</h3>
+                <i class="fas fa-gift" style="font-size: 40px; opacity: 0.3; position: absolute; right: 24px; top: 24px;"></i>
+            </div>
         </div>
 
         <!-- Análises em Grid -->
@@ -197,6 +203,86 @@
                             </tr>
                         @endforelse
                     </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Histórico de Cashback -->
+        <div style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 30px;">
+            <div style="background-color: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb;">
+                <h5 style="margin: 0; font-size: 16px; font-weight: 600; color: #1f2937;">
+                    <i class="fas fa-gift"></i> Histórico de Cashback
+                </h5>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                            <th style="padding: 16px; text-align: left; color: #6b7280; font-weight: 600;">Pedido</th>
+                            <th style="padding: 16px; text-align: left; color: #6b7280; font-weight: 600;">Data</th>
+                            <th style="padding: 16px; text-align: right; color: #6b7280; font-weight: 600;">Subtotal do Pedido</th>
+                            <th style="padding: 16px; text-align: center; color: #6b7280; font-weight: 600;">% Cashback</th>
+                            <th style="padding: 16px; text-align: right; color: #6b7280; font-weight: 600;">Cashback Ganho</th>
+                            <th style="padding: 16px; text-align: center; color: #6b7280; font-weight: 600;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalCashbackGained = 0;
+                            $ordersWithCashback = $customer->orders->where('cashback_amount', '>', 0);
+                        @endphp
+                        @forelse($ordersWithCashback as $order)
+                            @php
+                                $totalCashbackGained += $order->cashback_amount;
+                            @endphp
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 16px;">
+                                    <a href="{{ route('admin.crm.customers.order-detail', [$customer, $order->id]) }}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
+                                        {{ $order->order_number }}
+                                    </a>
+                                </td>
+                                <td style="padding: 16px; color: #6b7280;">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                                <td style="padding: 16px; text-align: right; color: #6b7280;">R$ {{ number_format($order->subtotal, 2, ',', '.') }}</td>
+                                <td style="padding: 16px; text-align: center;">
+                                    <span style="background-color: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                        {{ number_format($order->cashback_percentage, 2, ',', '.') }}%
+                                    </span>
+                                </td>
+                                <td style="padding: 16px; text-align: right;">
+                                    <strong style="color: #10b981;">+ R$ {{ number_format($order->cashback_amount, 2, ',', '.') }}</strong>
+                                </td>
+                                <td style="padding: 16px; text-align: center;">
+                                    @if(in_array($order->status, ['cancelled', 'refunded']))
+                                        <span style="background-color: #fee2e2; color: #7f1d1d; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                            <i class="fas fa-times"></i> Estornado
+                                        </span>
+                                    @else
+                                        <span style="background-color: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                            <i class="fas fa-check"></i> Creditado
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" style="padding: 40px; text-align: center; color: #6b7280;">
+                                    <i class="fas fa-gift" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                                    <p style="margin: 0;">Nenhum cashback concedido ainda</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                    @if($ordersWithCashback->count() > 0)
+                        <tfoot>
+                            <tr style="background-color: #f9fafb; border-top: 2px solid #e5e7eb;">
+                                <td colspan="4" style="padding: 16px; text-align: right; font-weight: 700; color: #1f2937;">Total de Cashback Concedido:</td>
+                                <td style="padding: 16px; text-align: right;">
+                                    <strong style="color: #10b981; font-size: 16px;">R$ {{ number_format($totalCashbackGained, 2, ',', '.') }}</strong>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>

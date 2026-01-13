@@ -83,6 +83,26 @@ class OrderController extends Controller
                         auth()->id()
                     );
                 }
+                
+                // Estornar cashback do cliente se houver
+                if ($order->cashback_amount > 0 && $order->customer) {
+                    $order->customer->decrement('cashback_balance', $order->cashback_amount);
+                    
+                    // Estornar entrada no livro caixa (crédito - devolução da despesa)
+                    \App\Models\CashBook::create([
+                        'transaction_date' => now(),
+                        'type' => 'credit',
+                        'category' => 'cashback',
+                        'description' => "Estorno de cashback - Pedido cancelado #{$order->order_number}",
+                        'amount' => $order->cashback_amount,
+                        'payment_method_id' => null,
+                        'order_id' => $order->id,
+                        'user_id' => auth()->id(),
+                        'fee_amount' => 0,
+                        'net_amount' => $order->cashback_amount,
+                    ]);
+                }
+                
                 Mail::queue(new OrderCancelledMail($order, $reason));
             } else {
                 Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, $status));
@@ -172,6 +192,25 @@ class OrderController extends Controller
                 'fee_amount' => 0,
                 'net_amount' => -$order->total,
             ]);
+            
+            // Estornar cashback do cliente se houver
+            if ($order->cashback_amount > 0 && $order->customer) {
+                $order->customer->decrement('cashback_balance', $order->cashback_amount);
+                
+                // Estornar entrada no livro caixa (crédito - devolução da despesa)
+                \App\Models\CashBook::create([
+                    'transaction_date' => now(),
+                    'type' => 'credit',
+                    'category' => 'cashback',
+                    'description' => "Estorno de cashback - Pedido refundado #{$order->order_number}",
+                    'amount' => $order->cashback_amount,
+                    'payment_method_id' => null,
+                    'order_id' => $order->id,
+                    'user_id' => auth()->id(),
+                    'fee_amount' => 0,
+                    'net_amount' => $order->cashback_amount,
+                ]);
+            }
 
             // Enviar email de notificação
             Mail::queue(new OrderCancelledMail($order, "Pedido estornado: {$reason}"));

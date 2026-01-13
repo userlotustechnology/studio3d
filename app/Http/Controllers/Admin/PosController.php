@@ -276,6 +276,15 @@ class PosController extends Controller
             // Criar pedido
             $orderNumber = 'PED-' . date('Y') . '-' . str_pad(Order::max('id') + 1, 6, '0', STR_PAD_LEFT);
             
+            // Calcular cashback
+            $cashbackPercentage = (float) setting('cashback_percentage', 0);
+            $cashbackAmount = 0;
+            
+            if ($cashbackPercentage > 0) {
+                // Calcular cashback sobre o subtotal
+                $cashbackAmount = ($validated['subtotal'] * $cashbackPercentage) / 100;
+            }
+            
             $order = Order::create([
                 'order_number' => $orderNumber,
                 'customer_id' => $validated['customer_id'],
@@ -284,6 +293,8 @@ class PosController extends Controller
                 'subtotal' => $validated['subtotal'],
                 'shipping_cost' => $validated['shipping'],
                 'discount' => 0,
+                'cashback_percentage' => $cashbackPercentage,
+                'cashback_amount' => $cashbackAmount,
                 'total' => $validated['total'],
                 'status' => 'pending',
                 'payment_method' => $validated['payment_method'],
@@ -295,6 +306,26 @@ class PosController extends Controller
             // Gerar access token após criar o pedido (precisa do ID)
             $order->access_token = $order->generateAccessToken();
             $order->save();
+            
+            // Adicionar cashback ao saldo do cliente
+            if ($cashbackAmount > 0) {
+                $customer = Customer::find($validated['customer_id']);
+                $customer->increment('cashback_balance', $cashbackAmount);
+                
+                // Registrar cashback no livro caixa como despesa
+                \App\Models\CashBook::create([
+                    'transaction_date' => now(),
+                    'type' => 'debit',
+                    'category' => 'cashback',
+                    'description' => "Cashback concedido ({$cashbackPercentage}%) - Pedido PDV #{$order->order_number}",
+                    'amount' => $cashbackAmount,
+                    'payment_method_id' => null,
+                    'order_id' => $order->id,
+                    'user_id' => auth()->id(),
+                    'fee_amount' => 0,
+                    'net_amount' => -$cashbackAmount,
+                ]);
+            }
 
             // Criar itens do pedido
             foreach ($validated['items'] as $productId => $itemData) {

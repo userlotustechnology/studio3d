@@ -11,6 +11,11 @@ class Customer extends Model
         'email',
         'phone',
         'cpf',
+        'cashback_balance',
+    ];
+
+    protected $casts = [
+        'cashback_balance' => 'decimal:2',
     ];
 
     public function addresses()
