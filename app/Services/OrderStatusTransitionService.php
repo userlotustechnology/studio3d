@@ -87,6 +87,11 @@ class OrderStatusTransitionService
 
         $order->update($updateData);
 
+        // Registrar custo real do frete no livro caixa quando o pedido é enviado
+        if ($newStatus === 'shipped' && $order->carrier_shipping_cost > 0) {
+            \App\Models\CashBook::recordShippingCost($order);
+        }
+
         // Disparar notificação para Slack via webhook
         $this->sendSlackNotification($order, $currentStatus, $newStatus, $reason);
     }

@@ -189,51 +189,7 @@
             </div>
         </div>
 
-        <!-- Estatísticas do Sistema -->
-        <div style="background: white; border-radius: 8px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-                <i class="fas fa-chart-bar" style="font-size: 24px; color: #f59e0b;"></i>
-                <h2 style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">Estatísticas do Sistema</h2>
-            </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <!-- Card: Usuários -->
-                <div style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); border-radius: 8px; padding: 24px; color: white; text-align: center;">
-                    <i class="fas fa-users" style="font-size: 32px; margin-bottom: 12px; opacity: 0.8; display: block;"></i>
-                    <h3 style="font-size: 32px; font-weight: 700; margin: 12px 0;">
-                        {{ \App\Models\User::count() }}
-                    </h3>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0;">Usuários Cadastrados</p>
-                </div>
-
-                <!-- Card: Produtos -->
-                <div style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border-radius: 8px; padding: 24px; color: white; text-align: center;">
-                    <i class="fas fa-box" style="font-size: 32px; margin-bottom: 12px; opacity: 0.8; display: block;"></i>
-                    <h3 style="font-size: 32px; font-weight: 700; margin: 12px 0;">
-                        {{ \App\Models\Product::count() }}
-                    </h3>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0;">Produtos Cadastrados</p>
-                </div>
-
-                <!-- Card: Pedidos -->
-                <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px; padding: 24px; color: white; text-align: center;">
-                    <i class="fas fa-shopping-cart" style="font-size: 32px; margin-bottom: 12px; opacity: 0.8; display: block;"></i>
-                    <h3 style="font-size: 32px; font-weight: 700; margin: 12px 0;">
-                        {{ \App\Models\Order::where('is_draft', false)->count() }}
-                    </h3>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0;">Pedidos Completos</p>
-                </div>
-
-                <!-- Card: Categorias -->
-                <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 8px; padding: 24px; color: white; text-align: center;">
-                    <i class="fas fa-list" style="font-size: 32px; margin-bottom: 12px; opacity: 0.8; display: block;"></i>
-                    <h3 style="font-size: 32px; font-weight: 700; margin: 12px 0;">
-                        {{ \App\Models\Category::count() }}
-                    </h3>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0;">Categorias</p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

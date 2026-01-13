@@ -20,6 +20,11 @@
                 <i class="fas fa-edit"></i>
                 Editar
             </a>
+            <button onclick="confirmDelete('{{ route('admin.cash-book.destroy', $cashBook) }}')"
+               style="background: #dc2626; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-trash"></i>
+                Deletar
+            </button>
         </div>
     </div>
 
@@ -226,4 +231,37 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este lançamento?</p>
+                <p class="text-danger"><strong>Esta ação não pode ser desfeita.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(url) {
+    document.getElementById('deleteForm').action = url;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
 @endsection

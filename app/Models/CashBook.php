@@ -85,7 +85,8 @@ class CashBook extends Model
     }
 
     /**
-     * Registra venda de um pedido
+     * Registra venda de um pedido (apenas subtotal, sem frete)
+     * O frete é registrado separadamente em recordShippingRevenue()
      */
     public static function recordSale(Order $order): self
     {
@@ -94,7 +95,8 @@ class CashBook extends Model
         $settlementDate = null;
 
         if ($paymentMethod) {
-            $feeAmount = $paymentMethod->calculateFee($order->total);
+            // Taxa é calculada sobre o subtotal (sem frete)
+            $feeAmount = $paymentMethod->calculateFee($order->subtotal);
             $settlementDate = $paymentMethod->calculateSettlementDate();
         }
 
@@ -103,9 +105,9 @@ class CashBook extends Model
             'payment_method_id' => $paymentMethod?->id,
             'type' => 'credit',
             'category' => 'sale',
-            'amount' => $order->total,
+            'amount' => $order->subtotal,
             'fee_amount' => 0, // Taxa será débito separado
-            'net_amount' => $order->total,
+            'net_amount' => $order->subtotal,
             'description' => "Venda - Pedido #{$order->order_number}",
             'settlement_date' => $settlementDate,
             'metadata' => [
