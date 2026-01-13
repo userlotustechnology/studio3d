@@ -45,6 +45,28 @@ class CashBook extends Model
     }
 
     /**
+     * Traduz a categoria para português
+     */
+    public static function translateCategory(string $category): string
+    {
+        $translations = [
+            'sale' => 'Venda',
+            'payment_fee' => 'Taxa de Pagamento',
+            'shipping_revenue' => 'Frete Recebido',
+            'shipping_cost' => 'Custo de Frete',
+            'product_cost' => 'Custo de Produtos (CMV)',
+            'refund' => 'Estorno',
+            'expense' => 'Despesa',
+            'revenue' => 'Receita',
+            'withdrawal' => 'Retirada',
+            'investment' => 'Investimento',
+            'other' => 'Outros',
+        ];
+
+        return $translations[$category] ?? ucfirst($category);
+    }
+
+    /**
      * Registra uma entrada no livro caixa
      */
     public static function recordEntry(array $data): self
@@ -173,6 +195,46 @@ class CashBook extends Model
                 'carrier_cost' => $order->carrier_shipping_cost,
                 'shipping_revenue' => $order->shipping_cost,
                 'shipping_company_id' => $order->shipping_company_id,
+            ],
+        ]);
+    }
+
+    /**
+     * Registra custo dos produtos vendidos (CMV - Custo de Mercadoria Vendida)
+     */
+    public static function recordProductCosts(Order $order): ?self
+    {
+        $totalCost = 0;
+        $products = [];
+
+        foreach ($order->items as $item) {
+            if ($item->product && $item->product->cost_price > 0) {
+                $itemCost = $item->product->cost_price * $item->quantity;
+                $totalCost += $itemCost;
+                $products[] = [
+                    'product_name' => $item->product_name,
+                    'quantity' => $item->quantity,
+                    'unit_cost' => $item->product->cost_price,
+                    'total_cost' => $itemCost,
+                ];
+            }
+        }
+
+        if ($totalCost <= 0) {
+            return null;
+        }
+
+        return self::recordEntry([
+            'order_id' => $order->id,
+            'type' => 'debit',
+            'category' => 'product_cost',
+            'amount' => $totalCost,
+            'net_amount' => -$totalCost,
+            'description' => "CMV (Custo dos Produtos) - Pedido #{$order->order_number}",
+            'metadata' => [
+                'order_number' => $order->order_number,
+                'products' => $products,
+                'total_items' => count($products),
             ],
         ]);
     }

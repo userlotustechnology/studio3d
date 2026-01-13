@@ -57,7 +57,7 @@
                     @forelse($categoryReport as $item)
                     <tr style="border-bottom: 1px solid #f3f4f6;">
                         <td style="padding: 12px;">
-                            <span style="font-weight: 600; color: #1f2937;">{{ ucfirst(str_replace('_', ' ', $item->category)) }}</span>
+                            <span style="font-weight: 600; color: #1f2937;">{{ \App\Models\CashBook::translateCategory($item->category) }}</span>
                         </td>
                         <td style="padding: 12px;">
                             @if($item->type === 'credit')

@@ -166,6 +166,9 @@ class Order extends Model
         // Registrar taxa da forma de pagamento
         \App\Models\CashBook::recordSaleFee($this);
         
+        // Registrar custo dos produtos (CMV - Custo de Mercadoria Vendida)
+        \App\Models\CashBook::recordProductCosts($this);
+        
         // Registrar frete recebido
         if ($this->shipping_cost > 0) {
             \App\Models\CashBook::recordShippingRevenue($this);
