@@ -3,99 +3,93 @@
 @section('title', 'Novo Produto - Admin')
 
 @section('content')
-<div style="background-color: #f3f4f6; padding: 30px 20px;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <!-- Header -->
-        <div style="margin-bottom: 30px;">
-            <a href="{{ route('admin.products.index') }}" style="color: #3b82f6; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
-            <h1 style="font-size: 32px; font-weight: 700; color: #1f2937; margin: 0;">Novo Produto</h1>
-            <p style="color: #6b7280; font-size: 14px; margin-top: 8px;">Preencha os dados para criar um novo produto</p>
+<div style="padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <div>
+            <h1 style="font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">Novo Produto</h1>
+            <p style="color: #6b7280;">Preencha os dados para criar um novo produto</p>
         </div>
+        <a href="{{ route('admin.products.index') }}" style="background: #e5e7eb; color: #1f2937; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </a>
+    </div>
 
-        <!-- Form -->
-        <div style="background: white; border-radius: 8px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+    <!-- Form Card -->
+    <div style="background: white; border-radius: 8px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
+            <!-- Grid Layout para Nome e Descrição -->
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 24px;">
                 <!-- Nome -->
-                <div style="margin-bottom: 24px;">
-                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                        Nome do Produto *
-                    </label>
+                <div>
+                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Nome do Produto *</label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
                         placeholder="Digite o nome do produto">
                     @error('name')
-                    <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                    <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Descrição -->
-                <div style="margin-bottom: 24px;">
-                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                        Descrição *
-                    </label>
-                    <textarea name="description" required rows="6"
-                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; font-family: inherit;"
+                <div>
+                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Descrição *</label>
+                    <textarea name="description" required rows="4"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit;"
                         placeholder="Digite a descrição do produto">{{ old('description') }}</textarea>
                     @error('description')
-                    <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
+                    <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Preço, Custo e Categoria -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <!-- Preço de Venda -->
+                <div>
+                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Preço de Venda (R$) *</label>
+                    <input type="number" name="price" value="{{ old('price') }}" required step="0.01" min="0.01"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
+                        placeholder="0.00">
+                    @error('price')
+                    <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Preço, Custo e Categoria -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-                    <!-- Preço de Venda -->
-                    <div>
-                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            Preço de Venda (R$) *
-                        </label>
-                        <input type="number" name="price" value="{{ old('price') }}" required step="0.01" min="0.01"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
-                            placeholder="0.00">
-                        @error('price')
-                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Preço de Custo -->
-                    <div>
-                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            Preço de Custo (R$)
-                            <span style="color: #6b7280; font-weight: 400;">(opcional)</span>
-                        </label>
-                        <input type="number" name="cost_price" value="{{ old('cost_price') }}" step="0.01" min="0"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
-                            placeholder="0.00">
-                        @error('cost_price')
-                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Categoria -->
-                    <div>
-                        <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            Categoria *
-                        </label>
-                        <select name="category_id" required
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
-                            <option value="">Selecione uma categoria</option>
-                            @foreach($categories as $id => $name)
-                            <option value="{{ $id }}" {{ old('category_id') == $id ? 'selected' : '' }}>
-                                {{ $name }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                        <p style="color: #dc2626; margin-top: 4px; font-size: 12px;">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <!-- Preço de Custo -->
+                <div>
+                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Preço de Custo (R$) <span style="color: #6b7280; font-weight: 400;">(opcional)</span></label>
+                    <input type="number" name="cost_price" value="{{ old('cost_price') }}" step="0.01" min="0"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
+                        placeholder="0.00">
+                    @error('cost_price')
+                    <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- SKU, Tipo e Estoque -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                <!-- Categoria -->
+                <div>
+                    <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px;">Categoria *</label>
+                    <select name="category_id" required
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                        <option value="">Selecione uma categoria</option>
+                        @foreach($categories as $id => $name)
+                        <option value="{{ $id }}" {{ old('category_id') == $id ? 'selected' : '' }}>
+                            {{ $name }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                    <p style="color: #dc2626; margin-top: 6px; font-size: 13px;">{{ $message }}</p>
+                    @enderror
+                </div>
+                </div>
+
+            <!-- SKU, Tipo e Estoque -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
                     <!-- SKU -->
                     <div>
                         <label style="display: block; color: #1f2937; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
@@ -366,4 +360,5 @@ function showPreviews(files) {
     imagePreview.style.display = 'flex';
 }
 </script>
+</div>
 @endsection
