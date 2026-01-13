@@ -173,6 +173,26 @@
                     </ul>
                 </li>
 
+                <!-- Menu de Estoque -->
+                <li class="menu-item {{ request()->routeIs('admin.stock.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.stock.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">inventory_2</span>
+                        <span class="title">Estoque</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.stock.index') }}" class="menu-link {{ request()->routeIs('admin.stock.index') ? 'active' : '' }}">
+                                Produtos
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.stock.movements') }}" class="menu-link {{ request()->routeIs('admin.stock.movements') ? 'active' : '' }}">
+                                Movimentações
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('admin.orders.*') ? 'open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined menu-icon">receipt_long</span>

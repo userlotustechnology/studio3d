@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\Address;
 use App\Models\ShippingRate;
 use App\Models\Setting;
+use App\Models\StockMovement;
 use App\Events\OrderConfirmed;
 use App\Mail\OrderConfirmationMail;
 use Illuminate\Http\Request;
@@ -297,7 +298,7 @@ class PosController extends Controller
                 
                 // Verificar estoque
                 if ($product->stock < $itemData['quantity']) {
-                    throw new \Exception("Estoque insuficiente para o produto {$product->name}");
+                    throw new \Exception("Estoque insuficiente para o produto {$product->name}. Disponível: {$product->stock}, Solicitado: {$itemData['quantity']}");
                 }
                 
                 // Criar item do pedido
@@ -310,8 +311,15 @@ class PosController extends Controller
                     'subtotal' => $itemData['price'] * $itemData['quantity']
                 ]);
                 
-                // Reduzir estoque
-                $product->decrement('stock', $itemData['quantity']);
+                // Registrar movimentação de estoque (saída)
+                StockMovement::recordMovement(
+                    $product->id,
+                    'out',
+                    $itemData['quantity'],
+                    "Venda PDV - Pedido #{$order->order_number}",
+                    $order->id,
+                    auth()->user()->name ?? 'PDV'
+                );
             }
 
             // Registrar transição de status no histórico

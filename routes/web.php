@@ -117,6 +117,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/financeiro', [FinanceController::class, 'index'])->name('admin.finance.index');
         Route::get('/admin/financeiro/vendas', [FinanceController::class, 'sales'])->name('admin.finance.sales');
 
+        // Rotas de Gerenciamento de Estoque
+        Route::get('/admin/estoque', [\App\Http\Controllers\Admin\StockController::class, 'index'])->name('admin.stock.index');
+        Route::get('/admin/estoque/movimentacoes', [\App\Http\Controllers\Admin\StockController::class, 'movements'])->name('admin.stock.movements');
+        Route::get('/admin/estoque/produto/{product}', [\App\Http\Controllers\Admin\StockController::class, 'productMovements'])->name('admin.stock.product-movements');
+        Route::get('/admin/estoque/produto/{product}/ajustar', [\App\Http\Controllers\Admin\StockController::class, 'adjust'])->name('admin.stock.adjust');
+        Route::post('/admin/estoque/produto/{product}/ajustar', [\App\Http\Controllers\Admin\StockController::class, 'processAdjustment'])->name('admin.stock.process-adjustment');
+
         // Rotas de Gerenciamento de Fretes
         Route::resource('admin/shipping-rates', ShippingRateController::class, [
             'parameters' => ['shipping_rate' => 'shippingRate'],

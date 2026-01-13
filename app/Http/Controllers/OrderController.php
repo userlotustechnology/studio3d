@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\OrderStatusUpdateMail;
 use App\Mail\OrderCancelledMail;
 use App\Models\Order;
+use App\Models\StockMovement;
 use App\Services\OrderStatusTransitionService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -71,8 +72,18 @@ class OrderController extends Controller
             // Recarregar para pegar o status atualizado
             $order->refresh();
 
-            // Disparar email específico para cancelamento, ou email genérico para outros status
+            // Se foi cancelado, devolver produtos ao estoque
             if ($status === 'cancelled') {
+                foreach ($order->items as $item) {
+                    StockMovement::recordMovement(
+                        $item->product_id,
+                        'in',
+                        $item->quantity,
+                        "Devolução por cancelamento - Pedido #{$order->order_number}",
+                        $order->id,
+                        auth()->user()->name ?? 'Sistema'
+                    );
+                }
                 Mail::queue(new OrderCancelledMail($order, $reason));
             } else {
                 Mail::queue(new OrderStatusUpdateMail($order, $previousStatus, $status));
