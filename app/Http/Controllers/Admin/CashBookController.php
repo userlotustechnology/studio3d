@@ -41,9 +41,9 @@ class CashBookController extends Controller
             $query->where('transaction_date', '<=', $request->end_date);
         }
 
-        // Ordenação
-        $query->orderBy('transaction_date', 'desc')
-              ->orderBy('created_at', 'desc');
+        // Ordenação (mais recentes primeiro)
+        $query->orderBy('created_at', 'desc')
+              ->orderBy('id', 'desc');
 
         $entries = $query->paginate(20)->withQueryString();
 

@@ -100,9 +100,12 @@ class CashBook extends Model
         $feeAmount = 0;
         $settlementDate = null;
 
+        // Calcular o valor da venda (subtotal - desconto da forma de pagamento)
+        $saleAmount = $order->subtotal - $order->discount;
+
         if ($paymentMethod) {
             // Taxa é calculada sobre o subtotal (sem frete)
-            $feeAmount = $paymentMethod->calculateFee($order->subtotal);
+            $feeAmount = $paymentMethod->calculateFee($saleAmount);
             $settlementDate = $paymentMethod->calculateSettlementDate();
         }
 
@@ -111,15 +114,17 @@ class CashBook extends Model
             'payment_method_id' => $paymentMethod?->id,
             'type' => 'credit',
             'category' => 'sale',
-            'amount' => $order->subtotal,
+            'amount' => $saleAmount,
             'fee_amount' => 0, // Taxa será débito separado
-            'net_amount' => $order->subtotal,
-            'description' => "Venda - Pedido #{$order->order_number}",
+            'net_amount' => $saleAmount,
+            'description' => "Venda - Pedido #{$order->order_number}" . ($order->discount > 0 ? " (Desconto: R$ " . number_format($order->discount, 2, ',', '.') . ")" : ""),
             'settlement_date' => $settlementDate,
             'metadata' => [
                 'order_number' => $order->order_number,
                 'customer_name' => $order->customer->name ?? null,
                 'payment_method' => $order->payment_method,
+                'subtotal' => $order->subtotal,
+                'discount' => $order->discount,
             ],
         ]);
     }

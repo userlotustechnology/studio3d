@@ -118,7 +118,7 @@
                 @endif
 
                 <li class="menu-title small text-uppercase">
-                    <span class="menu-title-text">FINANCEIRO</span>
+                    <span class="menu-title-text">RELATÓRIOS</span>
                 </li>
 
                 <li class="menu-item {{ request()->routeIs('admin.finance.*') ? 'open' : '' }}">
