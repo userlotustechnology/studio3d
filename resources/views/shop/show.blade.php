@@ -95,18 +95,7 @@
                 <!-- Quantity & Add to Cart -->
                 <div class="purchase-section">
                     @if($product->type === 'physical')
-                        <div style="margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 8px; border-left: 4px solid #0284c7;">
-                            <div style="display: flex; align-items: center; gap: 8px; color: #0c4a6e;">
-                                <i class="fas fa-box"></i>
-                                <span style="font-weight: 600;">Estoque disponível: {{ $product->stock }} unidade{{ $product->stock != 1 ? 's' : '' }}</span>
-                            </div>
-                            @if($product->stock <= 5 && $product->stock > 0)
-                                <div style="color: #ea580c; font-size: 13px; margin-top: 4px;">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Últimas unidades disponíveis!
-                                </div>
-                            @endif
-                        </div>
+                        
                     @endif
                     
                     @if($product->stock > 0 || $product->type === 'digital')

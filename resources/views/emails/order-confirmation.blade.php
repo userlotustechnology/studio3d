@@ -222,6 +222,12 @@
                                 @endif
                             </strong>
                         </div>
+                        @if($order->discount > 0)
+                        <div class="summary-row" style="color: #10b981;">
+                            <span>Desconto:</span>
+                            <strong>-R$ {{ number_format($order->discount, 2, ',', '.') }}</strong>
+                        </div>
+                        @endif
                         <div class="summary-row total">
                             <span>Total do Pedido:</span>
                             <strong>R$ {{ number_format($order->total, 2, ',', '.') }}</strong>

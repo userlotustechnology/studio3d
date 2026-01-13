@@ -1,15 +1,15 @@
 @extends('shop.layout')
 
-@section('title', 'Informe seu CPF')
+@section('title', 'Informe seus Dados')
 
 @section('content')
     <div class="container cpf-container" style="padding: 60px 20px; max-width: 500px; margin: 0 auto;">
         <div class="cpf-card" style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 30px;">
                 <i class="fas fa-id-card" style="font-size: 48px; color: var(--primary-color); margin-bottom: 20px;"></i>
-                <h1 style="font-size: 28px; color: var(--text-dark); margin-bottom: 10px;">Informe seu CPF</h1>
+                <h1 style="font-size: 28px; color: var(--text-dark); margin-bottom: 10px;">Informe seus Dados</h1>
                 <p style="color: var(--text-light); font-size: 14px;">
-                    Para continuar sua compra, precisamos do seu CPF
+                    Para continuar sua compra, precisamos de algumas informações
                 </p>
             </div>
 
@@ -29,6 +29,30 @@
                 <form method="POST" action="{{ route('cart.add', $productUuid) }}" id="cpfForm">
                     @csrf
                     <input type="hidden" name="quantity" value="{{ $quantity }}">
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label for="name" style="display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">
+                            Nome Completo <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            value="{{ old('name') }}"
+                            placeholder="Seu nome completo"
+                            required
+                            style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: all 0.3s;"
+                            onfocus="this.style.borderColor='var(--primary-color)'"
+                            onblur="this.style.borderColor='#e5e7eb'"
+                        >
+                        @error('name')
+                        <small style="color: #ef4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</small>
+                        @else
+                        <small style="color: var(--text-light); font-size: 12px; margin-top: 5px; display: block;">
+                            Informe seu nome completo como no documento
+                        </small>
+                        @enderror
+                    </div>
                     
                     <div style="margin-bottom: 20px;">
                         <label for="cpf" style="display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">
@@ -141,6 +165,7 @@
 
     <script>
         // Máscara de CPF
+        const nameInput = document.getElementById('name');
         const cpfInput = document.getElementById('cpf');
         const emailInput = document.getElementById('email');
         const phoneInput = document.getElementById('phone');
@@ -187,7 +212,10 @@
                 const data = await response.json();
                 
                 if (data.found) {
-                    // Preencher automaticamente email e telefone
+                    // Preencher automaticamente nome, email e telefone
+                    if (data.name && nameInput && !nameInput.value) {
+                        nameInput.value = data.name;
+                    }
                     if (data.email && !emailInput.value.includes('@temp.local')) {
                         emailInput.value = data.email;
                     }
@@ -209,9 +237,18 @@
         // Validação básica antes de enviar
         if (cpfForm) {
             cpfForm.addEventListener('submit', function(e) {
+                const name = nameInput.value.trim();
                 const cpf = cpfInput.value.replace(/\D/g, '');
                 const email = emailInput.value.trim();
                 const phone = phoneInput.value.replace(/\D/g, '');
+                
+                // Validar nome
+                if (name.length < 3) {
+                    e.preventDefault();
+                    alert('Por favor, informe seu nome completo.');
+                    nameInput.focus();
+                    return false;
+                }
                 
                 // Validar CPF
                 if (cpf.length !== 11) {

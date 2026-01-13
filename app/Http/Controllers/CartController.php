@@ -80,17 +80,23 @@ class CartController extends Controller
         
         if (!$order) {
             // Primeiro produto sendo adicionado - precisa do CPF, email e telefone
+            $name = $request->input('name');
             $cpf = $request->input('cpf');
             $email = $request->input('email');
             $phone = $request->input('phone');
             
-            if (!$cpf || !$email || !$phone) {
-                // Redirecionar para solicitar CPF, email e telefone
+            if (!$name || !$cpf || !$email || !$phone) {
+                // Redirecionar para solicitar nome, CPF, email e telefone
                 session()->put('product_to_add', [
                     'product_uuid' => $product->uuid,
                     'quantity' => $quantity
                 ]);
                 return redirect()->route('cart.request-cpf');
+            }
+
+            // Validar nome (mínimo 3 caracteres)
+            if (strlen($name) < 3) {
+                return redirect()->back()->with('error', 'Nome inválido! Informe seu nome completo.');
             }
 
             // Validar CPF (formato básico)
@@ -116,16 +122,17 @@ class CartController extends Controller
             $customer = Customer::where('cpf', $cpf)->first();
             
             if (!$customer) {
-                // Criar novo cliente
+                // Criar novo cliente com o nome informado
                 $customer = Customer::create([
-                    'name' => 'Cliente ' . $cpf,
+                    'name' => $name,
                     'email' => $email,
                     'cpf' => $cpf,
                     'phone' => $phoneDigits,
                 ]);
             } else {
-                // Atualizar sempre email e telefone do cliente existente
+                // Atualizar sempre nome, email e telefone do cliente existente
                 $customer->update([
+                    'name' => $name,
                     'email' => $email,
                     'phone' => $phoneDigits,
                 ]);
@@ -239,6 +246,7 @@ class CartController extends Controller
         if ($customer) {
             return response()->json([
                 'found' => true,
+                'name' => $customer->name,
                 'email' => $customer->email,
                 'phone' => $customer->phone,
             ]);
@@ -740,10 +748,24 @@ class CartController extends Controller
         }
 
         // Finalizar o pedido (remover draft status)
+        // Calcular desconto do método de pagamento
+        $paymentDiscount = 0;
+        $paymentMethod = PaymentMethod::where('code', $validated['payment_method'])->first();
+        
+        if ($paymentMethod) {
+            // Calcular desconto sobre o subtotal
+            $paymentDiscount = $paymentMethod->calculateDiscount($order->subtotal);
+        }
+        
+        // Recalcular total com desconto do método de pagamento
+        $finalTotal = $order->subtotal + $order->shipping_cost - $paymentDiscount;
+        
         $order->update([
             'billing_address_id' => $billingAddress->id,
             'shipping_address_id' => $shippingAddress?->id,
             'payment_method' => $validated['payment_method'],
+            'discount' => $paymentDiscount, // Atualizar desconto
+            'total' => $finalTotal, // Atualizar total
             'status' => 'pending', // Transição de 'draft' para 'pending'
             'is_draft' => false,
             'order_number' => 'PED-' . date('Y') . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),

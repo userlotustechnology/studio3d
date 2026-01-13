@@ -102,6 +102,16 @@
                             <div style="font-weight: 600; color: var(--text-dark);">R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}</div>
                         </div>
                     </div>
+                    @if($order->discount > 0)
+                    <div style="display: grid; grid-template-columns: auto auto; gap: 40px; justify-content: flex-end; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 14px; color: #10b981;">
+                                <i class="fas fa-tag"></i> Desconto:
+                            </div>
+                            <div style="font-weight: 600; color: #10b981;">-R$ {{ number_format($order->discount, 2, ',', '.') }}</div>
+                        </div>
+                    </div>
+                    @endif
                     <div style="border-top: 2px solid var(--border-color); padding-top: 15px; display: grid; grid-template-columns: auto auto; gap: 40px; justify-content: flex-end;">
                         <div>
                             <div style="font-size: 14px; color: var(--text-light);">Total:</div>

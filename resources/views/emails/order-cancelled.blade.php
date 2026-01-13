@@ -148,6 +148,12 @@
                             <td><strong>Frete:</strong></td>
                             <td style="text-align: right;">R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}</td>
                         </tr>
+                        @if($order->discount > 0)
+                        <tr style="color: #10b981;">
+                            <td><strong>Desconto:</strong></td>
+                            <td style="text-align: right;">-R$ {{ number_format($order->discount, 2, ',', '.') }}</td>
+                        </tr>
+                        @endif
                         <tr style="font-weight: 700; font-size: 15px;">
                             <td><strong>Total:</strong></td>
                             <td style="text-align: right;">R$ {{ number_format($order->total, 2, ',', '.') }}</td>

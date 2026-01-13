@@ -13,6 +13,8 @@ class PaymentMethod extends Model
         'description',
         'fee_percentage',
         'fee_fixed',
+        'discount_percentage',
+        'discount_fixed',
         'settlement_days',
         'is_active',
     ];
@@ -20,6 +22,8 @@ class PaymentMethod extends Model
     protected $casts = [
         'fee_percentage' => 'decimal:2',
         'fee_fixed' => 'decimal:2',
+        'discount_percentage' => 'decimal:2',
+        'discount_fixed' => 'decimal:2',
         'settlement_days' => 'integer',
         'is_active' => 'boolean',
     ];
@@ -44,11 +48,38 @@ class PaymentMethod extends Model
     }
 
     /**
+     * Calcula o desconto total para um valor
+     */
+    public function calculateDiscount(float $amount): float
+    {
+        $percentageDiscount = ($amount * $this->discount_percentage) / 100;
+        return $percentageDiscount + $this->discount_fixed;
+    }
+
+    /**
+     * Calcula o valor final com desconto aplicado
+     */
+    public function calculateFinalAmount(float $amount): float
+    {
+        return $amount - $this->calculateDiscount($amount);
+    }
+
+    /**
      * Calcula o valor líquido (descontando as taxas)
      */
     public function calculateNetAmount(float $amount): float
     {
         return $amount - $this->calculateFee($amount);
+    }
+
+    /**
+     * Calcula o valor líquido considerando desconto e taxas
+     * Primeiro aplica o desconto, depois calcula a taxa sobre o valor com desconto
+     */
+    public function calculateNetAmountWithDiscount(float $amount): float
+    {
+        $amountAfterDiscount = $this->calculateFinalAmount($amount);
+        return $amountAfterDiscount - $this->calculateFee($amountAfterDiscount);
     }
 
     /**

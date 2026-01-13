@@ -19,6 +19,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento instantâneo via PIX',
                 'fee_percentage' => 0.99,
                 'fee_fixed' => 0.00,
+                'discount_percentage' => 5.00, // 5% de desconto no PIX
+                'discount_fixed' => 0.00,
                 'settlement_days' => 0,
                 'is_active' => true,
             ],
@@ -28,6 +30,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento via cartão de crédito',
                 'fee_percentage' => 3.99,
                 'fee_fixed' => 0.39,
+                'discount_percentage' => 0.00,
+                'discount_fixed' => 0.00,
                 'settlement_days' => 30,
                 'is_active' => true,
             ],
@@ -37,6 +41,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento via cartão de débito',
                 'fee_percentage' => 1.99,
                 'fee_fixed' => 0.00,
+                'discount_percentage' => 2.00, // 2% de desconto no débito
+                'discount_fixed' => 0.00,
                 'settlement_days' => 1,
                 'is_active' => true,
             ],
@@ -46,6 +52,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento via boleto bancário',
                 'fee_percentage' => 0.00,
                 'fee_fixed' => 3.49,
+                'discount_percentage' => 3.00, // 3% de desconto no boleto
+                'discount_fixed' => 0.00,
                 'settlement_days' => 3,
                 'is_active' => true,
             ],
@@ -55,6 +63,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento via transferência bancária',
                 'fee_percentage' => 0.00,
                 'fee_fixed' => 0.00,
+                'discount_percentage' => 3.00, // 3% de desconto na transferência
+                'discount_fixed' => 0.00,
                 'settlement_days' => 1,
                 'is_active' => true,
             ],
@@ -64,6 +74,8 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Pagamento em dinheiro (balcão)',
                 'fee_percentage' => 0.00,
                 'fee_fixed' => 0.00,
+                'discount_percentage' => 10.00, // 10% de desconto à vista
+                'discount_fixed' => 0.00,
                 'settlement_days' => 0,
                 'is_active' => true,
             ],

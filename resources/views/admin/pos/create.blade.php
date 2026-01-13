@@ -146,8 +146,16 @@
                                 @foreach($paymentMethods as $method)
                                     <option value="{{ $method->code }}" 
                                             data-fee-percentage="{{ $method->fee_percentage }}" 
-                                            data-fee-fixed="{{ $method->fee_fixed }}">
+                                            data-fee-fixed="{{ $method->fee_fixed }}"
+                                            data-discount-percentage="{{ $method->discount_percentage }}"
+                                            data-discount-fixed="{{ $method->discount_fixed }}">
                                         {{ $method->name }}
+                                        @if($method->discount_percentage > 0 || $method->discount_fixed > 0)
+                                            - <span style="color: #10b981; font-weight: 600;">Desconto: 
+                                            @if($method->discount_percentage > 0){{ number_format($method->discount_percentage, 2, ',', '.') }}%@endif
+                                            @if($method->discount_fixed > 0){{ $method->discount_percentage > 0 ? ' + ' : '' }}R$ {{ number_format($method->discount_fixed, 2, ',', '.') }}@endif
+                                            </span>
+                                        @endif
                                         @if($method->fee_percentage > 0 || $method->fee_fixed > 0)
                                             - Taxa: 
                                             @if($method->fee_percentage > 0){{ number_format($method->fee_percentage, 2, ',', '.') }}%@endif
@@ -653,24 +661,66 @@ function calculateShipping() {
 }
 
 function updateTotalDisplay() {
-    total = subtotal + shipping;
+    // Calcular desconto baseado no método de pagamento selecionado
+    let discount = 0;
+    const paymentMethodSelect = document.querySelector('[name="payment_method"]');
+    const selectedOption = paymentMethodSelect.options[paymentMethodSelect.selectedIndex];
     
-    document.getElementById('subtotalDisplay').textContent = `R$ ${subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    document.getElementById('shippingDisplay').textContent = `R$ ${shipping.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    document.getElementById('totalDisplay').textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    if (selectedOption && selectedOption.value) {
+        const discountPercentage = parseFloat(selectedOption.dataset.discountPercentage || 0);
+        const discountFixed = parseFloat(selectedOption.dataset.discountFixed || 0);
+        
+        // Calcular desconto percentual sobre o subtotal (garantir 2 casas decimais)
+        discount = parseFloat(((subtotal * discountPercentage / 100) + discountFixed).toFixed(2));
+    }
     
-    // Atualizar campos hidden
+    // Total = subtotal - desconto + frete (garantir 2 casas decimais)
+    total = parseFloat((subtotal - discount + shipping).toFixed(2));
+    
+    document.getElementById('subtotalDisplay').textContent = `R$ ${subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    
+    // Exibir desconto se houver
+    let discountHtml = '';
+    if (discount > 0) {
+        discountHtml = `<div style="display: flex; justify-content: space-between; color: #10b981; font-weight: 600; margin-bottom: 10px;">
+            <span>Desconto:</span>
+            <span>- R$ ${discount.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+        </div>`;
+    }
+    
+    document.getElementById('shippingDisplay').textContent = `R$ ${shipping.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('totalDisplay').textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    
+    // Inserir desconto antes do frete
+    const totalsContainer = document.getElementById('subtotalDisplay').parentElement.parentElement;
+    const existingDiscount = totalsContainer.querySelector('.discount-line');
+    if (existingDiscount) {
+        existingDiscount.remove();
+    }
+    if (discount > 0) {
+        const shippingLine = document.getElementById('shippingDisplay').parentElement;
+        shippingLine.insertAdjacentHTML('beforebegin', `<div class="discount-line">${discountHtml}</div>`);
+    }
+    
+    // Atualizar campos hidden (com 2 casas decimais)
     if (!document.querySelector('[name="subtotal"]')) {
         const form = document.getElementById('posForm');
         form.insertAdjacentHTML('beforeend', `
-            <input type="hidden" name="subtotal" value="${subtotal}">
-            <input type="hidden" name="shipping" value="${shipping}">
-            <input type="hidden" name="total" value="${total}">
+            <input type="hidden" name="subtotal" value="${subtotal.toFixed(2)}">
+            <input type="hidden" name="discount" value="${discount.toFixed(2)}">
+            <input type="hidden" name="shipping" value="${shipping.toFixed(2)}">
+            <input type="hidden" name="total" value="${total.toFixed(2)}">
         `);
     } else {
-        document.querySelector('[name="subtotal"]').value = subtotal;
-        document.querySelector('[name="shipping"]').value = shipping;
-        document.querySelector('[name="total"]').value = total;
+        document.querySelector('[name="subtotal"]').value = subtotal.toFixed(2);
+        if (!document.querySelector('[name="discount"]')) {
+            const form = document.getElementById('posForm');
+            form.insertAdjacentHTML('beforeend', `<input type="hidden" name="discount" value="${discount.toFixed(2)}">`);
+        } else {
+            document.querySelector('[name="discount"]').value = discount.toFixed(2);
+        }
+        document.querySelector('[name="shipping"]').value = shipping.toFixed(2);
+        document.querySelector('[name="total"]').value = total.toFixed(2);
     }
 }
 

@@ -240,10 +240,21 @@
                     <div style="display: grid; gap: 15px; margin-bottom: 30px;">
                         @forelse($paymentMethods as $method)
                         <label style="display: flex; align-items: center; padding: 18px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: white;">
-                            <input type="radio" name="payment_method" value="{{ $method->code }}" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;">
+                            <input type="radio" name="payment_method" value="{{ $method->code }}" required style="margin-right: 15px; width: 20px; height: 20px; cursor: pointer;"
+                                data-discount-percentage="{{ $method->discount_percentage ?? 0 }}"
+                                data-discount-fixed="{{ $method->discount_fixed ?? 0 }}">
                             <div style="flex: 1;">
                                 <div style="font-weight: 700; color: var(--text-dark); font-size: 16px;">
                                     <i class="fas fa-credit-card" style="color: #667eea; margin-right: 8px;"></i> {{ $method->name }}
+                                    @if($method->discount_percentage > 0 || $method->discount_fixed > 0)
+                                        <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; font-weight: 600;">
+                                            @if($method->discount_percentage > 0)
+                                                {{ number_format($method->discount_percentage, 0) }}% OFF
+                                            @else
+                                                R$ {{ number_format($method->discount_fixed, 2, ',', '.') }} OFF
+                                            @endif
+                                        </span>
+                                    @endif
                                 </div>
                                 @if($method->description)
                                 <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">{{ $method->description }}</div>
@@ -263,6 +274,9 @@
                             {{ $message }}
                         </div>
                     @enderror
+
+                    <!-- Campo oculto para enviar o desconto do método de pagamento -->
+                    <input type="hidden" name="payment_discount" id="payment_discount_field" value="0">
 
                     <div class="checkout-buttons" style="display: grid; gap: 12px; margin-top: 30px;">
                         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
@@ -303,11 +317,11 @@
                     <div style="border-top: 2px solid var(--border-color); padding-top: 20px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
                             <span style="color: var(--text-light); font-weight: 500;">Subtotal</span>
-                            <span style="font-weight: 700; color: var(--text-dark);">R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
+                            <span style="font-weight: 700; color: var(--text-dark);" data-subtotal-display>R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
                             <span style="color: var(--text-light); font-weight: 500;">Frete</span>
-                            <span style="font-weight: 700; color: var(--text-dark);" data-frete-value>
+                            <span style="font-weight: 700; color: var(--text-dark);" data-frete-value data-frete-amount="{{ $shippingCost }}">
                                 @if($shippingCost == 0)
                                     <span style="color: #10b981;">GRÁTIS 🎉</span>
                                 @else
@@ -315,6 +329,15 @@
                                 @endif
                             </span>
                         </div>
+                        
+                        <!-- Linha de Desconto (Método de Pagamento) - Inicialmente oculta -->
+                        <div id="payment-discount-line" style="display: none; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+                            <span style="color: var(--text-light); font-weight: 500;">
+                                <i class="fas fa-tag" style="color: #10b981;"></i> Desconto
+                            </span>
+                            <span style="font-weight: 700; color: #10b981;" id="payment-discount-value">-R$ 0,00</span>
+                        </div>
+                        
                         @if($discount > 0)
                             <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
                                 <span style="color: var(--text-light); font-weight: 500;">Desconto</span>
@@ -763,21 +786,20 @@
                     // Atualizar o valor do frete na tela
                     const freteElement = document.querySelector('[data-frete-value]');
                     if (freteElement) {
+                        // Atualizar o atributo data-frete-amount para cálculo do total
+                        freteElement.setAttribute('data-frete-amount', data.shippingCost);
+                        
                         if (data.shippingCost === 0) {
                             freteElement.innerHTML = '<span style="color: #10b981;">GRÁTIS 🎉</span>';
                         } else {
-                            freteElement.textContent = data.formattedCost;
+                            freteElement.textContent = 'R$ ' + data.shippingCost.toFixed(2).replace('.', ',');
                             freteElement.style.color = 'var(--text-dark)';
+                            freteElement.style.fontWeight = '700';
                         }
                     }
                     
-                    // Atualizar o total
-                    const totalElement = document.querySelector('[data-total-value]');
-                    if (totalElement) {
-                        const subtotal = parseFloat(totalElement.getAttribute('data-subtotal'));
-                        const newTotal = subtotal + data.shippingCost;
-                        totalElement.textContent = 'R$ ' + newTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    }
+                    // Recalcular total com desconto
+                    updateTotalWithDiscount();
                 }
             })
             .catch(error => console.error('Erro ao calcular frete:', error));
@@ -836,5 +858,71 @@
                 }
             });
         }
+
+        // ===== CÁLCULO DE DESCONTO POR FORMA DE PAGAMENTO =====
+        function updateTotalWithDiscount() {
+            const subtotalElement = document.querySelector('[data-total-value]');
+            if (!subtotalElement) return;
+
+            const subtotal = parseFloat(subtotalElement.getAttribute('data-subtotal'));
+            
+            // Obter valor do frete
+            const freteElement = document.querySelector('[data-frete-amount]');
+            const shippingCost = freteElement ? parseFloat(freteElement.getAttribute('data-frete-amount')) || 0 : 0;
+            
+            // Obter método de pagamento selecionado
+            const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            
+            let paymentDiscount = 0;
+            
+            if (selectedPaymentMethod) {
+                const discountPercentage = parseFloat(selectedPaymentMethod.getAttribute('data-discount-percentage')) || 0;
+                const discountFixed = parseFloat(selectedPaymentMethod.getAttribute('data-discount-fixed')) || 0;
+                
+                // Calcular desconto percentual sobre o subtotal
+                if (discountPercentage > 0) {
+                    paymentDiscount = subtotal * (discountPercentage / 100);
+                }
+                
+                // Adicionar desconto fixo
+                if (discountFixed > 0) {
+                    paymentDiscount += discountFixed;
+                }
+            }
+            
+            // Mostrar ou ocultar linha de desconto
+            const discountLine = document.getElementById('payment-discount-line');
+            const discountValueElement = document.getElementById('payment-discount-value');
+            const discountField = document.getElementById('payment_discount_field');
+            
+            if (paymentDiscount > 0) {
+                discountLine.style.display = 'flex';
+                discountValueElement.textContent = '-R$ ' + paymentDiscount.toFixed(2).replace('.', ',');
+                
+                // Atualizar campo hidden
+                if (discountField) {
+                    discountField.value = paymentDiscount.toFixed(2);
+                }
+            } else {
+                discountLine.style.display = 'none';
+                if (discountField) {
+                    discountField.value = '0';
+                }
+            }
+            
+            // Calcular total final
+            const newTotal = subtotal + shippingCost - paymentDiscount;
+            
+            // Atualizar display do total (garantir 2 casas decimais)
+            subtotalElement.textContent = 'R$ ' + newTotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&.').replace(/\.(\d{2})$/, ',$1');
+        }
+
+        // Adicionar event listeners aos métodos de pagamento
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', updateTotalWithDiscount);
+        });
+
+        // Calcular inicialmente se houver método selecionado
+        updateTotalWithDiscount();
     </script>
 @endsection

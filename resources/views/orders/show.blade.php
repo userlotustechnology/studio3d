@@ -153,6 +153,15 @@
                         <span style="color: #6b7280;">Frete cobrado:</span>
                         <span style="color: #1f2937; font-weight: 600;">R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}</span>
                     </div>
+                    @if($order->discount > 0)
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <span style="color: #10b981;">
+                            <i class="fas fa-tag" style="margin-right: 4px;"></i>
+                            Desconto:
+                        </span>
+                        <span style="color: #10b981; font-weight: 600;">-R$ {{ number_format($order->discount, 2, ',', '.') }}</span>
+                    </div>
+                    @endif
                     @if($order->carrier_shipping_cost)
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
                         <span style="color: #6b7280; font-size: 13px;">

@@ -240,6 +240,34 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    <!-- Summary -->
+                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span>Subtotal:</span>
+                            <strong>R$ {{ number_format($order->subtotal, 2, ',', '.') }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span>Frete:</span>
+                            <strong>
+                                @if($order->shipping_cost == 0)
+                                    <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                @else
+                                    R$ {{ number_format($order->shipping_cost, 2, ',', '.') }}
+                                @endif
+                            </strong>
+                        </div>
+                        @if($order->discount > 0)
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #10b981;">
+                            <span>Desconto:</span>
+                            <strong>-R$ {{ number_format($order->discount, 2, ',', '.') }}</strong>
+                        </div>
+                        @endif
+                        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; color: #0f79f3; border-top: 2px solid #0f79f3; padding-top: 15px; margin-top: 15px;">
+                            <span>Total do Pedido:</span>
+                            <strong>R$ {{ number_format($order->total, 2, ',', '.') }}</strong>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Shipping Address -->
