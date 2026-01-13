@@ -94,22 +94,47 @@
 
                 <!-- Quantity & Add to Cart -->
                 <div class="purchase-section">
-                    <div class="quantity-selector">
-                        <label for="quantity">Quantidade:</label>
-                        <div class="quantity-input">
-                            <button type="button" class="qty-btn" onclick="decrementQuantity()">−</button>
-                            <input type="number" id="quantity" value="1" min="1" readonly>
-                            <button type="button" class="qty-btn" onclick="incrementQuantity()">+</button>
+                    @if($product->type === 'physical')
+                        <div style="margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 8px; border-left: 4px solid #0284c7;">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #0c4a6e;">
+                                <i class="fas fa-box"></i>
+                                <span style="font-weight: 600;">Estoque disponível: {{ $product->stock }} unidade{{ $product->stock != 1 ? 's' : '' }}</span>
+                            </div>
+                            @if($product->stock <= 5 && $product->stock > 0)
+                                <div style="color: #ea580c; font-size: 13px; margin-top: 4px;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Últimas unidades disponíveis!
+                                </div>
+                            @endif
                         </div>
-                    </div>
+                    @endif
+                    
+                    @if($product->stock > 0 || $product->type === 'digital')
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantidade:</label>
+                            <div class="quantity-input">
+                                <button type="button" class="qty-btn" onclick="decrementQuantity()">−</button>
+                                <input type="number" id="quantity" value="1" min="1" 
+                                       @if($product->type === 'physical') max="{{ $product->stock }}" @endif
+                                       readonly>
+                                <button type="button" class="qty-btn" onclick="incrementQuantity()">+</button>
+                            </div>
+                        </div>
 
-                    <form action="{{ route('cart.add', $product->uuid) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
-                        @csrf
-                        <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                        <button type="submit" class="btn-cart-checkout" @if($product->stock <= 0) disabled @endif>
-                            <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
-                        </button>
-                    </form>
+                        <form action="{{ route('cart.add', $product->uuid) }}" method="POST" id="addToCartForm" class="add-to-cart-form">
+                            @csrf
+                            <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                            <button type="submit" class="btn-cart-checkout">
+                                <i class="fas fa-shopping-bag"></i> Adicionar ao Carrinho
+                            </button>
+                        </form>
+                    @else
+                        <div style="padding: 20px; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-radius: 12px; text-align: center;">
+                            <i class="fas fa-times-circle" style="font-size: 48px; color: #dc2626; margin-bottom: 12px;"></i>
+                            <h3 style="color: #7f1d1d; margin-bottom: 8px;">Produto Esgotado</h3>
+                            <p style="color: #991b1b; margin-bottom: 0;">Este produto está temporariamente fora de estoque.</p>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Secondary Action Buttons -->
@@ -1147,8 +1172,16 @@
         function incrementQuantity() {
             const input = document.getElementById('quantity');
             const cartInput = document.getElementById('cartQuantity');
-            input.value = parseInt(input.value) + 1;
-            cartInput.value = input.value;
+            const maxStock = {{ $product->type === 'physical' ? $product->stock : 999 }};
+            const currentValue = parseInt(input.value);
+            
+            if (currentValue < maxStock) {
+                input.value = currentValue + 1;
+                cartInput.value = input.value;
+            } else {
+                // Mostrar alerta de limite de estoque
+                alert('Quantidade máxima disponível: ' + maxStock);
+            }
         }
 
         function decrementQuantity() {

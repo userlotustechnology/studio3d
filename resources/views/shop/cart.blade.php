@@ -70,13 +70,23 @@
                                 </div>
 
                                 <!-- Quantity -->
-                                <div class="cart-item-quantity-modern" style="display: flex; align-items: center; gap: 0; border: 2px solid #e5e7eb; border-radius: 10px;">
-                                    <form method="POST" action="{{ route('cart.update', $item->product->uuid) }}" style="display: flex; gap: 0; align-items: center;" class="quantity-form">
-                                        @csrf
-                                        <button type="button" class="qty-btn-modern" onclick="decrementQuantity(this)" style="background: none; border: none; padding: 8px 12px; cursor: pointer; color: #667eea; font-weight: 600; font-size: 18px; transition: all 0.3s;">−</button>
-                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" class="qty-input-modern" style="width: 50px; text-align: center; padding: 8px; border: none; background: transparent; font-weight: 600; border-left: 2px solid #e5e7eb; border-right: 2px solid #e5e7eb;">
-                                        <button type="button" class="qty-btn-modern" onclick="incrementQuantity(this)" style="background: none; border: none; padding: 8px 12px; cursor: pointer; color: #667eea; font-weight: 600; font-size: 18px; transition: all 0.3s;">+</button>
-                                    </form>
+                                <div class="cart-item-quantity-modern" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                    @if($item->product && $item->product->type === 'physical')
+                                        <small style="color: #6b7280; font-size: 12px;">
+                                            Estoque: {{ $item->product->stock }}
+                                        </small>
+                                    @endif
+                                    <div style="display: flex; align-items: center; gap: 0; border: 2px solid #e5e7eb; border-radius: 10px;">
+                                        <form method="POST" action="{{ route('cart.update', $item->product->uuid) }}" style="display: flex; gap: 0; align-items: center;" class="quantity-form">
+                                            @csrf
+                                            <button type="button" class="qty-btn-modern" onclick="decrementQuantity(this)" style="background: none; border: none; padding: 8px 12px; cursor: pointer; color: #667eea; font-weight: 600; font-size: 18px; transition: all 0.3s;">−</button>
+                                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" 
+                                                   @if($item->product && $item->product->type === 'physical') max="{{ $item->product->stock }}" @endif
+                                                   class="qty-input-modern" data-max="{{ $item->product && $item->product->type === 'physical' ? $item->product->stock : 999 }}" 
+                                                   style="width: 60px; text-align: center; padding: 8px; border: none; background: transparent; font-weight: 600; border-left: 2px solid #e5e7eb; border-right: 2px solid #e5e7eb;">
+                                            <button type="button" class="qty-btn-modern" onclick="incrementQuantity(this)" style="background: none; border: none; padding: 8px 12px; cursor: pointer; color: #667eea; font-weight: 600; font-size: 18px; transition: all 0.3s;">+</button>
+                                        </form>
+                                    </div>
                                 </div>
 
                                 <!-- Total -->
@@ -523,8 +533,16 @@
         // Funções para incrementar/decrementar quantidade
         function incrementQuantity(btn) {
             const input = btn.parentElement.querySelector('.qty-input-modern');
-            input.value = parseInt(input.value) + 1;
-            submitForm(btn.parentElement);
+            const currentValue = parseInt(input.value);
+            const maxValue = parseInt(input.getAttribute('data-max')) || 999;
+            
+            if (currentValue < maxValue) {
+                input.value = currentValue + 1;
+                submitForm(btn.parentElement);
+            } else {
+                // Mostrar alerta de estoque limitado
+                showStockAlert('Quantidade máxima disponível: ' + maxValue);
+            }
         }
 
         function decrementQuantity(btn) {
@@ -534,6 +552,81 @@
                 submitForm(btn.parentElement);
             }
         }
+
+        // Função para mostrar alerta de estoque
+        function showStockAlert(message) {
+            // Criar elemento de alerta se não existir
+            let alert = document.getElementById('stock-alert');
+            if (!alert) {
+                alert = document.createElement('div');
+                alert.id = 'stock-alert';
+                alert.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+                    border-left: 4px solid #ef4444;
+                    color: #7f1d1d;
+                    padding: 16px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    max-width: 350px;
+                    animation: slideInRight 0.3s ease;
+                `;
+                document.body.appendChild(alert);
+            }
+            
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>${message}</span>
+            `;
+            alert.style.display = 'flex';
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        // Adicionar CSS para animação
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Validar quantidade ao digitar manualmente
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInputs = document.querySelectorAll('.qty-input-modern');
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const maxValue = parseInt(this.getAttribute('data-max')) || 999;
+                    const currentValue = parseInt(this.value);
+                    
+                    if (currentValue > maxValue) {
+                        this.value = maxValue;
+                        showStockAlert('Quantidade máxima disponível: ' + maxValue);
+                    } else if (currentValue < 1) {
+                        this.value = 1;
+                    }
+                    
+                    submitForm(this.parentElement);
+                });
+            });
+        });
 
         // Submeter formulário automaticamente ao mudar a quantidade
         function submitForm(form) {

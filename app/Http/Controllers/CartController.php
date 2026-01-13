@@ -50,8 +50,29 @@ class CartController extends Controller
 
         // Validar estoque (apenas para produtos físicos)
         $quantity = $request->input('quantity', 1);
-        if ($product->type === 'physical' && $product->stock < $quantity) {
-            return redirect()->back()->with('error', 'Quantidade solicitada indisponível em estoque. Estoque disponível: ' . $product->stock . ' unidades.');
+        if ($product->type === 'physical') {
+            // Verificar quantidade já no carrinho
+            $cartQuantity = 0;
+            $draftOrderId = session()->get('draft_order_id');
+            if ($draftOrderId) {
+                $order = Order::find($draftOrderId);
+                if ($order) {
+                    $existingItem = $order->items()->where('product_id', $product->id)->first();
+                    if ($existingItem) {
+                        $cartQuantity = $existingItem->quantity;
+                    }
+                }
+            }
+            
+            $totalRequestedQuantity = $cartQuantity + $quantity;
+            
+            if ($product->stock < $totalRequestedQuantity) {
+                $availableToAdd = max(0, $product->stock - $cartQuantity);
+                if ($availableToAdd == 0) {
+                    return redirect()->back()->with('error', 'Este produto já está em sua quantidade máxima disponível no carrinho.');
+                }
+                return redirect()->back()->with('error', "Quantidade solicitada indisponível. Você pode adicionar no máximo {$availableToAdd} unidade(s). Estoque disponível: {$product->stock}, já no carrinho: {$cartQuantity}.");
+            }
         }
         
         // Obter ou criar order de rascunho
@@ -300,13 +321,23 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Pedido não encontrado!');
         }
 
+        // Validar estoque antes de atualizar (apenas para produtos físicos)
+        if ($product->type === 'physical' && $quantity > 0) {
+            if ($product->stock < $quantity) {
+                return redirect()->back()->with('error', "Quantidade solicitada indisponível. Estoque disponível: {$product->stock} unidade(s).");
+            }
+        }
+
         $orderItem = $order->items()->where('product_id', $product->id)->first();
         
         if ($orderItem) {
             if ($quantity <= 0) {
                 $orderItem->delete();
             } else {
-                $orderItem->update(['quantity' => $quantity]);
+                $orderItem->update([
+                    'quantity' => $quantity,
+                    'subtotal' => $product->price * $quantity
+                ]);
             }
             
             $this->updateOrderTotals($order);
