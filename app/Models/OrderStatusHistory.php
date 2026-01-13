@@ -12,12 +12,18 @@ class OrderStatusHistory extends Model
         'from_status',
         'to_status',
         'reason',
-        'changed_by',
+        'user_id',
+        'changed_by_legacy',
     ];
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

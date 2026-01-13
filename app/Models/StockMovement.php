@@ -10,12 +10,13 @@ class StockMovement extends Model
     protected $fillable = [
         'product_id',
         'order_id',
+        'user_id',
         'type',
         'quantity',
         'stock_before',
         'stock_after',
         'reason',
-        'user_name',
+        'user_name_legacy',
     ];
 
     protected $casts = [
@@ -34,6 +35,11 @@ class StockMovement extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /**
      * Registra uma movimentação de estoque
      */
@@ -43,7 +49,8 @@ class StockMovement extends Model
         int $quantity,
         ?int $orderId = null,
         string $reason = '',
-        ?string $userName = null
+        ?int $userId = null,
+        ?string $userNameLegacy = null
     ): self {
         $product = Product::findOrFail($productId);
         $stockBefore = $product->stock;
@@ -70,12 +77,13 @@ class StockMovement extends Model
         return self::create([
             'product_id' => $productId,
             'order_id' => $orderId,
+            'user_id' => $userId,
             'type' => $type,
             'quantity' => $movement,
             'stock_before' => $stockBefore,
             'stock_after' => $stockAfter,
             'reason' => $reason,
-            'user_name' => $userName,
+            'user_name_legacy' => $userNameLegacy,
         ]);
     }
 }

@@ -171,7 +171,7 @@ class CartController extends Controller
                     $quantity,
                     $order->id,
                     "Produto adicionado ao carrinho - Pedido #{$order->order_number}",
-                    'Sistema'
+                    null
                 );
             }
         } else {
@@ -193,7 +193,7 @@ class CartController extends Controller
                     $quantity,
                     $order->id,
                     "Produto adicionado ao carrinho - Pedido #{$order->order_number}",
-                    'Sistema'
+                    null
                 );
             }
         }
@@ -425,7 +425,7 @@ class CartController extends Controller
                         $oldQuantity,
                         $order->id,
                         "Produto removido do carrinho - Pedido #{$order->order_number}",
-                        'Sistema'
+                        null
                     );
                 }
                 $orderItem->delete();
@@ -447,7 +447,7 @@ class CartController extends Controller
                             $quantityDiff,
                             $order->id,
                             "Quantidade aumentada no carrinho - Pedido #{$order->order_number}",
-                            'Sistema'
+                            null
                         );
                     } else {
                         // Diminuiu quantidade - devolver diferença
@@ -457,7 +457,7 @@ class CartController extends Controller
                             abs($quantityDiff),
                             $order->id,
                             "Quantidade diminuída no carrinho - Pedido #{$order->order_number}",
-                            'Sistema'
+                            null
                         );
                     }
                 }
@@ -495,7 +495,7 @@ class CartController extends Controller
                     $orderItem->quantity,
                     $order->id,
                     "Produto removido do carrinho - Pedido #{$order->order_number}",
-                    'Sistema'
+                    null
                 );
             }
             
@@ -523,7 +523,7 @@ class CartController extends Controller
                             $item->quantity,
                             $order->id,
                             "Carrinho limpo - Pedido #{$order->order_number}",
-                            'Sistema'
+                            null
                         );
                     }
                 }
@@ -756,7 +756,8 @@ class CartController extends Controller
             'from_status' => 'draft',
             'to_status' => 'pending',
             'reason' => 'Pedido finalizado pelo cliente',
-            'changed_by' => 'customer',
+            'user_id' => null,
+            'changed_by_legacy' => 'customer',
         ]);
 
         // Disparar evento de pedido confirmado para notificação no Slack

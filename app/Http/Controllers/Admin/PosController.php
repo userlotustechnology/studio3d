@@ -320,9 +320,9 @@ class PosController extends Controller
                     $product->id,
                     'out',
                     $itemData['quantity'],
-                    "Venda PDV - Pedido #{$order->order_number}",
                     $order->id,
-                    auth()->user()->name ?? 'PDV'
+                    "Venda PDV - Pedido #{$order->order_number}",
+                    auth()->id()
                 );
             }
 
@@ -332,7 +332,7 @@ class PosController extends Controller
                 'from_status' => 'draft',
                 'to_status' => 'pending',
                 'reason' => 'Pedido criado via PDV',
-                'changed_by' => 'admin',
+                'user_id' => auth()->id(),
             ]);
 
             DB::commit();

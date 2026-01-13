@@ -57,15 +57,14 @@ class StockController extends Controller
 
         if ($difference != 0) {
             $type = $difference > 0 ? 'in' : 'out';
-            $userName = auth()->user()->name ?? 'Sistema';
             
             StockMovement::recordMovement(
                 $product->id,
                 $type,
                 abs($difference),
-                $validated['reason'],
                 null,
-                $userName
+                $validated['reason'],
+                auth()->id()
             );
 
             return redirect()->route('admin.stock.product-movements', $product)

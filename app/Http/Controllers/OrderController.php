@@ -80,7 +80,7 @@ class OrderController extends Controller
                         $item->quantity,
                         $order->id,
                         "Devolução por cancelamento - Pedido #{$order->order_number}",
-                        auth()->user()->name ?? 'Sistema'
+                        auth()->id()
                     );
                 }
                 Mail::queue(new OrderCancelledMail($order, $reason));
@@ -152,9 +152,9 @@ class OrderController extends Controller
                         $item->product_id,
                         'in',
                         $item->quantity,
-                        "Devolução por estorno - Pedido #{$order->order_number}",
                         $order->id,
-                        auth()->user()->name ?? 'Sistema'
+                        "Devolução por estorno - Pedido #{$order->order_number}",
+                        auth()->id()
                     );
                 }
             }
@@ -168,6 +168,7 @@ class OrderController extends Controller
                 'amount' => $order->total,
                 'payment_method_id' => \App\Models\PaymentMethod::where('code', $order->payment_method)->first()?->id,
                 'order_id' => $order->id,
+                'user_id' => auth()->id(),
                 'fee_amount' => 0,
                 'net_amount' => -$order->total,
             ]);
@@ -201,7 +202,7 @@ class OrderController extends Controller
                     $item->quantity,
                     $order->id,
                     "Devolução por cancelamento de rascunho - Pedido #{$order->order_number}",
-                    auth()->user()->name ?? 'Sistema'
+                    auth()->id()
                 );
             }
 

@@ -14,6 +14,7 @@ class Order extends Model
         'uuid',
         'access_token',
         'customer_id',
+        'user_id',
         'billing_address_id',
         'shipping_address_id',
         'subtotal',
@@ -48,6 +49,11 @@ class Order extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function billingAddress(): BelongsTo
@@ -148,12 +154,12 @@ class Order extends Model
             \App\Models\StockMovement::create([
                 'product_id' => $item->product_id,
                 'order_id' => $this->id,
+                'user_id' => $this->user_id,
                 'type' => 'sale',
                 'quantity' => -$item->quantity,
                 'stock_before' => Product::find($item->product_id)->stock,
                 'stock_after' => Product::find($item->product_id)->stock, // Sem alteração
                 'reason' => 'Venda finalizada - pedido ' . $this->order_number,
-                'user_name' => 'Sistema',
             ]);
         }
     }

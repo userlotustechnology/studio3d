@@ -13,6 +13,7 @@ class CashBook extends Model
     protected $fillable = [
         'order_id',
         'payment_method_id',
+        'user_id',
         'type',
         'category',
         'amount',
@@ -42,6 +43,11 @@ class CashBook extends Model
     public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

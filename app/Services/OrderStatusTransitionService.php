@@ -70,7 +70,8 @@ class OrderStatusTransitionService
             'from_status' => $currentStatus,
             'to_status' => $newStatus,
             'reason' => $reason,
-            'changed_by' => $changedBy,
+            'user_id' => is_numeric($changedBy) ? (int)$changedBy : null,
+            'changed_by_legacy' => is_numeric($changedBy) ? null : $changedBy,
         ]);
 
         // Atualizar status do pedido
