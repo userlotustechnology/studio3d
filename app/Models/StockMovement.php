@@ -56,7 +56,7 @@ class StockMovement extends Model
         $stockBefore = $product->stock;
         
         // Calcular novo estoque baseado no tipo
-        $outTypes = ['out', 'cart_reservation', 'sale'];
+        $outTypes = ['out', 'cart_reservation'];
         $inTypes = ['in', 'cart_return'];
         
         if (in_array($type, $outTypes)) {

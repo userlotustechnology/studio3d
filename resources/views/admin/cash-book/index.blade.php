@@ -134,8 +134,8 @@
                     @forelse($entries as $entry)
                     <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;">
                         <td style="padding: 16px;">
-                            <span style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $entry->transaction_date->format('d/m/Y') }}</span>
-                            <div style="font-size: 12px; color: #94a3b8;">{{ $entry->transaction_date->format('H:i') }}</div>
+                            <span style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $entry->created_at->format('d/m/Y') }}</span>
+                            <div style="font-size: 12px; color: #94a3b8;">{{ $entry->created_at->format('H:i') }}</div>
                         </td>
                         <td style="padding: 16px;">
                             @if($entry->order)

@@ -137,31 +137,12 @@ class Order extends Model
             // MAS não registra se foi cancelado (apenas devolve estoque)
             if ($order->isDirty('status') && $order->getOriginal('status') === 'draft') {
                 if ($order->status !== 'cancelled') {
-                    $order->convertCartReservationsToSales();
+                    // Registrar apenas movimentações financeiras
+                    // O estoque já foi reservado quando adicionado ao carrinho
                     $order->registerFinancialEntries();
                 }
             }
         });
-    }
-
-    /**
-     * Converte as reservas do carrinho em vendas finais
-     */
-    public function convertCartReservationsToSales()
-    {
-        foreach ($this->items as $item) {
-            // Registrar a venda final (sem alterar estoque, pois já foi reservado)
-            \App\Models\StockMovement::create([
-                'product_id' => $item->product_id,
-                'order_id' => $this->id,
-                'user_id' => $this->user_id,
-                'type' => 'sale',
-                'quantity' => -$item->quantity,
-                'stock_before' => Product::find($item->product_id)->stock,
-                'stock_after' => Product::find($item->product_id)->stock, // Sem alteração
-                'reason' => 'Venda finalizada - pedido ' . $this->order_number,
-            ]);
-        }
     }
 
     /**
