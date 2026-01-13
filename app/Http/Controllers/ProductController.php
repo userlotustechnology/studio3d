@@ -56,10 +56,41 @@ class ProductController extends Controller
     }
 
     // ADMIN METHODS
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::orderBy('created_at', 'desc')->paginate(15);
-        return view('products.index', compact('products'));
+        $query = Product::query();
+
+        // Filtro por busca (nome ou SKU)
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('sku', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filtro por categoria
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
+        }
+
+        // Filtro por status
+        if ($request->filled('status')) {
+            if ($request->input('status') === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->input('status') === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Carregar categorias para o dropdown
+        $categories = Category::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+        
+        return view('products.index', compact('products', 'categories'));
     }
 
     public function create(): View

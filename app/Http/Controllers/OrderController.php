@@ -15,12 +15,59 @@ class OrderController extends Controller
 {
     public function __construct(private OrderStatusTransitionService $transitionService) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Incluir pedidos draft e finalizados
-        $orders = Order::orderBy('created_at', 'desc')
-            ->paginate(15);
-        return view('orders.index', compact('orders'));
+        $query = Order::query();
+
+        // Filtro por busca (número do pedido ou cliente)
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('order_number', 'LIKE', "%{$search}%")
+                  ->orWhereHas('customer', function($q) use ($search) {
+                      $q->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filtro por status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if ($status === 'draft') {
+                $query->where('is_draft', true);
+            } else {
+                $query->where('is_draft', false)
+                      ->where('status', $status);
+            }
+        }
+
+        // Filtro por período
+        if ($request->filled('period')) {
+            $period = $request->input('period');
+            $now = now();
+            
+            if ($period === 'today') {
+                $query->whereDate('created_at', $now->toDateString());
+            } elseif ($period === 'week') {
+                $query->whereBetween('created_at', [
+                    $now->startOfWeek(),
+                    $now->endOfWeek()
+                ]);
+            } elseif ($period === 'month') {
+                $query->whereYear('created_at', $now->year)
+                      ->whereMonth('created_at', $now->month);
+            }
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Calcular totais para os cards
+        $totalOrders = Order::count();
+        $draftCount = Order::where('is_draft', true)->count();
+        $pendingCount = Order::where('is_draft', false)->where('status', 'pending')->count();
+        $deliveredCount = Order::where('status', 'delivered')->count();
+
+        return view('orders.index', compact('orders', 'totalOrders', 'draftCount', 'pendingCount', 'deliveredCount'));
     }
 
     public function pending(): View

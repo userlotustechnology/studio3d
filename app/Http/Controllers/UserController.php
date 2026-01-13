@@ -12,9 +12,35 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::all();
+        $query = User::query();
+
+        // Filtro por busca (nome ou email)
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filtro por função
+        if ($request->filled('role')) {
+            $query->where('role', $request->input('role'));
+        }
+
+        // Filtro por status
+        if ($request->filled('status')) {
+            if ($request->input('status') === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->input('status') === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        
         return view('admin.users.index', compact('users'));
     }
 
