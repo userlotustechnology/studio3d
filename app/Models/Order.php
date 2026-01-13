@@ -75,6 +75,11 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class);
     }
 
+    public function cashBookEntries(): HasMany
+    {
+        return $this->hasMany(CashBook::class);
+    }
+
     public function generateOrderNumber(): string
     {
         return 'PED-' . date('Y') . '-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
@@ -125,6 +130,7 @@ class Order extends Model
             // Se o pedido saiu de draft para outro status (finalizou)
             if ($order->isDirty('status') && $order->getOriginal('status') === 'draft') {
                 $order->convertCartReservationsToSales();
+                $order->registerFinancialEntries();
             }
         });
     }
@@ -146,6 +152,28 @@ class Order extends Model
                 'reason' => 'Venda finalizada - pedido ' . $this->order_number,
                 'user_name' => 'Sistema',
             ]);
+        }
+    }
+
+    /**
+     * Registra as movimentações financeiras do pedido
+     */
+    public function registerFinancialEntries()
+    {
+        // Registrar venda
+        \App\Models\CashBook::recordSale($this);
+        
+        // Registrar taxa da forma de pagamento
+        \App\Models\CashBook::recordSaleFee($this);
+        
+        // Registrar frete recebido
+        if ($this->shipping_cost > 0) {
+            \App\Models\CashBook::recordShippingRevenue($this);
+        }
+        
+        // Registrar custo do frete pago à transportadora
+        if ($this->carrier_shipping_cost > 0) {
+            \App\Models\CashBook::recordShippingCost($this);
         }
     }
 }

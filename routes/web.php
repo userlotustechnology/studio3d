@@ -149,5 +149,30 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/pos/create-address', [App\Http\Controllers\Admin\PosController::class, 'createAddress'])->name('admin.pos.createAddress');
         Route::post('/admin/pos/calculate-shipping', [App\Http\Controllers\Admin\PosController::class, 'calculateShipping'])->name('admin.pos.calculateShipping');
 
+        // Rotas de Formas de Pagamento
+        Route::resource('admin/payment-methods', \App\Http\Controllers\Admin\PaymentMethodController::class, [
+            'parameters' => ['payment_method' => 'paymentMethod'],
+            'names' => [
+                'index' => 'admin.payment-methods.index',
+                'create' => 'admin.payment-methods.create',
+                'store' => 'admin.payment-methods.store',
+                'show' => 'admin.payment-methods.show',
+                'edit' => 'admin.payment-methods.edit',
+                'update' => 'admin.payment-methods.update',
+                'destroy' => 'admin.payment-methods.destroy'
+            ]
+        ]);
+        Route::patch('/admin/payment-methods/{paymentMethod}/toggle-active', [\App\Http\Controllers\Admin\PaymentMethodController::class, 'toggleActive'])->name('admin.payment-methods.toggle-active');
+
+        // Rotas do Livro Caixa
+        Route::get('/admin/cash-book', [\App\Http\Controllers\Admin\CashBookController::class, 'index'])->name('admin.cash-book.index');
+        Route::get('/admin/cash-book/create', [\App\Http\Controllers\Admin\CashBookController::class, 'create'])->name('admin.cash-book.create');
+        Route::post('/admin/cash-book', [\App\Http\Controllers\Admin\CashBookController::class, 'store'])->name('admin.cash-book.store');
+        Route::get('/admin/cash-book/{cashBook}', [\App\Http\Controllers\Admin\CashBookController::class, 'show'])->name('admin.cash-book.show');
+        Route::get('/admin/cash-book/{cashBook}/edit', [\App\Http\Controllers\Admin\CashBookController::class, 'edit'])->name('admin.cash-book.edit');
+        Route::put('/admin/cash-book/{cashBook}', [\App\Http\Controllers\Admin\CashBookController::class, 'update'])->name('admin.cash-book.update');
+        Route::delete('/admin/cash-book/{cashBook}', [\App\Http\Controllers\Admin\CashBookController::class, 'destroy'])->name('admin.cash-book.destroy');
+        Route::get('/admin/cash-book-reports', [\App\Http\Controllers\Admin\CashBookController::class, 'reports'])->name('admin.cash-book.reports');
+
     });
 });

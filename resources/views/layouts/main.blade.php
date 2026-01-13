@@ -231,6 +231,31 @@
                     </ul>
                 </li>
 
+                <!-- Menu Financeiro -->
+                <li class="menu-item {{ request()->routeIs('admin.cash-book.*') || request()->routeIs('admin.payment-methods.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.cash-book.*') || request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}">
+                        <span class="material-symbols-outlined menu-icon">account_balance</span>
+                        <span class="title">Financeiro</span>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{ route('admin.cash-book.index') }}" class="menu-link {{ request()->routeIs('admin.cash-book.index') ? 'active' : '' }}">
+                                Livro Caixa
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.cash-book.reports') }}" class="menu-link {{ request()->routeIs('admin.cash-book.reports') ? 'active' : '' }}">
+                                Relatórios
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.payment-methods.index') }}" class="menu-link {{ request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}">
+                                Formas de Pagamento
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('admin.pos.*') ? 'open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle {{ request()->routeIs('admin.pos.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined menu-icon">point_of_sale</span>
