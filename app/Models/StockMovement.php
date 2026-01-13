@@ -41,15 +41,26 @@ class StockMovement extends Model
         int $productId,
         string $type,
         int $quantity,
-        string $reason,
         ?int $orderId = null,
+        string $reason = '',
         ?string $userName = null
     ): self {
         $product = Product::findOrFail($productId);
         $stockBefore = $product->stock;
         
-        // Calcular novo estoque
-        $movement = $type === 'out' ? -abs($quantity) : abs($quantity);
+        // Calcular novo estoque baseado no tipo
+        $outTypes = ['out', 'cart_reservation', 'sale'];
+        $inTypes = ['in', 'cart_return'];
+        
+        if (in_array($type, $outTypes)) {
+            $movement = -abs($quantity);
+        } elseif (in_array($type, $inTypes)) {
+            $movement = abs($quantity);
+        } else {
+            // Para 'adjustment', usar a quantidade como passada
+            $movement = $quantity;
+        }
+        
         $stockAfter = $stockBefore + $movement;
         
         // Atualizar estoque do produto

@@ -119,5 +119,33 @@ class Order extends Model
                 $model->save();
             }
         });
+
+        // Processar mudanças de status
+        static::updated(function ($order) {
+            // Se o pedido saiu de draft para outro status (finalizou)
+            if ($order->isDirty('status') && $order->getOriginal('status') === 'draft') {
+                $order->convertCartReservationsToSales();
+            }
+        });
+    }
+
+    /**
+     * Converte as reservas do carrinho em vendas finais
+     */
+    public function convertCartReservationsToSales()
+    {
+        foreach ($this->items as $item) {
+            // Registrar a venda final (sem alterar estoque, pois já foi reservado)
+            \App\Models\StockMovement::create([
+                'product_id' => $item->product_id,
+                'order_id' => $this->id,
+                'type' => 'sale',
+                'quantity' => -$item->quantity,
+                'stock_before' => Product::find($item->product_id)->stock,
+                'stock_after' => Product::find($item->product_id)->stock, // Sem alteração
+                'reason' => 'Venda finalizada - pedido ' . $this->order_number,
+                'user_name' => 'Sistema',
+            ]);
+        }
     }
 }

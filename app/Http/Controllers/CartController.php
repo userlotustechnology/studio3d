@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Address;
 use App\Models\ShippingRate;
+use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -142,6 +143,18 @@ class CartController extends Controller
                 'quantity' => $newQuantity,
                 'subtotal' => $product->price * $newQuantity,
             ]);
+            
+            // Fazer reserva adicional no estoque (apenas para produtos físicos)
+            if ($product->type === 'physical') {
+                StockMovement::recordMovement(
+                    $product->id,
+                    'cart_reservation',
+                    $quantity,
+                    $order->id,
+                    "Produto adicionado ao carrinho - Pedido #{$order->order_number}",
+                    'Sistema'
+                );
+            }
         } else {
             // Se o produto não existe, criar um novo OrderItem
             OrderItem::create([
@@ -152,6 +165,18 @@ class CartController extends Controller
                 'quantity' => $quantity,
                 'subtotal' => $product->price * $quantity,
             ]);
+            
+            // Fazer reserva no estoque (apenas para produtos físicos)
+            if ($product->type === 'physical') {
+                StockMovement::recordMovement(
+                    $product->id,
+                    'cart_reservation',
+                    $quantity,
+                    $order->id,
+                    "Produto adicionado ao carrinho - Pedido #{$order->order_number}",
+                    'Sistema'
+                );
+            }
         }
 
         // Atualizar totais do pedido
@@ -331,13 +356,53 @@ class CartController extends Controller
         $orderItem = $order->items()->where('product_id', $product->id)->first();
         
         if ($orderItem) {
+            $oldQuantity = $orderItem->quantity;
+            
             if ($quantity <= 0) {
+                // Devolver estoque reservado (apenas para produtos físicos)
+                if ($product->type === 'physical') {
+                    StockMovement::recordMovement(
+                        $product->id,
+                        'cart_return',
+                        $oldQuantity,
+                        $order->id,
+                        "Produto removido do carrinho - Pedido #{$order->order_number}",
+                        'Sistema'
+                    );
+                }
                 $orderItem->delete();
             } else {
+                $quantityDiff = $quantity - $oldQuantity;
+                
                 $orderItem->update([
                     'quantity' => $quantity,
                     'subtotal' => $product->price * $quantity
                 ]);
+                
+                // Ajustar estoque reservado (apenas para produtos físicos)
+                if ($product->type === 'physical' && $quantityDiff != 0) {
+                    if ($quantityDiff > 0) {
+                        // Aumentou quantidade - reservar mais
+                        StockMovement::recordMovement(
+                            $product->id,
+                            'cart_reservation',
+                            $quantityDiff,
+                            $order->id,
+                            "Quantidade aumentada no carrinho - Pedido #{$order->order_number}",
+                            'Sistema'
+                        );
+                    } else {
+                        // Diminuiu quantidade - devolver diferença
+                        StockMovement::recordMovement(
+                            $product->id,
+                            'cart_return',
+                            abs($quantityDiff),
+                            $order->id,
+                            "Quantidade diminuída no carrinho - Pedido #{$order->order_number}",
+                            'Sistema'
+                        );
+                    }
+                }
             }
             
             $this->updateOrderTotals($order);
@@ -364,6 +429,18 @@ class CartController extends Controller
 
         $orderItem = $order->items()->where('product_id', $product->id)->first();
         if ($orderItem) {
+            // Devolver estoque reservado (apenas para produtos físicos)
+            if ($product->type === 'physical') {
+                StockMovement::recordMovement(
+                    $product->id,
+                    'cart_return',
+                    $orderItem->quantity,
+                    $order->id,
+                    "Produto removido do carrinho - Pedido #{$order->order_number}",
+                    'Sistema'
+                );
+            }
+            
             $orderItem->delete();
             $this->updateOrderTotals($order);
         }
@@ -378,6 +455,21 @@ class CartController extends Controller
         if ($draftOrderId) {
             $order = Order::find($draftOrderId);
             if ($order) {
+                // Devolver estoque de todos os itens físicos
+                foreach ($order->items as $item) {
+                    $product = Product::find($item->product_id);
+                    if ($product && $product->type === 'physical') {
+                        StockMovement::recordMovement(
+                            $product->id,
+                            'cart_return',
+                            $item->quantity,
+                            $order->id,
+                            "Carrinho limpo - Pedido #{$order->order_number}",
+                            'Sistema'
+                        );
+                    }
+                }
+                
                 $order->items()->delete();
                 $order->delete();
             }
