@@ -23,6 +23,7 @@ Route::get('/produto/{uuid}', [ProductController::class, 'show'])->name('shop.sh
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::get('/carrinho/count', [CartController::class, 'count'])->name('cart.count');
 Route::get('/carrinho/cpf', [CartController::class, 'requestCpf'])->name('cart.request-cpf');
+Route::get('/carrinho/cliente-por-cpf', [CartController::class, 'getCustomerByCpf'])->name('cart.get-customer-by-cpf');
 Route::post('/carrinho/adicionar/{uuid}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/carrinho/atualizar/{uuid}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/carrinho/remover/{uuid}', [CartController::class, 'remove'])->name('cart.remove');

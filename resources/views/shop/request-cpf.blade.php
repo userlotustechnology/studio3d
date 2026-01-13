@@ -30,7 +30,7 @@
                     @csrf
                     <input type="hidden" name="quantity" value="{{ $quantity }}">
                     
-                    <div style="margin-bottom: 25px;">
+                    <div style="margin-bottom: 20px;">
                         <label for="cpf" style="display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">
                             CPF <span style="color: #ef4444;">*</span>
                         </label>
@@ -38,6 +38,7 @@
                             type="text" 
                             id="cpf" 
                             name="cpf" 
+                            value="{{ old('cpf') }}"
                             maxlength="14"
                             placeholder="000.000.000-00"
                             required
@@ -45,9 +46,62 @@
                             onfocus="this.style.borderColor='var(--primary-color)'"
                             onblur="this.style.borderColor='#e5e7eb'"
                         >
+                        @error('cpf')
+                        <small style="color: #ef4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</small>
+                        @else
                         <small style="color: var(--text-light); font-size: 12px; margin-top: 5px; display: block;">
                             Informe apenas números ou use o formato 000.000.000-00
                         </small>
+                        @enderror
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label for="email" style="display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">
+                            Email <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            value="{{ old('email') }}"
+                            placeholder="seu@email.com"
+                            required
+                            style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: all 0.3s;"
+                            onfocus="this.style.borderColor='var(--primary-color)'"
+                            onblur="this.style.borderColor='#e5e7eb'"
+                        >
+                        @error('email')
+                        <small style="color: #ef4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</small>
+                        @else
+                        <small style="color: var(--text-light); font-size: 12px; margin-top: 5px; display: block;">
+                            Você receberá atualizações de pedidos neste email
+                        </small>
+                        @enderror
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label for="phone" style="display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">
+                            Telefone <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="phone" 
+                            name="phone" 
+                            value="{{ old('phone') }}"
+                            maxlength="15"
+                            placeholder="(00) 00000-0000"
+                            required
+                            style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: all 0.3s;"
+                            onfocus="this.style.borderColor='var(--primary-color)'"
+                            onblur="this.style.borderColor='#e5e7eb'"
+                        >
+                        @error('phone')
+                        <small style="color: #ef4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</small>
+                        @else
+                        <small style="color: var(--text-light); font-size: 12px; margin-top: 5px; display: block;">
+                            Será usado para contato sobre sua compra
+                        </small>
+                        @enderror
                     </div>
 
                     <div style="display: flex; gap: 12px;">
@@ -88,6 +142,8 @@
     <script>
         // Máscara de CPF
         const cpfInput = document.getElementById('cpf');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
         const cpfForm = document.getElementById('cpfForm');
         
         if (cpfInput) {
@@ -101,18 +157,84 @@
                 }
                 
                 e.target.value = value;
+                
+                // Buscar dados do cliente se CPF tiver 11 dígitos
+                if (value.replace(/\D/g, '').length === 11) {
+                    fetchCustomerData(value);
+                }
             });
+        }
+
+        // Máscara de telefone
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                }
+                
+                e.target.value = value;
+            });
+        }
+
+        // Buscar dados do cliente por CPF
+        async function fetchCustomerData(cpf) {
+            try {
+                const cleanCpf = cpf.replace(/\D/g, '');
+                const response = await fetch(`{{ route('cart.get-customer-by-cpf') }}?cpf=${cleanCpf}`);
+                const data = await response.json();
+                
+                if (data.found) {
+                    // Preencher automaticamente email e telefone
+                    if (data.email && !emailInput.value.includes('@temp.local')) {
+                        emailInput.value = data.email;
+                    }
+                    if (data.phone) {
+                        // Formatar telefone
+                        let phoneFormatted = data.phone.replace(/\D/g, '');
+                        if (phoneFormatted.length >= 10) {
+                            phoneFormatted = phoneFormatted.replace(/(\d{2})(\d)/, '($1) $2');
+                            phoneFormatted = phoneFormatted.replace(/(\d{5})(\d)/, '$1-$2');
+                        }
+                        phoneInput.value = phoneFormatted;
+                    }
+                }
+            } catch (error) {
+                console.log('Erro ao buscar dados do cliente:', error);
+            }
         }
 
         // Validação básica antes de enviar
         if (cpfForm) {
             cpfForm.addEventListener('submit', function(e) {
                 const cpf = cpfInput.value.replace(/\D/g, '');
+                const email = emailInput.value.trim();
+                const phone = phoneInput.value.replace(/\D/g, '');
                 
+                // Validar CPF
                 if (cpf.length !== 11) {
                     e.preventDefault();
                     alert('Por favor, informe um CPF válido com 11 dígitos.');
                     cpfInput.focus();
+                    return false;
+                }
+
+                // Validar email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Por favor, informe um email válido.');
+                    emailInput.focus();
+                    return false;
+                }
+
+                // Validar telefone (mínimo 10 dígitos)
+                if (phone.length < 10) {
+                    e.preventDefault();
+                    alert('Por favor, informe um telefone válido com pelo menos 10 dígitos.');
+                    phoneInput.focus();
                     return false;
                 }
             });

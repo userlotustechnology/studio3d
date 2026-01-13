@@ -79,11 +79,13 @@ class CartController extends Controller
         $order = session()->get('draft_order_id');
         
         if (!$order) {
-            // Primeiro produto sendo adicionado - precisa do CPF
+            // Primeiro produto sendo adicionado - precisa do CPF, email e telefone
             $cpf = $request->input('cpf');
+            $email = $request->input('email');
+            $phone = $request->input('phone');
             
-            if (!$cpf) {
-                // Redirecionar para solicitar CPF
+            if (!$cpf || !$email || !$phone) {
+                // Redirecionar para solicitar CPF, email e telefone
                 session()->put('product_to_add', [
                     'product_uuid' => $product->uuid,
                     'quantity' => $quantity
@@ -96,6 +98,17 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'CPF inválido!');
             }
 
+            // Validar email
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return redirect()->back()->with('error', 'Email inválido!');
+            }
+
+            // Validar telefone (mínimo 10 dígitos)
+            $phoneDigits = preg_replace('/[^0-9]/', '', $phone);
+            if (strlen($phoneDigits) < 10) {
+                return redirect()->back()->with('error', 'Telefone inválido! Informe pelo menos 10 dígitos.');
+            }
+
             // Remove máscara do CPF antes de usar
             $cpf = preg_replace('/[^0-9]/', '', $cpf);
 
@@ -106,8 +119,15 @@ class CartController extends Controller
                 // Criar novo cliente
                 $customer = Customer::create([
                     'name' => 'Cliente ' . $cpf,
-                    'email' => 'cliente-' . time() . '@temp.local',
+                    'email' => $email,
                     'cpf' => $cpf,
+                    'phone' => $phoneDigits,
+                ]);
+            } else {
+                // Atualizar sempre email e telefone do cliente existente
+                $customer->update([
+                    'email' => $email,
+                    'phone' => $phoneDigits,
                 ]);
             }
 
@@ -188,6 +208,45 @@ class CartController extends Controller
     {
         $productToAdd = session()->get('product_to_add');
         return view('shop.request-cpf', compact('productToAdd'));
+    }
+
+    public function getCustomerByCpf(Request $request)
+    {
+        // Obter CPF do query parameter
+        $cpf = $request->input('cpf');
+        
+        if (!$cpf) {
+            return response()->json([
+                'found' => false,
+                'message' => 'CPF não informado'
+            ], 400);
+        }
+        
+        // Remove máscara do CPF
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        
+        // Validar se CPF tem 11 dígitos
+        if (strlen($cpf) !== 11) {
+            return response()->json([
+                'found' => false,
+                'message' => 'CPF inválido'
+            ], 400);
+        }
+        
+        // Buscar cliente pelo CPF
+        $customer = Customer::where('cpf', $cpf)->first();
+        
+        if ($customer) {
+            return response()->json([
+                'found' => true,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+            ]);
+        }
+        
+        return response()->json([
+            'found' => false,
+        ]);
     }
 
     private function calculateShippingCost($cep, $subtotal = null): float
