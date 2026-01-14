@@ -66,7 +66,7 @@
                                 type="text" 
                                 id="billing_postal_code" 
                                 name="billing_postal_code" 
-                                value="{{ old('billing_postal_code') }}" 
+                                value="{{ old('billing_postal_code', session('cep') ? substr(session('cep'), 0, 5) . '-' . substr(session('cep'), 5) : '') }}" 
                                 required 
                                 placeholder="00000-000" 
                                 style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 6px; font-family: inherit; transition: border-color 0.3s;"
@@ -649,8 +649,19 @@
                     // Preencher os campos
                     document.querySelector('input[name="billing_street"]').value = data.logradouro;
                     document.querySelector('input[name="billing_neighborhood"]').value = data.bairro;
-                    document.querySelector('input[name="billing_city"]').value = data.localidade;
-                    document.querySelector('input[name="billing_state"]').value = data.uf;
+                    
+                    const billingCityField = document.querySelector('input[name="billing_city"]');
+                    const billingStateField = document.querySelector('input[name="billing_state"]');
+                    billingCityField.value = data.localidade;
+                    billingStateField.value = data.uf;
+                    
+                    // Bloquear campos de cidade e estado
+                    billingCityField.readOnly = true;
+                    billingStateField.readOnly = true;
+                    billingCityField.style.backgroundColor = '#f3f4f6';
+                    billingStateField.style.backgroundColor = '#f3f4f6';
+                    billingCityField.style.cursor = 'not-allowed';
+                    billingStateField.style.cursor = 'not-allowed';
 
                     // Mostrar campos de endereço de cobrança
                     billingAddressFields.style.display = 'block';
@@ -674,6 +685,14 @@
                             shippingNeighborhood.value = data.bairro;
                             shippingCity.value = data.localidade;
                             shippingState.value = data.uf;
+                            
+                            // Bloquear campos de cidade e estado de entrega
+                            shippingCity.readOnly = true;
+                            shippingState.readOnly = true;
+                            shippingCity.style.backgroundColor = '#f3f4f6';
+                            shippingState.style.backgroundColor = '#f3f4f6';
+                            shippingCity.style.cursor = 'not-allowed';
+                            shippingState.style.cursor = 'not-allowed';
                         }
                         // NÃO calcular frete aqui - esperar pelo CEP de entrega
                     } else {
@@ -739,8 +758,19 @@
                     // Preencher os campos de entrega
                     document.querySelector('input[name="shipping_street"]').value = data.logradouro;
                     document.querySelector('input[name="shipping_neighborhood"]').value = data.bairro;
-                    document.querySelector('input[name="shipping_city"]').value = data.localidade;
-                    document.querySelector('input[name="shipping_state"]').value = data.uf;
+                    
+                    const shippingCityField = document.querySelector('input[name="shipping_city"]');
+                    const shippingStateField = document.querySelector('input[name="shipping_state"]');
+                    shippingCityField.value = data.localidade;
+                    shippingStateField.value = data.uf;
+                    
+                    // Bloquear campos de cidade e estado
+                    shippingCityField.readOnly = true;
+                    shippingStateField.readOnly = true;
+                    shippingCityField.style.backgroundColor = '#f3f4f6';
+                    shippingStateField.style.backgroundColor = '#f3f4f6';
+                    shippingCityField.style.cursor = 'not-allowed';
+                    shippingStateField.style.cursor = 'not-allowed';
 
                     // Mostrar campos de endereço de entrega
                     shippingAddressFields.style.display = 'block';
@@ -924,5 +954,16 @@
 
         // Calcular inicialmente se houver método selecionado
         updateTotalWithDiscount();
+        
+        // Auto-preencher endereço se já houver CEP da sessão
+        @if(session('cep'))
+        document.addEventListener('DOMContentLoaded', function() {
+            const cep = '{{ session('cep') }}';
+            if (cep && cep.length === 8) {
+                // Disparar busca automática do CEP
+                searchCEP(cep);
+            }
+        });
+        @endif
     </script>
 @endsection

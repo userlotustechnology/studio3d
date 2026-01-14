@@ -350,6 +350,9 @@ class CartController extends Controller
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
             ]);
+            
+            // Salvar CEP na sessão para indicar que o frete foi calculado
+            session()->put('cep', $cep);
         }
 
         return response()->json([
@@ -380,7 +383,7 @@ class CartController extends Controller
                 if ($freeShippingMinimum > 0 && $subtotal >= $freeShippingMinimum) {
                     $shippingCost = 0;
                 } else {
-                    $shippingCost = 15.00; // Valor padrão temporário
+                    $shippingCost = 0; // Não mostrar valor até calcular o frete
                 }
             }
         }
@@ -583,6 +586,12 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', $message);
         }
 
+        // Validar se o frete foi calculado (existe CEP na sessão)
+        $cep = session('cep');
+        if (!$cep) {
+            return redirect()->route('cart.index')->with('error', 'É necessário calcular o frete antes de prosseguir para o pagamento!');
+        }
+
         $items = $order->items;
         $subtotal = $order->subtotal;
         $shippingCost = $order->shipping_cost;
@@ -625,6 +634,12 @@ class CartController extends Controller
         
         if (!$order || count($order->items) === 0) {
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio!');
+        }
+
+        // Validar se o frete foi calculado (existe CEP na sessão)
+        $cep = session('cep');
+        if (!$cep) {
+            return redirect()->route('cart.index')->with('error', 'É necessário calcular o frete antes de prosseguir para o pagamento!');
         }
 
         // Validar valor mínimo do pedido (não incluindo frete)

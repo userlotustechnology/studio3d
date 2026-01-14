@@ -143,18 +143,22 @@
                                 <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #667eea;"></i>CEP para Cálculo de Frete
                             </label>
                             <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: flex-end;">
-                                <input type="text" id="cep-input" placeholder="Digite seu CEP" maxlength="9" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;" value="{{ session('cep') ?? '' }}">
+                                <input type="text" id="cep-input" placeholder="Digite seu CEP" maxlength="9" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;" value="{{ session('cep') ? substr(session('cep'), 0, 5) . '-' . substr(session('cep'), 5) : '' }}">
                                 <button type="button" id="calc-shipping-btn" onclick="calculateShippingCost()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; white-space: nowrap;">
                                     <i class="fas fa-calculator"></i> Calcular
                                 </button>
                             </div>
-                            <div id="cep-error" style="display: none; color: #ef4444; font-size: 14px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <div id="cep-error" style="display: none; color: #ef4444; font-size: 14px; margin-top: 8px; align-items: center; gap: 6px;">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <span id="cep-error-text"></span>
                             </div>
-                            <div id="cep-loading" style="display: none; color: #667eea; font-size: 14px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <div id="cep-loading" style="display: none; color: #667eea; font-size: 14px; margin-top: 8px; align-items: center; gap: 6px;">
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <span>Calculando frete...</span>
+                            </div>
+                            <div id="shipping-required-warning" style="{{ session('cep') ? 'display: none;' : '' }} color: #f59e0b; font-size: 13px; margin-top: 8px; display: flex; align-items: center; gap: 6px; padding: 8px 12px; background-color: #fef3c7; border-radius: 6px; border: 1px solid #fbbf24;">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Calcule o frete antes de finalizar a compra</span>
                             </div>
                         </div>
 
@@ -165,11 +169,15 @@
                             </div>
                             <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
                                 <span style="color: #6b7280; font-weight: 500;">Frete</span>
-                                <span style="font-weight: 700; color: #667eea;">
-                                    @if($shippingCost == 0)
-                                        <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                <span id="shipping-display" style="font-weight: 700; color: #667eea;">
+                                    @if(session('cep'))
+                                        @if($shippingCost == 0)
+                                            <span style="color: #10b981;">GRÁTIS 🎉</span>
+                                        @else
+                                            R$ {{ number_format($shippingCost, 2, ',', '.') }}
+                                        @endif
                                     @else
-                                        R$ <span id="shipping-amount">{{ number_format($shippingCost, 2, ',', '.') }}</span>
+                                        <span style="color: #9ca3af; font-style: italic;">A calcular</span>
                                     @endif
                                 </span>
                             </div>
@@ -205,8 +213,8 @@
                         @endif
 
                         <div style="display: grid; gap: 12px;">
-                            <a href="{{ route('cart.checkout') }}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; text-align: center; display: block; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);">
-                                <i class="fas fa-lock"></i> Finalizar compra
+                            <a id="checkout-button" href="{{ route('cart.checkout') }}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; text-align: center; display: block; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);">
+                                <span id="checkout-text">Finalizar compra</span>
                             </a>
                             <a href="{{ route('shop.index') }}" style="background: white; color: #667eea; padding: 14px 20px; text-align: center; display: block; border-radius: 12px; font-weight: 600; text-decoration: none; border: 2px solid #667eea; transition: all 0.3s;">
                                 <i class="fas fa-arrow-left"></i> Continuar comprando
@@ -588,6 +596,108 @@
         // Variáveis globais
         const subtotalAmount = {{ $subtotal }};
         let currentShippingCost = {{ $shippingCost }};
+        
+        // Controle do estado do frete
+        let isShippingCalculated = {{ session('cep') ? 'true' : 'false' }};
+        
+        // Função para atualizar estado do botão de checkout
+        function updateCheckoutButton() {
+            const checkoutButton = document.getElementById('checkout-button');
+            const checkoutText = document.getElementById('checkout-text');
+            const shippingWarning = document.getElementById('shipping-required-warning');
+            
+            if (!checkoutButton || !checkoutText) {
+                return;
+            }
+            
+            if (isShippingCalculated) {
+                // Habilitar botão
+                checkoutButton.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                checkoutButton.style.opacity = '1';
+                checkoutButton.style.cursor = 'pointer';
+                checkoutButton.style.pointerEvents = 'auto';
+                checkoutText.innerHTML = '<i class="fas fa-lock"></i> Finalizar compra';
+                
+                // Esconder aviso de frete necessário
+                if (shippingWarning) {
+                    shippingWarning.style.display = 'none';
+                }
+                
+                // Remover evento de clique que previne navegação
+                checkoutButton.onclick = null;
+                checkoutButton.setAttribute('href', '{{ route("cart.checkout") }}');
+            } else {
+                // Desabilitar botão
+                checkoutButton.style.background = 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)';
+                checkoutButton.style.opacity = '0.6';
+                checkoutButton.style.cursor = 'not-allowed';
+                checkoutButton.style.pointerEvents = 'none';
+                checkoutText.innerHTML = '<i class="fas fa-calculator"></i> Calcule o frete para continuar';
+                
+                // Mostrar aviso de frete necessário
+                if (shippingWarning) {
+                    shippingWarning.style.display = 'flex';
+                }
+                
+                // Prevenir navegação
+                checkoutButton.removeAttribute('href');
+                checkoutButton.onclick = function(e) {
+                    e.preventDefault();
+                    // Mostrar alerta
+                    showShippingAlert('Por favor, calcule o frete antes de prosseguir!');
+                    // Focar no campo CEP
+                    const cepInput = document.getElementById('cep-input');
+                    if (cepInput) {
+                        cepInput.focus();
+                        cepInput.style.border = '2px solid #ef4444';
+                        setTimeout(() => {
+                            cepInput.style.border = '2px solid #e5e7eb';
+                        }, 2000);
+                    }
+                    return false;
+                };
+            }
+        }
+        
+        // Função para mostrar alerta de frete
+        function showShippingAlert(message) {
+            let alert = document.getElementById('shipping-alert');
+            if (!alert) {
+                alert = document.createElement('div');
+                alert.id = 'shipping-alert';
+                alert.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+                    border-left: 4px solid #f59e0b;
+                    color: #92400e;
+                    padding: 16px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    max-width: 350px;
+                    animation: slideInRight 0.3s ease;
+                `;
+                document.body.appendChild(alert);
+            }
+            
+            alert.innerHTML = `
+                <i class="fas fa-calculator"></i>
+                <span>${message}</span>
+            `;
+            alert.style.display = 'flex';
+            
+            // Auto remover após 4 segundos
+            setTimeout(() => {
+                if (alert) {
+                    alert.style.display = 'none';
+                }
+            }, 4000);
+        }
 
         // Funções para incrementar/decrementar quantidade
         function incrementQuantity(btn) {
@@ -710,6 +820,11 @@
             const loadingDiv = document.getElementById('cep-loading');
             const errorText = document.getElementById('cep-error-text');
 
+            // Validar se elementos existem
+            if (!cepInput || !errorDiv || !loadingDiv || !errorText) {
+                return;
+            }
+
             // Validar CEP
             if (!cep || cep.length !== 8) {
                 errorDiv.style.display = 'flex';
@@ -756,21 +871,27 @@
                 }).format(total);
 
                 // Atualizar elementos na tela
-                const shippingElement = document.getElementById('shipping-amount');
-                if (shippingElement) {
+                const shippingDisplay = document.getElementById('shipping-display');
+                if (shippingDisplay) {
                     if (currentShippingCost === 0) {
-                        shippingElement.innerHTML = '<span style="color: #10b981;">GRÁTIS 🎉</span>';
-                        shippingElement.parentElement.style.color = '#10b981';
+                        shippingDisplay.innerHTML = '<span style="color: #10b981;">GRÁTIS 🎉</span>';
+                        shippingDisplay.style.color = '#10b981';
                     } else {
-                        shippingElement.textContent = shippingFormatted;
-                        shippingElement.parentElement.style.color = '#667eea';
+                        shippingDisplay.innerHTML = 'R$ ' + shippingFormatted;
+                        shippingDisplay.style.color = '#667eea';
                     }
                 }
                 
                 document.getElementById('total-amount').textContent = totalFormatted;
 
+                // Marcar frete como calculado
+                isShippingCalculated = true;
+                updateCheckoutButton();
+
                 // Atualizar indicador de frete grátis
-                updateFreeShippingIndicator();
+                if (typeof updateFreeShippingIndicator === 'function') {
+                    updateFreeShippingIndicator();
+                }
 
                 // Formatar CEP para exibição (XXXXX-XXX)
                 cepInput.value = cep.substring(0, 5) + '-' + cep.substring(5);
@@ -837,5 +958,7 @@
 
         // Atualizar indicador quando a página carrega
         updateFreeShippingIndicator();
+        // Atualizar estado do botão de checkout quando página carrega
+        updateCheckoutButton();
     </script>
 @endsection
